@@ -1,0 +1,7 @@
+---
+layout: post
+title: "Foo"
+date: 2011-09-21 08:32
+comments: true
+categories: [foo]
+---

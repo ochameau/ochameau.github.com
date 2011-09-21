@@ -1,0 +1,37 @@
+// This File is imported last, and will override other styles in the cascade
+// Add styles here to make changes without digging in too much
+
+html, body > header {
+  background-color: #050a1d;
+}
+
+body > header {
+  background-image: image-url('techno-barje.jpg');
+  background-position: center top;
+  background-repeat: no-repeat;
+  height: 222px;
+  border-bottom: 7px solid red;
+  padding: 0; margin: 0;
+
+  h1 {
+    position: absolute;
+    left:0; right: 0; top: 0;
+    height: 222px;
+    text-align: center;
+    font-size: 100px;
+    
+  }
+  a {
+    color: transparent !important;
+  }
+}
+
+#resume-link {
+  position: absolute;
+  right:0; top: 0;
+}
+
+body > footer {
+  border-bottom: 7px solid red;
+  @include border-bottom-radius(0);
+}
