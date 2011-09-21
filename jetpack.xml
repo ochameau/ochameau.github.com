@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title>Techno Barje</title>
+  <link href="http://techno-barje.fr/atom.xml" rel="self"/>
+  <link href="http://techno-barje.fr/"/>
+  <updated>2011-09-21T19:58:11+02:00</updated>
+  <id>http://techno-barje.fr/</id>
+  <author>
+    <name>Alexandre Poirot</name>
+    
+  </author>
+
+  
+  <entry>
+    <title>Test</title>
+    <link href="http://techno-barje.fr/2011/09/21/test/"/>
+    <updated>2011-09-21T07:09:00+02:00</updated>
+    <id>http://techno-barje.fr/2011/09/21/test</id>
+    <content type="html">&lt;p&gt;Test&lt;/p&gt;
+
+&lt;p&gt;blaaa&lt;/p&gt;
+
+&lt;p&gt;  &lt;span class=&#8217;has-pullquote&#8217; data-pullquote=&#8217;surround it like this &#8216;&gt;
+  Surround your paragraph with the pull quote tags. Then when you come to
+  the text you want to pull, surround it like this and that&amp;#8217;s all there
+  is to it.
+  &lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Liquid error: Could not open library &amp;#8216;.dll&amp;#8217;: Le module spécifié est introuvable.&lt;/p&gt;
+
+&lt;p&gt;Liquid error: undefined method `Py_IsInitialized&amp;#8217; for RubyPython::Python:Module&lt;/p&gt;
+</content>
+  </entry>
+  
+</feed>
