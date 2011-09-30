@@ -1,0 +1,158 @@
+
+/* simply load "ctypes" object */
+Components.utils.import("resource://gre/modules/ctypes.jsm");
+
+/* Load libraries that we are going to use */
+var libs = {};
+libs.user32 = ctypes.open("user32.dll");
+libs.shell32 = ctypes.open("shell32.dll");
+libs.kernel32 = ctypes.open("kernel32.dll");
+
+/* Here is the tedious work of declaring functions arguments types and struct attributes types */
+/* In fact it's quite easy, you just have to find which precise type are using your native functions/struct */
+/* but it may be hard to known, for example in windows API, which precise type is behing their "HANDLE" type ... */
+/* I recommend you to find and look at python ctype binding source code because they already had done this work */
+
+var WindowProc =
+  ctypes.FunctionType(ctypes.stdcall_abi, ctypes.int,
+    [ctypes.voidptr_t, ctypes.int32_t, ctypes.int32_t, ctypes.int32_t]).ptr;
+var WM_MOUSEMOVE = 512;
+var WM_LBUTTONDOWN = 513;
+var WM_LBUTTONUP = 514;
+var WM_LBUTTONDBLCLK = 515;
+var WM_RBUTTONDOWN = 516;
+var WM_RBUTTONUP = 517;
+var WM_RBUTTONDBLCLK = 518;
+var WM_USER = 1024;
+
+var WNDCLASS =
+  ctypes.StructType("WNDCLASS",
+    [
+      { style : ctypes.uint32_t },
+      { lpfnWndProc : WindowProc },
+      { cbClsExtra : ctypes.int32_t },
+      { cbWndExtra : ctypes.int32_t },
+      { hInstance : ctypes.voidptr_t },
+      { hIcon : ctypes.voidptr_t },
+      { hCursor : ctypes.voidptr_t },
+      { hbrBackground : ctypes.voidptr_t },
+      { lpszMenuName : ctypes.char.ptr },
+      { lpszClassName : ctypes.char.ptr }
+    ]);
+
+var CreateWindowEx =
+  libs.user32.declare( "CreateWindowExA", ctypes.winapi_abi, ctypes.voidptr_t,
+      ctypes.long,
+      ctypes.char.ptr,
+      ctypes.char.ptr,
+      ctypes.int,
+      ctypes.int,
+      ctypes.int,
+      ctypes.int,
+      ctypes.int,
+      ctypes.voidptr_t,
+      ctypes.voidptr_t,
+      ctypes.voidptr_t,
+      ctypes.voidptr_t
+    );
+var HWND_MESSAGE = -3;
+
+var RegisterClass =
+  libs.user32.declare( "RegisterClassA", ctypes.winapi_abi, ctypes.voidptr_t,
+    WNDCLASS.ptr);
+
+var DefWindowProc =
+  libs.user32.declare("DefWindowProcA", ctypes.winapi_abi, ctypes.int,
+    ctypes.voidptr_t, ctypes.int32_t, ctypes.int32_t, ctypes.int32_t);
+
+
+var NOTIFICATIONDATA =
+  ctypes.StructType("NOTIFICATIONDATA",
+    [{ cbSize : ctypes.int },
+     { hWnd : ctypes.voidptr_t },
+     { uID : ctypes.int },
+     { uFlags : ctypes.int },
+     { uCallbackMessage : ctypes.int },
+     { hIcon : ctypes.voidptr_t },
+     { szTip : ctypes.char.array(64) },
+     { dwState : ctypes.int },
+     { dwStateMask : ctypes.int },
+     { szInfo : ctypes.char.array(256) },
+     { uTimeoutOrVersion : ctypes.int },
+     { szInfoTitle : ctypes.char.array(64) },
+     { dwInfoFlags : ctypes.int },
+     { guidItem : ctypes.int },
+     { hBalloonIcon : ctypes.int }
+    ]);
+var NIF_MESSAGE = 0x00000001;
+var NIF_ICON = 0x00000002;
+var NIF_TIP = 0x00000004;
+
+var Shell_NotifyIcon =
+  libs.shell32.declare("Shell_NotifyIcon", ctypes.winapi_abi, ctypes.bool,
+    ctypes.int,
+    NOTIFICATIONDATA.ptr);
+var NIM_ADD = 0x00000000;
+var NIM_MODIFY = 0x00000001;
+var NIM_DELETE = 0x00000002;
+  
+var LoadImage =
+  libs.user32.declare("LoadImageA", ctypes.winapi_abi, ctypes.voidptr_t,
+    ctypes.int,
+    ctypes.char.ptr,
+    ctypes.int,
+    ctypes.int,
+    ctypes.int,
+    ctypes.int);
+var IMAGE_BITMAP = 0;
+var IMAGE_ICON = 1;
+var LR_LOADFROMFILE = 16;
+
+
+/* **************************************************** */
+/* And now, the "real" code that is calling C functions */
+/* **************************************************** */
+
+/* Define one Window Proc function in order to catch win32 api events */
+function windowProc(hWnd, uMsg, wParam, lParam) {
+  if (lParam == WM_LBUTTONDOWN) {
+    Components.utils.reportError("Left click!");
+    /* 0 means that we handle this event */
+    return 0; 
+  }
+  else if (lParam == WM_RBUTTONDOWN) {
+    Components.utils.reportError("Right click!");
+    return 0;
+  }
+  /* Mandatory use default win32 procedure! */
+  return DefWindowProc(hWnd, uMsg, wParam, lParam);
+};
+
+/* Define a custom Window Class in order to bind our custom Window Proc */
+var wndclass = WNDCLASS();
+wndclass.lpszClassName = ctypes.char.array()("class-trayicon");
+wndclass.lpfnWndProc = WindowProc(windowProc);
+RegisterClass(wndclass.address());
+
+/* Create a Message event only Window using this custom class */
+var win = CreateWindowEx(
+    0, wndclass.lpszClassName,
+    ctypes.char.array()("trayicon-window"),
+    0, 0, 0, 0, 0,
+    ctypes.voidptr_t(HWND_MESSAGE), null, null, null);
+
+/* Create a win32api icon object with this icon path */
+var hIcon = LoadImage(0, "c:\\default.ico", IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+
+/* create a C struct that is defining a notification in tray */
+var icon = NOTIFICATIONDATA();
+icon.cbSize = NOTIFICATIONDATA.size;
+icon.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
+icon.szTip = "My tray icon!";
+icon.hIcon = hIcon;
+icon.uCallbackMessage = WM_USER+1000;
+icon.hWnd = win;
+icon.uID = 1;
+
+/* Display this notification! */
+Shell_NotifyIcon(NIM_ADD, icon.address());

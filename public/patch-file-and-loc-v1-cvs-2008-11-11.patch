@@ -1,0 +1,456 @@
+diff -r 8c3eb45b53c2 asmcomp/clambda.ml
+--- a/asmcomp/clambda.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/clambda.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -25,7 +25,7 @@ type ulambda =
+   | Uconst of structured_constant
+   | Udirect_apply of function_label * ulambda list * Debuginfo.t
+   | Ugeneric_apply of ulambda * ulambda list * Debuginfo.t
+-  | Uclosure of (function_label * int * Ident.t list * ulambda) list
++  | Uclosure of (function_label * int * Ident.t list * Debuginfo.t * ulambda) list
+               * ulambda list
+   | Uoffset of ulambda * int
+   | Ulet of Ident.t * ulambda * ulambda
+@@ -52,6 +52,7 @@ and ulambda_switch =
+ 
+ type function_description =
+   { fun_label: function_label;          (* Label of direct entry point *)
++    fun_dbg: Debuginfo.t;               (* Debug info : source code position *)
+     fun_arity: int;                     (* Number of arguments *)
+     mutable fun_closed: bool;           (* True if environment not used *)
+     mutable fun_inline: (Ident.t list * ulambda) option }
+diff -r 8c3eb45b53c2 asmcomp/clambda.mli
+--- a/asmcomp/clambda.mli	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/clambda.mli	Wed Nov 12 00:25:13 2008 +0100
+@@ -25,7 +25,7 @@ type ulambda =
+   | Uconst of structured_constant
+   | Udirect_apply of function_label * ulambda list * Debuginfo.t
+   | Ugeneric_apply of ulambda * ulambda list * Debuginfo.t
+-  | Uclosure of (function_label * int * Ident.t list * ulambda) list
++  | Uclosure of (function_label * int * Ident.t list * Debuginfo.t * ulambda) list
+               * ulambda list
+   | Uoffset of ulambda * int
+   | Ulet of Ident.t * ulambda * ulambda
+@@ -52,6 +52,7 @@ and ulambda_switch =
+ 
+ type function_description =
+   { fun_label: function_label;          (* Label of direct entry point *)
++    fun_dbg  : Debuginfo.t;             (* Debug info : file, line ,... *)
+     fun_arity: int;                     (* Number of arguments *)
+     mutable fun_closed: bool;           (* True if environment not used *)
+     mutable fun_inline: (Ident.t list * ulambda) option }
+diff -r 8c3eb45b53c2 asmcomp/closure.ml
+--- a/asmcomp/closure.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/closure.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -518,7 +518,7 @@ let rec close fenv cenv = function
+       let (uobj, _) = close fenv cenv obj in
+       (Usend(kind, umet, uobj, close_list fenv cenv args, Debuginfo.none),
+        Value_unknown)
+-  | Llet(str, id, lam, body) ->
++  | Llet(str, id, lam, body)  ->
+       let (ulam, alam) = close_named fenv cenv id lam in
+       begin match (str, alam) with
+         (Variable, _) ->
+@@ -685,8 +685,15 @@ and close_functions fenv cenv fun_defs =
+           (id, Lfunction(kind, params, body)) ->
+             let label = Compilenv.make_symbol (Some (Ident.unique_name id)) in
+             let arity = List.length params in
++	    let dbg = match body with 
++	      Levent(_,ev) -> 
++		Debuginfo.from_call ev
++	    | _ -> 
++		Debuginfo.none
++	    in
+             let fundesc =
+               {fun_label = label;
++	       fun_dbg = dbg;
+                fun_arity = (if kind = Tupled then -arity else arity);
+                fun_closed = initially_closed;
+                fun_inline = None } in
+@@ -725,7 +732,7 @@ and close_functions fenv cenv fun_defs =
+     let (ubody, approx) = close fenv_rec cenv_body body in
+     if !useless_env && occurs_var env_param ubody then useless_env := false;
+     let fun_params = if !useless_env then params else params @ [env_param] in
+-    ((fundesc.fun_label, fundesc.fun_arity, fun_params, ubody),
++    ((fundesc.fun_label, fundesc.fun_arity, fun_params, fundesc.fun_dbg, ubody),
+      (id, env_pos, Value_closure(fundesc, approx))) in
+   (* Translate all function definitions. *)
+   let clos_info_list =
+@@ -755,7 +762,7 @@ and close_functions fenv cenv fun_defs =
+ 
+ and close_one_function fenv cenv id funct =
+   match close_functions fenv cenv [id, funct] with
+-      ((Uclosure([_, _, params, body], _) as clos),
++      ((Uclosure([_, _, params, dbg, body], _) as clos),
+        [_, _, (Value_closure(fundesc, _) as approx)]) ->
+         (* See if the function can be inlined *)
+         if lambda_smaller body (!Clflags.inline_threshold + List.length params)
+diff -r 8c3eb45b53c2 asmcomp/cmm.ml
+--- a/asmcomp/cmm.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/cmm.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -107,6 +107,7 @@ type fundecl =
+ type fundecl =
+   { fun_name: string;
+     fun_args: (Ident.t * machtype) list;
++    fun_dbg: Debuginfo.t;
+     fun_body: expression;
+     fun_fast: bool }
+ 
+diff -r 8c3eb45b53c2 asmcomp/cmm.mli
+--- a/asmcomp/cmm.mli	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/cmm.mli	Wed Nov 12 00:25:13 2008 +0100
+@@ -93,6 +93,7 @@ type fundecl =
+ type fundecl =
+   { fun_name: string;
+     fun_args: (Ident.t * machtype) list;
++    fun_dbg : Debuginfo.t;
+     fun_body: expression;
+     fun_fast: bool }
+ 
+diff -r 8c3eb45b53c2 asmcomp/cmmgen.ml
+--- a/asmcomp/cmmgen.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/cmmgen.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -369,7 +369,7 @@ let fundecls_size fundecls =
+ let fundecls_size fundecls =
+   let sz = ref (-1) in
+   List.iter
+-    (fun (label, arity, params, body) ->
++    (fun (label, arity, params, dbg, body) ->
+       sz := !sz + 1 + (if arity = 1 then 2 else 3))
+     fundecls;
+   !sz
+@@ -445,7 +445,7 @@ let transl_constant = function
+ (* Translate constant closures *)
+ 
+ let constant_closures =
+-  ref ([] : (string * (string * int * Ident.t list * ulambda) list) list)
++  ref ([] : (string * (string * int * Ident.t list * Debuginfo.t * ulambda) list) list)
+ 
+ (* Boxed integers *)
+ 
+@@ -784,7 +784,7 @@ let subst_boxed_number unbox_fn boxed_id
+ 
+ (* Translate an expression *)
+ 
+-let functions = (Queue.create() : (string * Ident.t list * ulambda) Queue.t)
++let functions = (Queue.create() : (string * Ident.t list * Debuginfo.t * ulambda) Queue.t)
+ 
+ let rec transl = function
+     Uvar id ->
+@@ -795,8 +795,8 @@ let rec transl = function
+       let lbl = new_const_symbol() in
+       constant_closures := (lbl, fundecls) :: !constant_closures;
+       List.iter
+-        (fun (label, arity, params, body) ->
+-          Queue.add (label, params, body) functions)
++        (fun (label, arity, params, dbg, body) ->
++          Queue.add (label, params, dbg, body) functions)
+         fundecls;
+       Cconst_symbol lbl
+   | Uclosure(fundecls, clos_vars) ->
+@@ -805,8 +805,8 @@ let rec transl = function
+       let rec transl_fundecls pos = function
+           [] ->
+             List.map transl clos_vars
+-        | (label, arity, params, body) :: rem ->
+-            Queue.add (label, params, body) functions;
++        | (label, arity, params, dbg, body) :: rem ->
++            Queue.add (label, params, dbg, body) functions;
+             let header =
+               if pos = 0
+               then alloc_closure_header block_size
+@@ -1514,9 +1514,10 @@ and transl_letrec bindings cont =
+ 
+ (* Translate a function definition *)
+ 
+-let transl_function lbl params body =
++let transl_function lbl params dbg body =
+   Cfunction {fun_name = lbl;
+              fun_args = List.map (fun id -> (id, typ_addr)) params;
++	     fun_dbg  = dbg;
+              fun_body = transl body;
+              fun_fast = !Clflags.optimize_for_speed}
+ 
+@@ -1530,12 +1531,12 @@ module StringSet =
+ 
+ let rec transl_all_functions already_translated cont =
+   try
+-    let (lbl, params, body) = Queue.take functions in
++    let (lbl, params, dbg, body) = Queue.take functions in
+     if StringSet.mem lbl already_translated then
+       transl_all_functions already_translated cont
+     else begin
+       transl_all_functions (StringSet.add lbl already_translated)
+-                           (transl_function lbl params body :: cont)
++                           (transl_function lbl params dbg body :: cont)
+     end
+   with Queue.Empty ->
+     cont
+@@ -1667,10 +1668,10 @@ let emit_constant_closure symb fundecls 
+ let emit_constant_closure symb fundecls cont =
+   match fundecls with
+     [] -> assert false
+-  | (label, arity, params, body) :: remainder ->
++  | (label, arity, params, dbg, body) :: remainder ->
+       let rec emit_others pos = function
+         [] -> cont
+-      | (label, arity, params, body) :: rem ->
++      | (label, arity, params, dbg, body) :: rem ->
+           if arity = 1 then
+             Cint(infix_header pos) ::
+             Csymbol_address label ::
+@@ -1717,6 +1718,7 @@ let compunit size ulam =
+   let init_code = transl ulam in
+   let c1 = [Cfunction {fun_name = Compilenv.make_symbol (Some "entry");
+                        fun_args = [];
++		       fun_dbg = Debuginfo.none; 
+                        fun_body = init_code; fun_fast = false}] in
+   let c2 = transl_all_functions StringSet.empty c1 in
+   let c3 = emit_all_constants c2 in
+@@ -1845,6 +1847,7 @@ let send_function arity =
+   Cfunction
+    {fun_name = "caml_send" ^ string_of_int arity;
+     fun_args = fun_args;
++    fun_dbg  = Debuginfo.none;
+     fun_body = body;
+     fun_fast = true}
+ 
+@@ -1854,6 +1857,7 @@ let apply_function arity =
+   Cfunction
+    {fun_name = "caml_apply" ^ string_of_int arity;
+     fun_args = List.map (fun id -> (id, typ_addr)) all_args;
++    fun_dbg  = Debuginfo.none;
+     fun_body = body;
+     fun_fast = true}
+ 
+@@ -1871,6 +1875,7 @@ let tuplify_function arity =
+   Cfunction
+    {fun_name = "caml_tuplify" ^ string_of_int arity;
+     fun_args = [arg, typ_addr; clos, typ_addr];
++    fun_dbg  = Debuginfo.none;
+     fun_body =
+       Cop(Capply(typ_addr, Debuginfo.none),
+           get_field (Cvar clos) 2 :: access_components 0 @ [Cvar clos]);
+@@ -1909,6 +1914,7 @@ let final_curry_function arity =
+    {fun_name = "caml_curry" ^ string_of_int arity ^
+                "_" ^ string_of_int (arity-1);
+     fun_args = [last_arg, typ_addr; last_clos, typ_addr];
++    fun_dbg  = Debuginfo.none;
+     fun_body = curry_fun [] last_clos (arity-1);
+     fun_fast = true}
+ 
+@@ -1922,6 +1928,7 @@ let rec intermediate_curry_functions ari
+     Cfunction
+      {fun_name = name2;
+       fun_args = [arg, typ_addr; clos, typ_addr];
++      fun_dbg  = Debuginfo.none;
+       fun_body = Cop(Calloc,
+                      [alloc_closure_header 4;
+                       Cconst_symbol(name1 ^ "_" ^ string_of_int (num+1));
+@@ -1983,6 +1990,7 @@ let entry_point namelist =
+       namelist (Cconst_int 1) in
+   Cfunction {fun_name = "caml_program";
+              fun_args = [];
++	     fun_dbg  = Debuginfo.none;
+              fun_body = body;
+              fun_fast = false}
+ 
+diff -r 8c3eb45b53c2 asmcomp/debuginfo.ml
+--- a/asmcomp/debuginfo.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/debuginfo.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -38,7 +38,6 @@ let to_string d =
+            d.dinfo_file d.dinfo_line d.dinfo_char_start d.dinfo_char_end
+ 
+ let from_location kind loc =
+-  if loc.loc_ghost then none else
+   { dinfo_kind = kind;
+     dinfo_file = loc.loc_start.pos_fname;
+     dinfo_line = loc.loc_start.pos_lnum;
+diff -r 8c3eb45b53c2 asmcomp/i386/emit.mlp
+--- a/asmcomp/i386/emit.mlp	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/i386/emit.mlp	Wed Nov 12 00:25:13 2008 +0100
+@@ -877,6 +877,9 @@ let emit_profile () =
+ 
+ (* Emission of a function declaration *)
+ 
++open Debuginfo
++let file_counter = ref 1
++
+ let fundecl fundecl =
+   function_name := fundecl.fun_name;
+   fastcode_flag := fundecl.fun_fast;
+@@ -890,6 +893,18 @@ let fundecl fundecl =
+   emit_align 16;
+   `	.globl	{emit_symbol fundecl.fun_name}\n`;
+   `{emit_symbol fundecl.fun_name}:\n`;
++  if !Clflags.debug then begin
++    let dbg = fundecl.fun_dbg in
++    let file_name = dbg.dinfo_file
++    and file_num=(!file_counter)
++    and file_line=dbg.dinfo_line
++    in
++    if file_name<>"" then begin
++      `\t.file {emit_int file_num} \"{emit_string file_name}\"\n`;
++      `\t.loc {emit_int file_num} {emit_int file_line}\n`;
++      incr file_counter;
++    end;
++  end;
+   if !Clflags.gprofile then emit_profile();
+   let n = frame_size() - 4 in
+   if n > 0 then
+diff -r 8c3eb45b53c2 asmcomp/linearize.ml
+--- a/asmcomp/linearize.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/linearize.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -53,6 +53,7 @@ let has_fallthrough = function
+ 
+ type fundecl =
+   { fun_name: string;
++    fun_dbg : Debuginfo.t;
+     fun_body: instruction;
+     fun_fast: bool }
+ 
+@@ -263,5 +264,6 @@ let rec linear i n =
+ 
+ let fundecl f =
+   { fun_name = f.Mach.fun_name;
++    fun_dbg  = f.Mach.fun_dbg;
+     fun_body = linear f.Mach.fun_body end_instr;
+     fun_fast = f.Mach.fun_fast }
+diff -r 8c3eb45b53c2 asmcomp/linearize.mli
+--- a/asmcomp/linearize.mli	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/linearize.mli	Wed Nov 12 00:25:13 2008 +0100
+@@ -48,6 +48,7 @@ val invert_test: Mach.test -> Mach.test
+ 
+ type fundecl =
+   { fun_name: string;
++    fun_dbg : Debuginfo.t;
+     fun_body: instruction;
+     fun_fast: bool }
+ 
+diff -r 8c3eb45b53c2 asmcomp/mach.ml
+--- a/asmcomp/mach.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/mach.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -78,6 +78,7 @@ type fundecl =
+ type fundecl =
+   { fun_name: string;
+     fun_args: Reg.t array;
++    fun_dbg : Debuginfo.t;
+     fun_body: instruction;
+     fun_fast: bool }
+ 
+diff -r 8c3eb45b53c2 asmcomp/mach.mli
+--- a/asmcomp/mach.mli	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/mach.mli	Wed Nov 12 00:25:13 2008 +0100
+@@ -78,6 +78,7 @@ type fundecl =
+ type fundecl =
+   { fun_name: string;
+     fun_args: Reg.t array;
++    fun_dbg : Debuginfo.t;
+     fun_body: instruction;
+     fun_fast: bool }
+ 
+diff -r 8c3eb45b53c2 asmcomp/printcmm.ml
+--- a/asmcomp/printcmm.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/printcmm.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -176,8 +176,13 @@ let fundecl ppf f =
+        if !first then first := false else fprintf ppf "@ ";
+        fprintf ppf "%a: %a" Ident.print id machtype ty)
+      cases in
+-  fprintf ppf "@[<1>(function %s@;<1 4>@[<1>(%a)@]@ @[%a@])@]@."
+-         f.fun_name print_cases f.fun_args sequence f.fun_body
++  let dbg =
++    if f.fun_dbg = Debuginfo.none
++    then "no dbg"
++    else Debuginfo.to_string f.fun_dbg
++  in
++  fprintf ppf "@[<1>(function %s %s@;<1 4>@[<1>(%a)@]@ @[%a@])@]@."
++         f.fun_name dbg print_cases f.fun_args sequence f.fun_body
+ 
+ let data_item ppf = function
+   | Cdefine_symbol s -> fprintf ppf "\"%s\":" s
+diff -r 8c3eb45b53c2 asmcomp/printlinear.ml
+--- a/asmcomp/printlinear.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/printlinear.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -74,4 +74,9 @@ let rec all_instr ppf i =
+   | _ -> fprintf ppf "%a@,%a" instr i all_instr i.next
+ 
+ let fundecl ppf f =
+-  fprintf ppf "@[<v 2>%s:@,%a@]" f.fun_name all_instr f.fun_body
++  let dbg = 
++    if f.fun_dbg = Debuginfo.none 
++    then "no dbg" 
++    else Debuginfo.to_string f.fun_dbg
++  in
++  fprintf ppf "@[<v 2>%s:%s@,%a@]" f.fun_name dbg all_instr f.fun_body
+diff -r 8c3eb45b53c2 asmcomp/printmach.ml
+--- a/asmcomp/printmach.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/printmach.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -190,8 +190,13 @@ let rec instr ppf i =
+   end
+ 
+ let fundecl ppf f =
+-  fprintf ppf "@[<v 2>%s(%a)@,%a@]"
+-    f.fun_name regs f.fun_args instr f.fun_body
++  let dbg =
++    if f.fun_dbg = Debuginfo.none 
++    then "no dbg"
++    else Debuginfo.to_string f.fun_dbg
++  in
++  fprintf ppf "@[<v 2>%s %s (%a)@,%a@]"
++    f.fun_name dbg regs f.fun_args instr f.fun_body
+ 
+ let phase msg ppf f =
+   fprintf ppf "*** %s@.%a@." msg fundecl f
+diff -r 8c3eb45b53c2 asmcomp/reloadgen.ml
+--- a/asmcomp/reloadgen.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/reloadgen.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -134,6 +134,7 @@ method fundecl f =
+   redo_regalloc <- false;
+   let new_body = self#reload f.fun_body in
+   ({fun_name = f.fun_name; fun_args = f.fun_args;
++    fun_dbg = f.fun_dbg;
+     fun_body = new_body; fun_fast = f.fun_fast},
+    redo_regalloc)
+ 
+diff -r 8c3eb45b53c2 asmcomp/schedgen.ml
+--- a/asmcomp/schedgen.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/schedgen.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -348,6 +348,7 @@ method schedule_fundecl f =
+     let new_body = schedule f.fun_body in
+     clear_code_dag();
+     { fun_name = f.fun_name;
++      fun_dbg = f.fun_dbg;
+       fun_body = new_body;
+       fun_fast = f.fun_fast }
+   end else
+diff -r 8c3eb45b53c2 asmcomp/selectgen.ml
+--- a/asmcomp/selectgen.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/selectgen.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -820,6 +820,7 @@ method emit_fundecl f =
+   self#emit_tail env f.Cmm.fun_body;
+   { fun_name = f.Cmm.fun_name;
+     fun_args = loc_arg;
++    fun_dbg  = f.Cmm.fun_dbg;
+     fun_body = self#extract;
+     fun_fast = f.Cmm.fun_fast }
+ 
+diff -r 8c3eb45b53c2 asmcomp/spill.ml
+--- a/asmcomp/spill.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/spill.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -398,6 +398,7 @@ let fundecl f =
+   use_date := Reg.Map.empty;
+   { fun_name = f.fun_name;
+     fun_args = f.fun_args;
++    fun_dbg  = f.fun_dbg;
+     fun_body = new_body;
+     fun_fast = f.fun_fast }
+   
+diff -r 8c3eb45b53c2 asmcomp/split.ml
+--- a/asmcomp/split.ml	Tue Nov 11 18:35:39 2008 +0100
++++ b/asmcomp/split.ml	Wed Nov 12 00:25:13 2008 +0100
+@@ -206,5 +206,6 @@ let fundecl f =
+   equiv_classes := Reg.Map.empty;
+   { fun_name = f.fun_name;
+     fun_args = new_args;
++    fun_dbg  = f.fun_dbg;
+     fun_body = new_body;
+     fun_fast = f.fun_fast }

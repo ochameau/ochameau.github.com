@@ -1,0 +1,835 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/page/4/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/02/26/Un-noyau-en-OCaml/">Un Noyau en OCaml</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-02-26T18:04:35+01:00" pubdate  data-updated="true" >Feb 26<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Cette id&#233;e doit souvent revenir dans l&#8217;esprit des d&#233;veloppeurs Haskell ou
+OCaml&#160;: Pourquoi n&#8217;entendons-nous pas parler d&#8217;exp&#233;riences de noyaux &#233;cris
+avec un langage fonctionnel&#160;?</p>
+
+
+<p>En effet, le fait de ne jamais avoir de segfault ou de null pointer
+exception est tout de m&#234;me un sacr&#233; avantage dans un noyau!!! Alors oui, il y a
+&#224; coup s&#251;r d&#8217;&#233;normes probl&#232;mes comme le garbage collector, on perdrait surement
+en contr&#244;le et en efficacit&#233;. Mais je reste convaincu que des fonctions en
+fonctionnel pur (donc sans effets de bords) seraient une sacr&#233;e avanc&#233;e dans le
+d&#233;veloppement kernel o&#249; l&#8217;on manipule plusieurs threads et plusieurs coeurs
+d&#8217;ex&#233;cution en m&#234;me temps!</p>
+
+
+<p>Et bien apr&#232;s une longue recherche, on peut trouver deux projets en
+OCaml&#160;:</p>
+
+
+<ul>
+<li><a href="http://mynos.sourceforge.net/" hreflang="en">MyNOS</a></li>
+<li><a href="http://home.gna.org/funk/" hreflang="en">Funk</a></li>
+</ul>
+
+
+<p>Malheureusement, ces projets n&#8217;ont plus d&#8217;activit&#233; notable depuis 2005
+:(</p>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/02/21/dynamique-vs-statique/">Dynamique vs Statique</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-02-21T15:24:52+01:00" pubdate  data-updated="true" >Feb 21<span>st</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Les langages dynamiques comme Python, PHP, Ruby ou encore Javascript ont le
+vent en poupe, car ils apportent un net gain en <em>productivit&#233;
+<del>&#233;ph&#233;m&#232;re</del> instantan&#233;e</em>.<br />
+Lorsque l&#8217;on d&#233;veloppe dans ces langages, on boucle sur des cycles&#160;:
+<strong>coder puis regarder</strong>&#160;:</p>
+
+
+<ul>
+<li>on modifie le code source du programme, et,</li>
+<li>on va directement voir le r&#233;sultat en ex&#233;cutant l&#8217;application &#8230;</li>
+</ul>
+
+
+<p>Dans le cas des langages &#224; typage statique, nous sommes oblig&#233;s de rajouter
+une &#233;tape interm&#233;diaire&#160;: <strong>coder, compiler et &#233;ventuellement
+regarder</strong>&#160;:</p>
+
+
+<ul>
+<li>on commence toujours pas modifier notre code source, puis,</li>
+<li>nous sommes oblig&#233;s de cliquer sur un bouton ou de lancer un make pour la
+compilation, et enfin,</li>
+<li>suivant le r&#233;sultat de la compilation, soit on se lance dans un nouveau
+cycle en cas d&#8217;erreur, ou alors, on ex&#233;cute l&#8217;application pour valider des
+besoins fonctionnels ou visuels.<br /></li>
+</ul>
+
+
+<p>Donc oui, un programme d&#233;velopp&#233; &#224; l&#8217;aide d&#8217;un langage statique prendra plus
+de temps car l&#8217;&#233;tape de compilation nous oblige &#224; supprimer toute erreur de
+typage, de syntaxe et souvent bon nombre d&#8217;erreurs d&#8217;inattention. De plus cette
+&#233;tape de compilation ne supprime pas l&#8217;&#233;tape &quot;lancer le programme&quot;, que nous
+devons toujours effectuer afin de valider les specs fonctionnelles ou
+graphiques.<br /></p>
+
+
+<p>Mais ce temps pass&#233; &#224; faire valider notre code par le compilateur n&#8217;est pas
+sans b&#233;n&#233;fices, puisque notre programme sera plus fiable et n&#8217;&#233;mettra aucune
+erreur purement informatique&#160;: typage, syntaxe, &#8230;<br />
+Ainsi, <strong>les erreurs sont pr&#233;sent&#233;es au d&#233;veloppeur et en aucun cas &#224;
+l&#8217;utilisateur</strong> qui ne devrait en aucun cas avoir &#224; g&#233;rer, ni
+comprendre, ni m&#234;me voir une telle erreur! <sup>[<a href="#pnote-212155-1" id="rev-pnote-212155-1" name="rev-pnote-212155-1">1</a>]</sup></p>
+
+
+<h3>Tests unitaires</h3>
+
+
+<p>Oui mais certains diront&#160;: on peut d&#233;velopper en mode <em><a href="http://fr.wikipedia.org/wiki/Extreme_programming" hreflang="fr">Extreme
+programming</a></em> ou encore <em>Programmation agile</em> en agr&#233;mentant une
+base de tests unitaires tout au long du d&#233;veloppement. Cela se tient si l&#8217;on
+fait des tests unitaires doubl&#233;s de <a href="http://fr.wikipedia.org/wiki/Couverture_de_code" hreflang="fr">couverture de
+code</a> maintenue &#224; 100% afin de s&#8217;assurer d&#8217;ex&#233;cuter l&#8217;int&#233;gralit&#233; du code
+source par les tests et ainsi &#233;viter l&#8217;affichage de moultes erreurs aux yeux
+&#233;bahis de nos utilisateurs.<br />
+Mais cela engendre un volume de travail suppl&#233;mentaire loin d&#8217;&#234;tre n&#233;gligeable!
+On peut m&#234;me se demander si les tests ne font pas que reproduire l&#8217;action d&#8217;un
+compilateur analysant notre programme ?<br />
+Pour rester objectif, je dirais que de tels tests vont plus loin et permettent
+par exemple de valider des specs fonctionelles et nous obtenons au final un
+logiciel modulaire, <ins>sp&#233;cifi&#233;</ins> et solide.<sup>[<a href="#pnote-212155-2" id="rev-pnote-212155-2" name="rev-pnote-212155-2">2</a>]</sup>&#8217;<br />
+Mais je reste perplexe quand au temps de d&#233;veloppement n&#233;cessaire si l&#8217;on
+compare &#224; n&#8217;importe quel langage statique agr&#233;ment&#233; de quelques tests
+unitaires/fonctionnels (naturellement plus succincts).<br />
+D&#8217;autre part, il ne faut pas oublier que la <a href="http://fr.wikipedia.org/wiki/Loi_de_Pareto" hreflang="fr">r&#232;gle des 80/20</a>
+s&#8217;applique &#224; tout, y compris &#224; l&#8217;informatique et &#224; notre sujet de
+discussion&#160;: on peut souvent r&#233;aliser une application fonctionnelle &#224; 80%
+avec 20% du temps n&#233;cessaire pour faire l&#8217;application finale&#160;: fiable et
+maintenable par d&#8217;autres d&#233;veloppeurs.</p>
+
+
+<h3>Refactoring et &#233;volution <sup>[<a href="#pnote-212155-3" id="rev-pnote-212155-3" name="rev-pnote-212155-3">3</a>]</sup></h3>
+
+
+<p>Enfin, je tiens &#224; mettre en avant un probl&#232;me s&#233;rieux lorsque l&#8217;on doit
+faire &#233;voluer une application &#233;crite &#224; l&#8217;aide d&#8217;un langage dynamique. En effet,
+dans ce cas de figure, nous devons &#224; coup s&#251;r modifier des structures de
+donn&#233;es&#160;: faire &#233;voluer un attribut entier vers un objet plus complexe, ou
+encore modifier le nom d&#8217;une fonction ou ses param&#232;tres, ou pire encore&#160;:
+changer le type de sortie d&#8217;une fonction! Et &#224; moins d&#8217;utiliser des outils
+avanc&#233;s comme IntelliJ ou Eclipse, <strong>les &#233;tapes de refactoring(r&#233;&#233;criture
+de code) seront laborieuses, incompl&#232;tes et vont d&#233;cupler le nombre d&#8217;erreur
+signal&#233;es &#224; l&#8217;ex&#233;cution</strong> &#8230;<br />
+Enfin, il faut rester conscient que ces outils ne pourront jamais rejoindre le
+niveau de v&#233;rification effectu&#233; par le compilateur d&#8217;un langage typ&#233;
+statiquement, et ce, &#224; cause de la nature dynamique du langage.</p>
+
+
+<div class="footnotes">
+<h4>Notes</h4>
+<p>[<a href="#rev-pnote-212155-1" id="pnote-212155-1" name="pnote-212155-1">1</a>] <a href="http://pinderkent.blogsavy.com/archives/157" hreflang="en">Billet sur les erreurs &#224; l&#8217;ex&#233;cution</a></p>
+<p>[<a href="#rev-pnote-212155-2" id="pnote-212155-2" name="pnote-212155-2">2</a>] les tests unitaires sont une bonne chose et je
+reviendrais la dessus</p>
+<p>[<a href="#rev-pnote-212155-3" id="pnote-212155-3" name="pnote-212155-3">3</a>] <a href="http://blogs.tedneward.com/2008/01/24/Can+Dynamic+Languages+Scale.aspx" hreflang="en">Billet sur l&#8217;&#233;volutivit&#233; du dynamique</a></p>
+</div>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/01/29/La-3D-et-le-fonctionnel/">La 3D Et Le Fonctionnel</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-01-29T23:43:53+01:00" pubdate  data-updated="true" >Jan 29<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3><a href="http://en.wikipedia.org/wiki/Tim_Sweeney_(game_developer)" hreflang="en">Tim sweeney</a> - <a href="/tag/unreal">unreal</a> engine -
+pourquoi utiliser le fonctionnel&#160;?</h3>
+
+
+<p>Ce cher monsieur intitule sa pr&#233;sentation&#160;: <a href="http://www.st.cs.uni-sb.de/edu/seminare/2005/advanced-fp/docs/sweeny.pdf?reredd" hreflang="en">The Next Mainstream Programming Language</a>, en citant &#224; maintes
+reprises Haskell comme exemple &#224; reproduire pour son langage sp&#233;cialis&#233; dans le
+d&#233;veloppement de moteur 3D qui sera &#224; m&#234;me d&#8217;exploiter les multiples coeurs des
+processeurs graphiques. On pourra rapidement faire le lien avec le <a href="http://blog.techno-barje.fr/post/2008/01/07/Le-fonctionnel-arrive" hreflang="fr">billet pr&#233;c&#233;dent</a> et intel &#8230; les raisons d&#8217;utiliser le fonctionnel
+pour la 3D et les processeurs mutli-core sont les m&#234;mes.<br /></p>
+
+
+<h3><a href="/tag/Ocaml">Ocaml</a> + <a href="/tag/SDL">SDL</a> + <a href="/tag/OpenGL">OpenGL</a></h3>
+
+
+<p>C&#8217;est possible, et cela a l&#8217;air de marcher plut&#244;t bien&#160;: <a href="http://itmmetelko.com/blog/2008/01/07/compiling-ocaml-sdl-and-opengl-on-windows-mini-tutorial/" hreflang="en">Compiler le triplet sous windows</a> <a href="http://itmmetelko.com/blog/2008/01/13/ocaml-mini-sdl-example-2/" hreflang="en">Exemple 1</a> <a href="http://itmmetelko.com/blog/2008/01/24/ocaml-mini-sdl-example-v3/" hreflang="en">Exemple 2</a><br /></p>
+
+
+<h3>Des jeux 3D en OCaml&#160;?</h3>
+
+
+<p>Oui, cela existe aussi&#160;: <a href="http://freetennis.sourceforge.net/" hreflang="en">Freetennis</a>. Il y&#8217;a m&#234;me des &#233;tudiants qui ont r&#233;alis&#233; un jeu
+pour enfants&#160;: <a href="http://www.nongnu.org/rigobot/">Rigobot</a> o&#249; ils
+pourront programmer des robots dans un univers en 3D!</p>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/01/14/Pourquoi-ocaml/">Mais Pourquoi Ocaml ?</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-01-14T22:24:50+01:00" pubdate  data-updated="true" >Jan 14<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Ses performances</h2>
+
+
+<p>C&#8217;est un des langages les plus performant avec un garbage collector&#160;:
+<a href="http://shootout.alioth.debian.org/gp4sandbox/benchmark.php?test=all&amp;lang=all&amp;calc=Calculate&amp;xfullcpu=1&amp;xmem=1&amp;xloc=0&amp;binarytrees=1&amp;chameneosredux=0&amp;fannkuch=1&amp;fasta=1&amp;knucleotide=1&amp;mandelbrot=1&amp;meteor=0&amp;nbody=0&amp;nsieve=1&amp;nsievebits=1&amp;partialsums=1&amp;pidigits=0&amp;recursive=1&amp;regexdna=1&amp;revcomp=1&amp;spectralnorm=1&amp;hello=0&amp;sumcol=1&amp;threadring=0">
+Benchmark avec comme crit&#232;re&#160;: vitesse et consommation m&#233;moire</a><br />
+Au final OCaml consomme peu de m&#233;moire tout en restant dans les plus rapides et
+tout cela sans demander au d&#233;veloppeur de g&#233;rer la m&#233;moire!</p>
+
+
+<h2>L&#8217;environnement par d&#233;faut, ses outils&#160;:</h2>
+
+
+<p>Mine de rien, lorsque vous t&#233;l&#233;charger les sources
+<em>ocaml-3.10.1.tar.bz2</em> de 2.2 Mo, vous aller avoir acc&#232;s &#224; un nombre
+important d&#8217;outils avanc&#233;s&#160;:</p>
+
+
+<ul>
+<li>un compilateur en <strong>code natif</strong> (x86, amd64, power pc, alpha,
+mips, sparc, &#8230;),</li>
+<li>un compilateur qui g&#233;n&#232;re du <strong>bytecode</strong> caml. Le programme
+pourra int&#233;grer l&#8217;interpr&#233;teur de bytecode afin d&#8217;&#234;tre ex&#233;cutable n&#8217;importe o&#249;.
+L&#8217;application peut aussi int&#233;grer un toplevel afin de pouvoir ex&#233;cuter des
+commandes <strong>dans</strong> le programme.(une sorte de shell),</li>
+<li>Un <strong>d&#233;bugueur pas &#224; pas</strong> permettant de revenir en arri&#232;re!
+(uniquement en bytecode),</li>
+<li>Un toplevel ind&#233;pendant permettant d&#8217;apprendre facilement le langage en
+ex&#233;cutant des instruction caml comme dans une ligne de commande,</li>
+<li>camlp4, un preprocesseur permettant d&#8217;&#233;tendre le langage en fonction du
+domaine de notre programme,</li>
+<li>des g&#233;n&#233;rateurs de parser lex/yacc,</li>
+<li>un outil de cr&#233;ation automatique de documentation &#224; partir de code source
+.ml,</li>
+<li>ocamlbuild, un assistant de compilation, comme make, mais sp&#233;cialis&#233; pour
+OCaml et tr&#232;s simple,</li>
+<li>et enfin, des outils de profiling.</li>
+</ul>
+
+
+<h2>Sa richesse</h2>
+
+
+<p>C&#8217;est &#224; coup s&#251;r un des seuls langage &#224; permettre de choisir le paradigme le
+plus adapt&#233; pour chaque partie de son programme!<br />
+Nous pouvons ainsi utiliser selon le contexte du <strong>fonctionnel, de
+l&#8217;imp&#233;ratif ou de l&#8217;objet</strong>.<br />
+Mais ce langage va encore plus loin, et int&#232;gre des concepts de programmation
+que tout langage digne de ce nom devrait int&#233;grer:</p>
+
+
+<ul>
+<li>polymorphisme param&#233;tr&#233; (ie generics de java et templates de C++),</li>
+<li><a href="http://fr.wikipedia.org/wiki/Fonction_d%27ordre_sup%C3%A9rieur">fonctions
+d&#8217;ordre sup&#233;rieur</a> (une fonction peut prendre en param&#232;tre ou retourner une
+fonction, et ce de mani&#232;re tr&#232;s naturelle),</li>
+<li><a href="http://fr.wikipedia.org/wiki/Fermeture_%28informatique%29">fermetures</a>
+(closure in english, difficile &#224; r&#233;sumer!),</li>
+<li>prise en charge des exceptions,</li>
+<li><a href="http://fr.wikipedia.org/wiki/Filtrage_par_motif">filtrage par
+motifs</a> (pattern matching in english),</li>
+<li><a href="http://fr.wikipedia.org/wiki/Inf%C3%A9rence_de_types">l&#8217;inf&#233;rance
+de types</a></li>
+<li>&#8230;</li>
+</ul>
+
+
+<p>Voici comment obtenir un quicksort clair et simple avec du filtrage par
+motif, du fonctionnel, des types inf&#233;r&#233;s ainsi que des fermetures et une
+fonction d&#8217;ordre sup&#233;rieur&#160;:</p>
+
+
+<pre>
+ let rec quicksort = function                     (* filtrage par motif du param&#232;tre d'entr&#233;e qui est la liste &#224; trier *)
+    | [] -&gt; []                                                     (* [] est une liste vide *)
+    | pivot :: rest -&gt;                                       (* pivot = premier element, rest = le reste de la liste *)
+        let is_less x = x &lt; pivot in                 (* fermeture, car nous utilisons la variable pivot *)
+        let left, right = List.partition is_less rest in       (* partition est une fonction d'ordre sup&#233;rieur car is_less est une fonction *)
+        (quicksort left) @ [pivot] @ (quicksort right)     (* @ permet de concat&#233;ner des listes *)
+(* le tout sans avoir &#224; pr&#233;ciser les types ... *)
+(* List.partition p l returns a pair of lists (l1, l2), where l1 is the list of all the elements of l that satisfy the predicate p, and l2 is the list of all the elements of l that do not satisfy p. *)
+</pre>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/01/07/Le-fonctionnel-arrive/">Le Fonctionnel Arrive</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-01-07T23:01:30+01:00" pubdate  data-updated="true" >Jan 7<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3><a href="/tag/F">F#</a></h3>
+
+
+<p>Le tout dernier langage de Microsoft, F# est bas&#233; &#224; 80% sur Ocaml!<br />
+<a href="http://research.microsoft.com/fsharp/manual/ml-compat.aspx" hreflang="en">D&#233;tail des diff&#233;rences entre ocaml et F#</a><br /></p>
+
+
+<h3><a href="/tag/Haskell">Haskell</a>, <a href="/tag/HOP">HOP</a> et l&#8217;INRIA
+dans la presse du monde php/java</h3>
+
+
+<p>Les magazines de vulgarisation se mettent &#224; parler d&#8217;<a href="http://fr.wikipedia.org/wiki/Haskell" hreflang="fr">Haskell</a> (langage
+fonctionnel pur)<br />
+<a href="http://www.programmez.com/magazine_articles.php?id_article=980&amp;&amp;titre=Introduction%20%C3%A0%20la%20programmation%20fonctionnelle%20avec%20Haskell" hreflang="fr">Introduction sur programmez.com</a></p>
+
+
+<p>Il vont m&#234;me jusqu&#8217;&#224; parler de <a href="http://hop.inria.fr/" hreflang="fr">HOP</a>, un projet de l&#8217;inria qui propose un framework de d&#233;veloppement
+d&#8217;applications web (html/js) avec un langage bas&#233; en grande partie sur Scheme.
+Et pour ceux qui ne le savent pas, <a href="http://fr.wikipedia.org/wiki/Scheme" hreflang="fr">Scheme</a> est un autre
+langage fonctionnel!<br />
+<a href="http://www.programmez.com/magazine_articles.php?id_article=974&amp;&amp;titre=Hop,%20un%20langage%20de%20programmation%20pour%20le%20Web%20(1re%20partie)" hreflang="fr">Intro de l&#8217;article sur HOP</a><br /></p>
+
+
+<h3><a href="/tag/Intel">Intel</a> et <a href="/tag/Ct">Ct</a></h3>
+
+
+<p>Intel planche sur le calcul parall&#232;le (il y&#8217;a effectivement de quoi faire
+avec les multi core!) et a cr&#233;&#233; un nouveau langage&#160;: <em><a href="http://fr.wikipedia.org/wiki/Intel_Ct" hreflang="fr">Ct</a> is strict and
+purely functional</em> (<a href="http://techresearch.intel.com/articles/Tera-Scale/1514.htm" hreflang="en">description tr&#232;s d&#233;taill&#233;e de Ct</a>)<br />
+C&#8217;est un langage pour simplifier le d&#233;veloppement sur les machines multicore,
+et plus particuli&#232;rement sur les serveurs de calculs du projet <a href="http://techresearch.intel.com/articles/Tera-Scale/1421.htm" hreflang="en">TeraScale</a> (processeur avec 80cores).<br />
+<a href="http://cufp.galois.com/slides/2007/AnwarGhuloum.pdf" hreflang="en">Pr&#233;sentation de Ct par un de ses cr&#233;ateurs</a><br /></p>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/01/07/OCaml-est-la/">OCaml Est L&#224;</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-01-07T22:16:26+01:00" pubdate  data-updated="true" >Jan 7<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="/tag/Ocaml">Ocaml</a> et la <a href="/tag/programmation%20fonctionnelle">programmation fonctionnelle</a> sont d&#233;j&#224;
+parmis nous!</p>
+
+
+<ul>
+<li><a href="http://fr.wikipedia.org/wiki/MediaWiki#Le_contenu_.C3.A9labor.C3.A9" hreflang="fr">MediaWiki</a> (le logiciel faisant tourner wikipedia) utilise ocaml pour
+afficher ses formules math&#233;matiques!</li>
+</ul>
+
+
+<ul>
+<li>KDE fait de m&#234;me avec son application de tableau p&#233;riodique des elements
+chimiques&#160;: <a href="http://www.framasoft.net/article4052.html" hreflang="fr">kalzium</a>, pour r&#233;soudre des &#233;quations chimiques!</li>
+</ul>
+
+
+<blockquote>
+<p>a CH3CH2OH + b O2 -&gt; c H2O + d CO2 =&gt; 1 CH3CH2OH + 3 O2 -&gt; 3 H2O +
+2 CO2<br />
+<a href="http://websvn.kde.org/trunk/KDE/kdeedu/kalzium/src/solver/README?revision=437725&amp;view=markup" hreflang="en">Code sources</a></p>
+</blockquote>
+
+
+<ul>
+<li><a href="http://fr.wikipedia.org/wiki/XSLT" hreflang="fr">XSLT</a>
+<strong>est</strong> une langage fonctionnel d&#233;crit en XML!</li>
+</ul>
+
+
+<ul>
+<li>Enfin, un ph&#233;nom&#232;ne majeur est l&#8217;adoption massive des libraries
+<em>ajax</em> comme <a href="http://jquery.com/" hreflang="en">jQuery</a>.</li>
+</ul>
+
+
+<p>Figurez vous que ces libraries utilisent fortement les aspects fonctionnels
+de javascript.<br />
+Examples avec jQuery&#160;:</p>
+
+
+<pre>
+     $('#myButton').bind('click', function() {
+         // 'this' is the DOM element that triggered the event
+         alert(this.id == 'myButton');
+     });
+</pre>
+
+
+<pre>
+     $('div').each(function() {
+         // 'this' is a DOM element
+         alert(this.tagName.toLowerCase() == 'div');
+     });
+</pre>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2007/12/26/OCaml-existe/">OCaml &#8220;Existe&#8221;.</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2007-12-26T19:01:31+01:00" pubdate  data-updated="true" >Dec 26<span>th</span>, 2007</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Commen&#231;ons simplement en montrant que <q>OCaml EXISTE</q>.</p>
+
+
+<h2><a href="/tag/Miniville">Miniville</a></h2>
+
+
+<p>Vous avez surement entendu parl&#233; de <a href="http://montcuq.miniville.fr/" hreflang="fr">Miniville</a>, mais si, le jeu en flash o&#249; chaque visite permet
+d&#8217;agrandir une ville. C&#8217;est sans int&#233;r&#234;t, certes, mais cela a le m&#233;rite
+d&#8217;exister dans la vraie vie. Donc vous ne le devinerez jamais, mais l&#8217;&#233;quipe
+qui a d&#233;velopp&#233; ce jeu, Motion twin, utilise <a href="/tag/OCaml">OCaml</a>!</p>
+
+
+<p>En effet, il suffit d&#8217;aller sur <a href="http://tech.motion-twin.com/ocaml.html" hreflang="fr">leur site</a> pour se
+rendre compte qu&#8217;ils ont assimil&#233; les qualit&#233; de ce langage. Ils ont ainsi
+d&#233;velopp&#233; une plateforme/langage maison qui sert &#224; g&#233;n&#233;rer des applications
+flash ainsi que le webservice c&#244;t&#233; serveur.<br />
+Le nom de se projet&#160;? <a href="http://haxe.org/fr/intro" hreflang="fr">Haxe</a><br />
+Un <a href="http://haxe.org/projects" hreflang="fr">tas de projets</a>
+gravitent d&#233;j&#224; autour!<br />
+(Disponible sur linux, mac et win)</p>
+
+
+<p>Pas convaincu&#160;? Vous n&#8217;avez peut &#234;tre pas le plugin flash&#160;?<br />
+Et bah &#231;a tombe bien, j&#8217;ai un autre exemple pile poil pour vous!</p>
+
+
+<h2><a href="/tag/Xen">Xen</a></h2>
+
+
+<p><a href="http://www.citrixxenserver.com/Pages/default.aspx" hreflang="en">Xen</a>, l&#8217;hyperviseur de machines virtuelles embarque avec lui quelques
+100 000 lignes d&#8217;<a href="/tag/OCaml">OCaml</a>!<br />
+La cerise sur le cadeau, c&#8217;est que ce logiciel libre n&#8217;est pas d&#233;velopp&#233; par
+des frenchies de l&#8217;INRIA! Non, Xen vient tout droit de l&#8217;universit&#233; de
+Cambridge.</p>
+
+
+<p>Source de cette info, <a href="http://groups.google.com/group/fa.caml/browse_frm/thread/5b3755174580829e/7ea42655927e438e#7ea42655927e438e" hreflang="en">la recherche de profil &quot;ocaml hacker&quot;</a> par Xen.</p>
+
+
+<h2><a href="/tag/EDOS">EDOS</a></h2>
+
+
+<p><q><a href="http://www.edos-project.org/" hreflang="en">Environment for the
+development and Distribution of Open Source software</a></q><br />
+Ce projet a pour but de faciliter le d&#233;veloppement, la maintenance et les tests
+des distributions libres en am&#233;liorant les outils de gestion de paquets. En
+voici un projet int&#233;ressant! Oui, c&#8217;est un projet en partie fran&#231;ais, oui
+l&#8217;INRIA et des universit&#233;s sont sur le coup, <strong>mais</strong> cela a d&#233;j&#224;
+des retomb&#233;es concr&#232;tes&#160;: <a href="http://edos.debian.net/">Assurance
+qualit&#233; de Debian</a> et les outils d&#233;velopp&#233;s peuvent potentiellement devenir
+des applications courantes.<br />
+J&#8217;allais oublier de pr&#233;ciser: OCaml est le langage de programmation principal
+de ce projet.</p>
+
+
+<p><a href="http://www.edos-project.org/xwiki/bin/view/Main/Tools" hreflang="en">Liste des outils d&#233;velopp&#233;s</a><br />
+<a href="https://protactinium.pps.jussieu.fr:12345/svn/edos/software/dependencies/" hreflang="en">Acc&#232;s direct aux sources</a></p>
+
+
+<p>Pour ceux qui sont pass&#233;s &#224; jussieu, il est important de noter la
+participation de <a href="http://www.pps.jussieu.fr/~dicosmo/">M. Di
+cosmo</a></p>
+
+
+<p><br /></p>
+
+
+<pre>
+ Conclusion &gt; <strong>OCaml existe.</strong>
+</pre>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2007/12/21/lets-go/">Let&#8217;s Go</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2007-12-21T18:06:48+01:00" pubdate  data-updated="true" >Dec 21<span>st</span>, 2007</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Bon aller, je me lance!<br />
+Rien de bien original en cette fin d&#8217;ann&#233;e 2007 &#224; lancer un blog, n&#233;anmoins,
+j&#8217;esp&#232;re l&#8217;agr&#233;menter r&#233;guli&#232;rement de contenu passionn&#233; afin de promouvoir ma
+vision tr&#232;s personnelle de l&#8217;informatique.</p>
+
+
+<p>Ainsi, je vous invite vivement &#224; passer dans le coin si vous &#234;tes int&#233;ress&#233;s
+soit par les technologies employ&#233;es par <strong><a href="/tag/Mozilla">Mozilla</a></strong>&#160;: xul, html, xbl, rdf, xpcom, svg, &#8230;,
+ou si, &#224; l&#8217;oppos&#233; de l&#8217;univers du d&#233;veloppement logiciel, vous voyez dans le
+langage <strong><a href="/tag/OCaml">OCaml</a></strong> de grands espoirs.</p>
+
+
+<p>En effet, je vous montrerais par le biais de projets personnels ou
+professionnels le potentiel, la viabilit&#233;, les d&#233;fauts et les qualit&#233;s de ces
+technologies.</p>
+
+
+<p>PS&#160;: le th&#232;me n&#8217;est pas super, mais un tout beau arrive, merci
+Takyon!</p>
+
+</div>
+  
+  
+
+
+  </article>
+
+<nav role="pagination">
+  <div>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/page/3/">Newer &rarr;</a>
+    
+  </div>
+</nav>
+
+</div>
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

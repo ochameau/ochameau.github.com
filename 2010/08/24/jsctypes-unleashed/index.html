@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>jsctypes unleashed - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2010/08/24/jsctypes-unleashed/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">Jsctypes Unleashed</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-08-24T17:53:21+02:00" pubdate  data-updated="true" >Aug 24<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><p>As bugs <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=573066" hreflang="en">573066</a> and <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=585175" hreflang="en">585175</a>
+are fixed and available in last Firefox <a href="http://nightly.mozilla.org/" hreflang="en">nightlies</a>, we can now use JSCtypes at full power!<br /></p>
+
+<p style="text-align: right"><em>Thanks to <a href="http://blog.mozilla.com/dwitte/" hreflang="en">dwitte</a> for quick
+fixes!</em></p>
+
+
+<p>That means :</p>
+
+<ul>
+<li>Complex C-struct usage,</li>
+<li>The possibility to define a JS callback seen by C library as a function
+pointer, and,</li>
+<li>Full Win32 API (also called MFC) supports!</li>
+</ul>
+
+
+<p>Lets see how to practice all that on our previous example: TrayIcon via
+Win32api. We were able to <em>just</em> display an icon in the <a href="/post/2010/08/06/JSctypes-reboot">previous blogpost</a>. Now we are able to
+intercept events from win32api thanks to ctypes.FunctionType. First we define a
+plain old javascript function like this one:</p>
+
+<pre>
+function windowProcCallback(hWnd, uMsg, wParam, lParam) {
+  if (lParam == WM_LBUTTONDOWN) {
+    Components.utils.reportError(&quot;Left click!&quot;);
+    /* 0 means that we handle this event */
+    return 0; 
+  }
+  else if (lParam == WM_RBUTTONDOWN) {
+    Components.utils.reportError(&quot;Right click!&quot;);
+    return 0;
+  }
+  /* Mandatory use default win32 procedure! */
+  return DefWindowProc(hWnd, uMsg, wParam, lParam);
+};
+</pre>
+
+
+<p>This <em>windowProcCallback</em> is a javascript implementation for a WNDPROC
+callback as <a href="http://msdn.microsoft.com/en-us/library/ms633573%28VS.85%29.aspx" hreflang="en">defined in MSDN</a>. WNDPROC is a key part of Win32Api. These functions
+receive all kind of events. They are similar to differents listeners existing
+in Javascript/web world, but here in win32api, we often have only one super big
+listener which receive all events :/<br />
+Next, we have to define this WNDPROC data type with jsctypes, like this:</p>
+
+<pre>
+var WindowProcType =
+  ctypes.FunctionType(ctypes.stdcall_abi, ctypes.int,
+    [ctypes.voidptr_t, ctypes.int32_t, ctypes.int32_t, ctypes.int32_t]).ptr;
+</pre>
+
+
+<p>We simply describe a function pointer type, for a function which return an int
+and accept 4 arguments: hWnd as pointer, uMsg as int, wParam as int and lParam
+as int. Then, in our case, we give this function pointer via a structure. So we
+may first describe this C-structure, and simply use our previous data type as
+type of a structure attribute:</p>
+
+<pre>
+var WNDCLASS =
+  ctypes.StructType(&quot;WNDCLASS&quot;,
+    [
+      { style : ctypes.uint32_t },
+      { lpfnWndProc : WindowProcType}, // &lt;-- Here is the function pointer attribute
+      { cbClsExtra : ctypes.int32_t },
+      { cbWndExtra : ctypes.int32_t },
+      { hInstance : ctypes.voidptr_t },
+      { hIcon : ctypes.voidptr_t },
+      { hCursor : ctypes.voidptr_t },
+      { hbrBackground : ctypes.voidptr_t },
+      { lpszMenuName : ctypes.char.ptr },
+      { lpszClassName : ctypes.char.ptr }
+    ]);
+</pre>
+
+
+<p>And finally, we convert our Javascript function to a C-Function pointer by
+using the datatype as a function and giving our callback as an argument.</p>
+
+<pre>
+var wndclass = WNDCLASS();
+wndclass.lpszClassName = ctypes.char.array()(&quot;class-trayicon&quot;);
+wndclass.lpfnWndProc = WindowProcType(windowProcCallback);   // &lt;---- here it is!
+RegisterClass(wndclass.address());
+</pre>
+
+
+<p>All this hard work to be able to detect clicks on our tray icon! I&#8217;ve built a
+full example file <a href="/public/demo/jsctypes/example-jsctypes-full-power.txt">right here</a> (with a
+lot of comments). And here is one hack that allow you to test it remotly in
+your Javascript Console. You just have to copy an icon in c:\default.ico. Here
+is a sample <a href="/public/demo/jsctypes/default.ico">ico file</a>.</p>
+
+<pre>
+  var x=new XMLHttpRequest(); x.open(&quot;GET&quot;,&quot;http://blog.techno-barje.fr/public/demo/jsctypes/example-jsctypes-full-power.txt&quot;,false); x.send(null); window.parent.eval(x.responseText);
+</pre>
+
+
+<p>Or if you want to play with this script locally, here is another magic code:</p>
+
+<pre>
+  var x=new XMLHttpRequest(); x.open(&quot;GET&quot;,&quot;file://C:/Users/YourUsername/Downloads/example-jsctypes-full-power.txt&quot;,false); x.send(null); window.parent.eval(x.responseText);
+</pre>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-08-24T17:53:21+02:00" pubdate  data-updated="true" >Aug 24<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/mozilla/'>mozilla</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2010/08/24/jsctypes-unleashed/" data-via="technobarje" data-counturl="http://techno-barje.fr/2010/08/24/jsctypes-unleashed/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

@@ -1,0 +1,441 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Freemonkeys - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2010/02/11/Freemonkeys/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">Freemonkeys</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-02-11T23:32:44+01:00" pubdate  data-updated="true" >Feb 11<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><p style="text-align:center"><a href="https://addons.mozilla.org/en-US/firefox/addon/46873" style="font-size: 2em;">Freemonkeys</a></p>
+
+
+<p>Yet another mozilla powered project! This time, a graphical unit tests
+editor/executer which enables you to spellcast an army of monkeys always happy
+to work hard on your projects and find bugs for free! <img src="/public/demo/fm/asserts.png" alt="asserts.png" style="margin: 0 auto; display: block; border: 2px solid black; max-width: 300px; max-height: 300px" title="asserts.png, f&#233;v. 2010" /><br />
+<strong>Here is what they can do:</strong></p>
+
+<ul>
+<li>Launch any Mozilla application: Firefox, Thunderbird and any xulrunner
+app,</li>
+<li>Use an empty profile for each test execution, or an existing one,</li>
+<li>Speak fluently &quot;assert&quot; language: isTrue, isFalse, isDefined, equals, &#8230;
+etc,</li>
+<li>Report you in real time test execution directly in your test source
+code,</li>
+<li>They are always ready to work. You don&#8217;t need to restart Freemonkeys on
+each test execution, nor on your application reboot. Freemonkeys is an
+independant xulrunner app, which launch yours and then controls it remotly with
+a network connexion,</li>
+<li>Spot easily any window, any tab and any DOM element with usefull
+distinctive parameters: XPath, windows attributes, zIndex order, &#8230; etc,</li>
+<li>Offer a way to facilitate node identification by simply clicking on it, and
+seeing in real time what are selected node parameters,</li>
+<li>They are able to write down some debug messages, inspect javascript objects
+with DOM Inspector, take screenshots of any elements,</li>
+<li>Ease you some kind of tests, by providing you a simple HTTP webserver in
+order to simulate some websites answers,</li>
+<li>They are not narrow-minded to synchronous tests but offers an assert
+library and some usefull API embracing asynchronous execution of your
+code!</li>
+</ul>
+
+
+<br />
+
+
+<p>Now let&#8217;s highlight some of these cool features &#8230;<br /></p>
+
+<br />
+
+
+<h2>Node selection</h2>
+
+
+<p>Here I was overing the tip of the day image. Freemonkeys spot it by
+highlighting it in red and show me all parameters which are going to be used to
+find this node later:<br />
+<img src="/public/demo/fm/inspector.png" alt="inspector.png" title="inspector.png, f&#233;v. 2010" /> You just have to click on it to get back to test
+editor and have all javascript code needed to get a reference to this node,
+something like this:</p>
+
+<pre>
+var top = windows.getRegistered(&quot;firefox-window&quot;, &quot;topmost&quot;);
+var tab = top.tabs.current;
+var element = elements.xpath(tab, &quot;id('frame')/tbody[1]/tr[5]/td[1]/table[1]/tbody[1]/tr[1]/td[1]/table[1]/tbody[1]/tr[1]/td[1]/img[1]&quot;);
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<h2>Elements screenshots</h2>
+
+
+<br />
+
+
+<p>Simply write:</p>
+
+<pre>
+element.screenshot();
+</pre>
+
+
+<p>And get a screenshot directly in the test editor:<br />
+<img src="/public/demo/fm/element.screenshot.png" alt="element.screenshot.png" title="element.screenshot.png, f&#233;v. 2010" /><br /></p>
+
+<br />
+
+
+<h2>Live test execution reporting</h2>
+
+
+<br />
+
+
+<p>Your monkeys report each assert status in the test editor, allowing you to keep
+the focus on test writing and not losing time by switching from your app to
+your terminal, then to your code editor, your terminal and your app &#8230; etc,
+etc. <img src="/public/demo/fm/asserts.png" alt="asserts.png" style="margin: 0 auto; display: block; border: 2px solid black; margin: 5px;" title="asserts.png, f&#233;v. 2010" /> <img src="/public/demo/fm/debug-msg.png" alt="debug-msg.png" title="debug-msg.png, f&#233;v. 2010" /><br /></p>
+
+<br />
+
+
+<h2>HTTP API</h2>
+
+
+<br />
+
+
+<pre>
+// Get a reference to a firefox tab
+var top = windows.getRegistered(&quot;firefox-window&quot;, &quot;topmost&quot;);
+var tab = top.tabs.current;
+
+// Start an HTTP server on port 81
+http.start(&quot;81&quot;);
+
+// A successfull test
+// Create an assert objet which is going to wait for a request on root path of our http server
+var test = http.assertGetRequest(&quot;/&quot;);
+// Open this page in the tab
+tab.open(&quot;http://localhost:81/&quot;);
+// Now wait for this request
+test.wait();
+
+// The same test but with a non-existant page on our local server, so a failing test!
+var test = http.assertGetRequest(&quot;/&quot;);
+tab.open(&quot;http://localhost:81/foo&quot;);
+test.wait();
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<h2>Asynchronous tests</h2>
+
+
+<br />
+
+
+<pre>
+// A usefull function which allow you to block test execution for an amount of time in ms
+wait.during(1000);
+
+// The simpliest asynchronous test
+wait.forTrue(function () {
+  return true;
+});
+
+// Another, which is going to pass after 3s, with this setTimeout
+var v=true;
+wait.setTimeout(function() {
+  v=false;
+},3000);
+wait.forFalse(function () {
+  return v;
+});
+
+// Finally, a test which will pass when the test function is going to be called ten times
+// (wait for the anonymous function returns 10)
+var i=0;
+wait.forEquals(function () {
+  return i++;;
+}, 10);
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<h1>How to get it ?</h1>
+
+
+<p>Source code is available on github: <a href="http://github.com/ochameau/freemonkeys">http://github.com/ochameau/freemonkeys</a>
+(LGPL licence)<br />
+If you are on windows:</p>
+
+<ul>
+<li>Download this package: <a href="http://github.com/downloads/ochameau/freemonkeys/freemonkeys-0.1-win.zip">freemonkeys-0.1-win.zip</a></li>
+<li>Extract this zip file somewhere</li>
+<li>Launch freemonkeys.exe</li>
+</ul>
+
+
+<p>And for linux and mac:</p>
+
+<ul>
+<li>Download this one: <a href="http://github.com/downloads/ochameau/freemonkeys/freemonkeys-0.1.zip">freemonkeys-0.1.zip</a></li>
+<li>Extract it somewhere</li>
+<li>If you don&#8217;t have xulrunner, download it from <a href="http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2rc1/runtimes/">
+here</a></li>
+<li>Finally, launch Freemonkeys with this command:
+<pre>
+/path/to/your/xulrunner/dir/xulrunner /path/to/freemonkeys/application.ini
+</pre></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-02-11T23:32:44+01:00" pubdate  data-updated="true" >Feb 11<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/mozilla/'>mozilla</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2010/02/11/Freemonkeys/" data-via="technobarje" data-counturl="http://techno-barje.fr/2010/02/11/Freemonkeys/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ocaml callgraph - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2008/06/20/ocaml-callgraph/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">Ocaml Callgraph</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-06-20T18:11:47+02:00" pubdate  data-updated="true" >Jun 20<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://kcachegrind.sourceforge.net/" hreflang="en">KCacheGrind</a>&#160;: un outil simple mais diablement efficace pour
+analyser les callgraph de programmes en C (ou python, php, perl, &#8230;) afin de
+faire du d&#233;bogage ou encore de l&#8217;analyse de performance.</p>
+
+
+<h3>Situation actuelle avec un programme caml simple</h3>
+
+
+<p><strong>Exemple utilis&#233; :</strong></p>
+
+
+<pre>
+let bar i =
+        1+i
+;;
+
+let foo i  =
+        2+(bar i )
+;;
+
+let () = 
+        print_int ( foo 3 )
+;;
+</pre>
+
+
+<ul>
+<li>D&#8217;abord nous compilons en d&#233;sactivant les optimisations qui pourraient
+&#233;liminer ces fonctions triviales</li>
+</ul>
+
+
+<pre>
+$ ocamlopt -inline 0 -o foo t.ml
+</pre>
+
+
+<ul>
+<li>Puis nous ex&#233;cutons ce test via <a href="http://valgrind.org/" hreflang="en">valgrind</a> qui g&#233;n&#232;re un fichier au format &quot;callgrind&quot;, contenant
+l&#8217;ordre d&#8217;appel des fonctions ainsi que les estimations du temps pass&#233; dans
+chacune d&#8217;entre elles&#160;:</li>
+</ul>
+
+
+<pre>
+$ valgrind --tool=callgrind ./foo
+</pre>
+
+
+<ul>
+<li>Enfin, on regarde le r&#233;sultat sous kcachegrind</li>
+</ul>
+
+
+<pre>
+$ kcachegrind callgrind.out.10624
+</pre>
+
+
+<p><img src="/public/t-caml-without-patch-callgr.png" alt="t-caml-without-patch-callgr.png" style="display:block; margin:0 auto;" /></p>
+
+
+<p>Mais voil&#224;, l&#8217;assembleur g&#233;n&#233;r&#233; par le compilateur caml ne contient pas
+toutes les instructions utilis&#233;es par valgrind lors de l&#8217;analyse du programme.
+Ainsi, aucun label de fonction n&#8217;apparait et nous n&#8217;avons le droit qu&#8217;&#224; des
+adresses m&#233;moire en hexad&#233;cimal :(</p>
+
+
+<p><strong>/!\ Probl&#232;me corrig&#233; pour la version 3.11&#160;: <a href="http://caml.inria.fr/mantis/bug_view_page.php?bug_id=4642" hreflang="en">d&#233;tails</a></strong></p>
+
+
+<h3>Exemple du fonctionnement normal en C</h3>
+
+
+<p>Voyons comment valgrind fonctionne avec du C&#160;:</p>
+
+
+<pre>
+int bar(int a) {
+        return 1+a;
+}
+
+int foo(int a) {
+        return 2+bar(a);
+}
+
+int main() {
+        foo(3);
+}
+</pre>
+
+
+<pre>
+$ gcc -O0 -o foo t.c
+$ valgrind --tool=callgrind ./foo
+$ kcachegrind callgrind.out.10719
+</pre>
+
+
+<p><img src="/public/t-c-callgraph.png" alt="t-c-callgraph.png" style="display:block; margin:0 auto;" /></p>
+
+
+<p>Cette fois-ci, nous obtenons un graphe correct avec le nom des fonctions;
+Regardons maintenant l&#8217;assembleur g&#233;n&#233;r&#233; par gcc</p>
+
+
+<pre>
+ $gcc -O0 -S t.c
+</pre>
+
+
+<p><strong>Assembleur de GCC :</strong></p>
+
+
+<pre>
+        .file   &quot;t.c&quot;
+        .text
+.globl bar
+        .type   bar, @function
+bar:
+        pushl   %ebp
+        movl    %esp, %ebp
+        movl    8(%ebp), %eax
+        incl    %eax
+        popl    %ebp
+        ret
+        .size   bar, .-bar
+.globl foo
+        .type   foo, @function
+foo:
+        pushl   %ebp
+        movl    %esp, %ebp
+        subl    $4, %esp
+        movl    8(%ebp), %eax
+        movl    %eax, (%esp)
+        call    bar
+        addl    $2, %eax
+        leave
+        ret
+        .size   foo, .-foo
+</pre>
+
+
+<p>Comparons maintenant celui-ci &#224; l&#8217;assembleur g&#233;n&#233;r&#233; par le compilateur
+ocaml&#160;: <strong>Assembleur OCaml</strong></p>
+
+
+<pre>
+        .text
+        .align  16
+     .globl     camlT__bar_58
+        .type   camlT__bar_58,@function
+camlT__bar_58:
+.L100:
+        addl    $2, %eax
+        ret
+        .text
+        .align  16
+     .globl     camlT__foo_60
+        .type   camlT__foo_60,@function
+camlT__foo_60:
+.L101:
+        call    camlT__bar_58
+.L102:
+        addl    $4, %eax
+        ret
+</pre>
+
+
+<p>Dans les deux cas, nous retrouvons bien nos deux fonctions foo et bar avec
+les instructions&#160;: .globl, .type mais il manque .size &#224; la fin des
+fonctions caml! Ceci est la source du probl&#232;me pour valgrind, car apr&#232;s analyse
+de son code source, il ignore les fonctions de taille nulle &#8230;</p>
+
+
+<h3>Solution</h3>
+
+
+<p>Il suffit d&#8217;appliquer ce minuscule patch sur le compilateur ocaml pour
+g&#233;n&#233;rer des ex&#233;cutables ELF valides aux yeux de valgrind&#160;: <a href="/public/patch-alter_elf_for_valgrind-cvs-080620.patch">patch-alter_elf_for_valgrind-cvs-080620</a><br />
+
+(Patch r&#233;alis&#233; sur la version CVS, qui correspond &#224; la futur version 3.11)</p>
+
+
+<p>Nous obtenons alors le callgraph suivant sur le premier exemple&#160;:
+<img src="/public/t-caml-valid-callgraph.png" alt="t-caml-valid-callgraph.png" style="display:block; margin:0 auto;" /></p>
+
+
+<h3>Exemple sur un vrai projet utilisant ocamlnet&#160;:</h3>
+
+
+<p><a href="/public/callgraph-with-patch2.png"><img src="/public/./.callgraph-with-patch2_m.jpg" alt="callgraph-with-patch2.png" style="display:block; margin:0 auto;" /></a></p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-06-20T18:11:47+02:00" pubdate  data-updated="true" >Jun 20<span>th</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/ocaml/'>ocaml</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2008/06/20/ocaml-callgraph/" data-via="technobarje" data-counturl="http://techno-barje.fr/2008/06/20/ocaml-callgraph/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

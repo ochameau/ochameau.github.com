@@ -1,0 +1,342 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>XUL Profiler - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2008/12/11/XUL-Profiler/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">XUL Profiler</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-12-11T19:51:59+01:00" pubdate  data-updated="true" >Dec 11<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><p><img src="/public/addon_thumb.png" alt="addon_thumb.png" style="margin: 0 0 1em 1em; float: right;" title="addon_thumb.png, dec 2008" /> XUL
+Profiler&#160;? Qu&#8217;est-ce donc&#160;? Et bien c&#8217;est l&#8217;extension Firefox que
+j&#8217;ai pu d&#233;velopper chez <a href="http://www.yoono.com">Yoono</a>. Elle a pour
+but de donner des pistes aux d&#233;veloppeurs XUL (mais aussi aux d&#233;veloppeurs Web)
+pour optimiser les performances de leurs applications.</p>
+
+
+<p>Pour l&#8217;instant, cette extension permet de r&#233;colter deux
+informations&#160;:</p>
+
+
+<ul>
+<li>un callgraph Javascript&#160;: Chaque appel de fonction est consign&#233; dans
+un arbre et class&#233; par son temps d&#8217;ex&#233;cution. On peut ainsi rapidement rep&#233;rer
+les fonctions qui ralentissent le navigateur.</li>
+<li>une vid&#233;o des rafraichissements de Firefox&#160;: Toutes les op&#233;rations de
+mise &#224; jour graphique de firefox sont enregistr&#233;es dans une vid&#233;o qui nous
+permet d&#8217;apprendre &#224; optimiser notre Javascript ainsi que les CSS afin de
+soulager Firefox dans son travail de layout.</li>
+</ul>
+
+
+<p>L&#8217;extension est disponible sur <a href="https://addons.mozilla.org/fr/firefox/addon/9954">Mozilla addons</a></p>
+
+
+<p>Voici quelques r&#233;sultats sur des exemples simples.</p>
+
+
+<h2>Callgraph Javascript</h2>
+
+
+<p>(<a href="/public/test-xulprofiler-callgraph.html">Fichier html de
+test</a>)</p>
+
+
+<pre>
+function fun_root() {
+  fun_A();
+  fun_B();
+  fun_C();
+}
+function fun_A() {
+  dump(&quot;fun A&quot;);
+}
+function fun_B() {
+  dump(&quot;fun B&quot;);
+  var s=&quot;&quot;;
+  fun_D();
+  for(var i=0; i&lt;1000; i++) {
+    s+=&quot;CPU INTENSIVE FUNCTION&quot;;
+    fun_D();
+  }
+  fun_D();
+}
+function fun_C() {
+  dump(&quot;fun C&quot;);
+}
+function fun_D() {
+  dump(&quot;fun D&quot;);
+}
+</pre>
+
+
+<p><img src="/public/test-xulprofiler-callgraph.png" alt="test-xulprofiler-callgraph.png" style="margin: 0 auto; display: block;" title="test-xulprofiler-callgraph.png, dec 2008" /></p>
+
+
+<p>On voit ici la hi&#233;rarchie des appels entre les fonction gr&#226;ce &#224; la
+pr&#233;sentation sous forme d&#8217;arbre, et l&#8217;on peut conclure que la majorit&#233; du temps
+de calcul de ce script est effectu&#233; dans la fonction &quot;fun_B&quot;.</p>
+
+
+<h2>Paint events</h2>
+
+
+<p>(<a href="/public/test-xulprofiler-paint.html">Fichier html de test</a>)</p>
+
+
+<pre>
+function delayEachInserts() {
+  for(var i=0;i&lt;20;i++) {
+    window.setTimeout(insertItem,100*i,i);
+  }
+}
+function insertItem(i) {
+  var container=document.getElementById(&quot;container&quot;);
+  var item=document.createElement(&quot;div&quot;);
+  item.setAttribute(&quot;class&quot;,&quot;item&quot;);
+  item.textContent=&quot;Item &quot;+i;
+  container.appendChild(item);
+}
+window.addEventListener(&quot;load&quot;,delayEachInserts,false);
+</pre>
+
+
+<p>&#160; <strong>=&gt;</strong> <a style="font-weight: bold;" href="/public/test-xulprofiler-paint-result.html">R&#233;sutat</a></p>
+
+
+<p>Cet exemple montre que lorsqu&#8217;on ajoute un &#233;lement DOM, Firefox est oblig&#233;
+de rafraichir son conteneur &#224; chaque ajout.</p>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-12-11T19:51:59+01:00" pubdate  data-updated="true" >Dec 11<span>th</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/mozilla/'>mozilla</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2008/12/11/XUL-Profiler/" data-via="technobarje" data-counturl="http://techno-barje.fr/2008/12/11/XUL-Profiler/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

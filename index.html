@@ -62,7 +62,7 @@
     
   <header>
     
-      <h1 class="entry-title"><a href="/2011/09/21/foo/">Foo</a></h1>
+      <h1 class="entry-title"><a href="/2011/03/31/Jetpack-runner/">Jetpack Runner</a></h1>
     
     
       <p class="meta">
@@ -75,12 +75,82 @@
 
 
 
-<time datetime="2011-09-21T08:32:00+02:00" pubdate  data-updated="true" >Sep 21<span>st</span>, 2011</time></p>
+<time datetime="2011-03-31T03:58:47+02:00" pubdate  data-updated="true" >Mar 31<span>st</span>, 2011</time></p>
     
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><p>Here is the very first release of Jetpack runner. This firefox extension built
+on top of the Addon SDK is a personal project that aim to ease development of
+firefox extension using the SDK. It is a great exhibit of SDK capabilities as
+we can now develop such tool using the SDK itself! For now, to create an addon
+you need to go thought a python application that only has a command line
+interface: <img src="/public/jetpack_runner/cfx.jpg" alt="cfx.jpg" style="margin: 0 auto; display: block;" title="cfx" /> This is painfull to install
+and even more annoying to use on Windows as there is no really decent command
+line interface. Finally, if we compare to chrome extensions, we only need
+chrome to build an addon! This leads me to build a Firefox extension, that can
+be really easy to install in Firefox and allow to build really cool interfaces
+to create, run and test your addons.<br /></p>
+
+<br />
+
+
+<h2>Jetpack runner features:</h2>
+
+
+<p><img src="/public/jetpack_runner/jr.png" alt="jr.png" style="float: right; margin: 0 0 1em 1em;" title="jr.png, mar. 2011" /></p>
+
+<ul>
+<li>Download and install SDK automatically</li>
+<li>Create addon from templates</li>
+<li>Run an addon</li>
+<li>Execute unit-tests</li>
+<li>Generate firefox extension XPI file or xulrunner application package</li>
+<li>You can run these either in current firefox instance or run them in a new
+one</li>
+<li>We can execute a package as a firefox extension or as a xulrunner
+application</li>
+</ul>
+
+
+<br />
+
+
+<br />
+
+
+<h2>Jetpack runner first steps:</h2>
+
+
+<p>On extension installation, a tab opens automatically on &quot;jetpack:&quot; url, the
+main jetpack runner interface. That allow to download and install a precise SDK
+release: <img src="/public/jetpack_runner/jr-first-run.jpg" alt="jr-first-run.jpg" style="margin: 0 auto; display: block;" title="jr-first-run.jpg, mar. 2011" /> Then it displays a list of packages provided
+by addon SDK. &quot;addon-sdk&quot; is the main package to play with. <img src="/public/jetpack_runner/jr-packages.jpg" alt="jr-packages.jpg" style="margin: 0 auto; display: block;" title="jr-packages.jpg, mar. 2011" /> After
+clicking on &quot;Create addon&quot; button, you would easily create a new one by filling
+obvious form and selecting a template addon: <img src="/public/jetpack_runner/jr-templates.jpg" alt="jr-templates.jpg" style="margin: 0 auto; display: block;" title="jr-templates.jpg, mar. 2011" /> And
+then, you end up on your newly created addon package page, where you can run
+it, execute unit tests or download as a firefox extension XPI file: <img src="/public/jetpack_runner/jr-addon.jpg" alt="jr-addon.jpg" style="margin: 0 auto; display: block;" title="jr-addon.jpg, mar. 2011" /><br /></p>
+
+<br />
+
+
+<h2>Jetpack runner!!!</h2>
+
+
+<p>Last but not least, here is a link to install it or to checkout the
+source.<br /></p>
+
+<br />
+
+
+<p><b>Firefox Extension:</b><br />
+<a href="/public/jetpack_runner/jetpack-runner-0.1.1.xpi">jetpack-runner-0.1.1.xpi</a><br /></p>
+
+<br />
+
+
+<p><b>Source code:</b><br />
+<a href="https://github.com/ochameau/jetpack-runner">Github project</a></p>
 </div>
   
   
@@ -93,7 +163,7 @@
     
   <header>
     
-      <h1 class="entry-title"><a href="/2011/09/21/test/">Test</a></h1>
+      <h1 class="entry-title"><a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - La G&#233;olocalisation Horodat&#233;!</a></h1>
     
     
       <p class="meta">
@@ -106,24 +176,956 @@
 
 
 
-<time datetime="2011-09-21T07:09:00+02:00" pubdate  data-updated="true" >Sep 21<span>st</span>, 2011</time></p>
+<time datetime="2011-01-08T23:25:18+01:00" pubdate  data-updated="true" >Jan 8<span>th</span>, 2011</time></p>
     
   </header>
 
 
-  <div class="entry-content"><p>Test</p>
+  <div class="entry-content"><p style="text-align: center"><a href="http://arretetoi.la/" style="font-size: 2em;">http://arretetoi.la/</a></p>
 
-<p>blaaa</p>
 
-<p>  <span class='has-pullquote' data-pullquote='surround it like this '>
-  Surround your paragraph with the pull quote tags. Then when you come to
-  the text you want to pull, surround it like this and that&#8217;s all there
-  is to it.
-  </span></p>
+<p><img src="/public/arretetoila/icon_128.png" style="float: right;" /> Cette
+application web va vous permettre de r&#233;cup&#233;rer une liste de restaurants le long
+d&#8217;un trajet en voiture. D&#8217;abord, vous indiquez votre lieu de d&#233;part, d&#8217;arriv&#233;e
+ainsi que l&#8217;heure &#224; laquelle vous comptez partir. Tout ceci pour obtenir une
+liste de restaurants chaudement recommand&#233;s par <a href="http://dismoiou.fr/">Dismoiou.fr</a>. Jusque l&#224;, rien de r&#233;volutionnaire! Mais
+la particularit&#233; de ce service est d&#8217;afficher des adresses uniquement autour
+des villes que vous allez croiser autour des horaires de repas. Ainsi, si vous
+faites Paris-Marseille en partant &#224; 8h, le site vous proposera de d&#233;jeuner pr&#232;s
+de lyon, car vous devrez y &#234;tre autour de midi!</p>
 
-<p>Liquid error: Could not open library &#8216;.dll&#8217;: Le module spécifié est introuvable.</p>
+<p style="font-size: 1.2em; text-align: center"><strong>Arretetoi.la est un
+service &#224; la fois g&#233;olocalis&#233; mais surtout horodat&#233;!</strong></p>
 
-<p>Liquid error: undefined method `Py_IsInitialized&#8217; for RubyPython::Python:Module</p>
+
+<p>Les site marche aussi bien sur ordinateur que sur t&#233;l&#233;phone. La version sur
+ordinateur vous permettra de pr&#233;parer un parcours et d&#8217;estimer o&#249; vous pourriez
+manger. Tandis que la version mobile vous permettra de mettre &#224; jour
+l&#8217;estimation en fonction de votre progression. En effet, votre t&#233;l&#233;phone pourra
+transmettre votre position exacte et mettre &#224; jour la zone de
+d&#233;jeuner/diner.<br />
+Voici un aper&#231;u de la version ordinateur:</p>
+
+<p style="text-align: center">Indication des lieux de d&#233;part/arriv&#233;e ainsi que
+l&#8217;heure de d&#233;part <img src="/public/arretetoila/desktop-1.png" style="display: block; margin: auto;" /> Votre trajet horodat&#233; <img src="/public/arretetoila/desktop-2.png" style="display: block; margin: auto;" />
+Lieu o&#249; vous serez &#224; midi ou 20h, avec les restaurants recommand&#233;s <img src="/public/arretetoila/desktop-3.png" style="display: block; margin: auto;" /></p>
+
+
+<p>La version mobile:</p>
+
+<p style="text-align: center">Indication de votre lieu d&#8217;arriv&#233;e, le reste se
+remplit automatiquement <img src="/public/arretetoila/mobile-1.png" style="display: block; margin: auto;" /> Liste des restaurants recommand&#233;s autour de
+midi ou 20h <img src="/public/arretetoila/mobile-2.png" style="display: block; margin: auto;" /> Affichage du restaurant s&#233;lectionn&#233; sur une
+carte avec votre trajet <img src="/public/arretetoila/mobile-3.png" style="display: block; margin: auto;" /></p>
+
+
+<p>Enfin, notez que vous pouvez ajouter cette application &#224; votre &#233;cran d&#8217;accueil
+sur iphone et android. Ainsi que sur ordinateur avec le navigateur chrome via
+le <a href="https://chrome.google.com/webstore/detail/dmjmddodainnogedepioklhnhdmebfhk">chrome
+web store</a>.</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google Maps Hacks Part2 - Cool Function to Power Up Route, Directions</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-11-04T18:18:03+01:00" pubdate  data-updated="true" >Nov 4<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Another day, another library!<br />
+This new library brings some usefull functions and one of them is just awesome
+:)<br />
+Start with these usefull functions:</p>
+
+<ul>
+<li>return the distance between two points,</li>
+<li>retrieve the a point at a given distance between two another,</li>
+<li>compute the square box with a given size around a point</li>
+</ul>
+
+
+<p>And the awesome function allows you to find the point at a given duration on a
+direction computed by google maps API. For example, you may retrieve the
+precive point where you are going to be after 1hour driving on the road from
+Paris to Berlin!<br />
+For more information, I suggest you to check at the README available on github:
+<a href="https://github.com/ochameau/google-map-api-path-tools">https://github.com/ochameau/google-map-api-path-tools</a><br /></p>
+
+<p>As usual, source code is available under LGPL Licence.</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google Maps Hacks Part1 - Auto-suggest Location in &lt;input></a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-11-04T16:21:46+01:00" pubdate  data-updated="true" >Nov 4<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As I&#8217;m hacking around Google Maps API, I tried to write some libraries around
+it in order to ease futher developments around this very cool API! The first
+library brings auto-suggest in html inputs, so users can see a dynamic list of
+cities name when they start typing in a form :)<br /></p>
+
+<br />
+
+
+<p>Here is the source code of it, licenced under LGPL:<br />
+<a href="https://github.com/ochameau/google-map-api-suggest">https://github.com/ochameau/google-map-api-suggest</a><br /></p>
+
+<p>And what users may expect: <img src="/public/gmaps/gmapi-suggest-sc1.png" alt="gmapi-suggest-sc1.png" style="margin: 0 auto; display: block;" title="gmapi-suggest-sc1.png, nov. 2010" /> <img src="/public/gmaps/gmapi-suggest-sc2.png" alt="gmapi-suggest-sc2.png" style="margin: 0 auto; display: block;" title="gmapi-suggest-sc2.png, nov. 2010" /></p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView Secrets - Part3 - How to Properly Call ObjectiveC From Javascript</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-10-06T19:02:38+02:00" pubdate  data-updated="true" >Oct 6<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Let&#8217;s change the subject: this time no more talks about memory but always on
+UIWebView component. When we use this component for something else than just
+displaying webpages, like building UI with HTML, Javascript, &#8230; We often want
+to call Javascript functions from objective C and the opposite.<br /></p>
+
+<br />
+
+
+<h2>Call Javascript function from Objective-C:</h2>
+
+
+<p>The first move is easily done with the following piece of code:</p>
+
+<pre>
+  // In your Javascript files:
+    function myJavascriptFunction () {
+    
+      // Do whatever your want!
+    
+    }
+  
+  // -----------------------------------
+  
+  // And in your Objective-C code:
+  // Call Javascript function from Objective-C:
+    [webview stringByEvaluatingJavaScriptFromString:@&quot;myJavascriptFunction()&quot;];
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<h2>Call Objective-C function from Javascript:</h2>
+
+
+<p>But calling objective-c from a Javascript function is not easy as Iphone SDK
+doesn&#8217;t offer any native way to do this! So we have to use any king of hack to
+do this &#8230;<br />
+The most known, used <ins>and buggy</ins>&#160;practice is to register a
+<em>UIWebViewDelegate</em> on your web view and &#171; catch-and-immediatly-cancel &#187;
+a location change done in javascript.</p>
+
+<p style="text-align:right">(a <a href="http://stackoverflow.com/questions/3275093/call-objective-c-method-from-javascript-with-parameter">
+very</a> <a href="http://stackoverflow.com/questions/243459/uiwebview-expose-objective-c-to-javascript">
+extremely</a> <a href="http://stackoverflow.com/questions/2767902/what-are-some-methods-to-debug-javascript-inside-of-a-uiwebview">
+plenty</a> <a href="http://tetontech.wordpress.com/2008/08/14/calling-objective-c-from-javascript-in-an-iphone-uiwebview/">
+much</a> <a href="http://www.iphonedevsdk.com/forum/iphone-sdk-development/14501-javascript-interaction-uiwebview-app.html">
+advised</a> practice!)</p>
+
+
+<pre>
+  // In Objective-C
+  - someFunctionOnInit {
+    
+    webView = [[UIWebView alloc] init];
+    // Register the UIWebViewDelegate in order to shouldStartLoadWithRequest to be called (next function)
+    webView.delegate = self;  
+    
+  }
+  
+  // This function is called on all location change :
+  - (BOOL)webView:(UIWebView *)webView2 
+          shouldStartLoadWithRequest:(NSURLRequest *)request 
+          navigationType:(UIWebViewNavigationType)navigationType {
+    
+    // Intercept custom location change, URL begins with &quot;js-call:&quot;
+    if ([[[request URL] absoluteString] hasPrefix:@&quot;js-call:&quot;]) {
+      
+      // Extract the selector name from the URL
+      NSArray *components = [requestString componentsSeparatedByString:@&quot;:&quot;];
+      NSString *function = [components objectAtIndex:1];
+      
+      // Call the given selector
+      [self performSelector:NSSelectorFromString(functionName)];
+      
+      // Cancel the location change
+      return NO;
+    }
+    
+    // Accept this location change
+    return YES;
+    
+  }
+  
+  - (void)myObjectiveCFunction {
+    
+    // Do whatever you want!
+   
+  }
+
+  // -----------------------------------
+  
+  // Now in your javascript simply do this to call your objective-c function:
+  // /!\ But for those who just read title and code, take care, this is a buggy practice /!\\n  window.location = &quot;js-call:myObjectiveCFunction&quot;;
+
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<h2>What&#8217;s wrong with UIWebViewDelegate, shouldStartLoadWithRequest and
+location change ?</h2>
+
+
+<p>There is weird but apprehensible bugs with this practice:<br />
+a lot of javascript/html stuff get broken when we cancel a location change:</p>
+
+<ul>
+<li>All setInterval and setTimeout immediatly stop on location change</li>
+<li>Every innerHTML won&#8217;t work after a canceled location change!</li>
+<li>You may get other really weird bugs, really hard to diagnose &#8230;</li>
+</ul>
+
+
+<p style="text-align: center"><a href="/public/iphone-sdk/NativeBridge/NativeBridge-bug.zip" style="font-size:2em">Sample application highlighting these bugs</a></p>
+
+
+<p>Key files of this example:</p>
+
+<ul>
+<li><strong>MyWebview.m:</strong> Objective-c part, that inherit from
+UIWebView. Set the UIWebViewDelegate and catch requests in
+shouldStartLoadWithRequest selector.</li>
+<li><strong>NativeBridge.js:</strong> Tiny javascript library in order to
+change the location and offer a way to send arguments and receive a
+response.</li>
+<li><strong>webview-script.js:</strong> Test case script, that highlight these
+bugs.</li>
+</ul>
+
+
+<p>In webview-script.js: InnerHTML stop working whereas textContent continues to
+&#8230;</p>
+
+<pre>
+  document.getElementById(&quot;count&quot;).innerHTML = i;
+  document.getElementById(&quot;count2&quot;).textContent = i;
+</pre>
+
+
+<br />
+
+
+<p>But we can&#8217;t charge Apple on this bug. I mean we try to load another location
+in the document we are working on! The webview component may start doing stuff
+before the delegate call, which cancel the load &#8230;<br />
+We have to find alternative way to communicate with the native code!<br /></p>
+
+<br />
+
+
+<h2>Better way to call Objective-C</h2>
+
+
+<p>The only thing we have to change is in Javascript code. Instead of changing the
+document location, we create an IFrame and set its location to a value that
+trigger the shouldStartLoadWithRequest method.<br />
+And voil&#224;!</p>
+
+<pre>
+  var iframe = document.createElement(&quot;IFRAME&quot;);
+  iframe.setAttribute(&quot;src&quot;, &quot;js-frame:myObjectiveCFunction&quot;;
+  document.documentElement.appendChild(iframe);
+  iframe.parentNode.removeChild(iframe);
+  iframe = null;
+</pre>
+
+
+<p>Here is another sample application, with exactly the same structures and test
+file.<br />
+But this time you are going to see innerHTML and setTimeout working! Again,
+this demo contains a library (NativeBridge.js) that allow to send arguments to
+native code and get back a result in javascript asynchronously, with a callback
+function.</p>
+
+<p style="text-align: center"><a href="/public/iphone-sdk/NativeBridge/NativeBridge-non-buggy.zip" style="font-size:2em;">Best practice example!</a></p>
+
+
+<br />
+
+
+<br />
+
+
+<h2>Free Objective-C&lt;-&gt;Javascript library</h2>
+
+
+<p>Finally I provide the communication library under LGPL licence so it can ease
+your work on iphone platform! As I know that it&#8217;s really not easy ;-)<br /></p>
+
+<ul>
+<li><a href="http://github.com/ochameau/NativeBridge/blob/master/MyWebView.m" style="font-weight:bold;">MyWebView.m</a>: ObjectiveC part,</li>
+<li><a href="http://github.com/ochameau/NativeBridge/blob/master/NativeBridge.js" style="font-weight:bold;">NativeBridge.js</a>: Javascript side.</li>
+</ul>
+
+
+<p>The code is full of comment, so you may easily use and tweak it!</p>
+
+<p style="text-align: center"><a href="http://github.com/ochameau/NativeBridge">Github repo</a></p>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/10/04/UIWebView-secrets-part2-leaks-on-release/">UIWebView Secrets - Part2 - Leaks on Release</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-10-04T18:08:40+02:00" pubdate  data-updated="true" >Oct 4<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Continue on iphone with leaks around UIWebView! Here is another big one with
+no apparent solution. When we try to release a UIWebView component, very few
+memory is freed. So any application using this object to display webpages is
+going to crash quickly with Low memory exception :(</p>
+
+
+<br />
+
+
+<p>I think this memory usage graph gives an idea on how big is this new king of
+leak: <img src="/public/iphone-sdk/profile-uiwebview-leak-onrelease.png" alt="memory usage" style="margin: 0 auto; display: block;" title="memory usage" /></p>
+
+<ol>
+<li>Create a UIWebView</li>
+<li>Load http://www.google.com/</li>
+<li>Release the webview (UIWebView dealloc is correctly called!)<br />
+Look how so few memory is freed :/</li>
+</ol>
+
+
+<p style="text-align: center"><a href="/public/iphone-sdk/UIWebViewLeaks2.zip">Test Application</a></p>
+
+
+<p>The leak is all but tiny! Before the loading of the webpage, the application
+was using 630kB of memory, and after the release of the UIWebview, 1150kB! So
+we have a 500KB leak in order to simply display the home of Google.com!</p>
+
+
+<p>This time, I didn&#8217;t manage to find any hack to solve this bug.<br />
+So if you have any tips to fix this, don&#8217;t hesitate to post a comment!</p>
+
+
+<p>I&#8217;ve tried a lot of differents hacks to free more memory (or use less), like:</p>
+
+<pre>
+  // Setup the webview to disable some fancy effect on phone number, but doesn't change anything on memory released ...
+  webview.dataDetectorTypes = UIDataDetectorTypeNone;
+  webview.allowsInlineMediaPlayback = NO;
+</pre>
+
+
+<p>or</p>
+
+<pre>
+  // Remove and disable all URL Cache, but doesn't seem to affect the memory
+  [[NSURLCache sharedURLCache] removeAllCachedResponses];
+  [[NSURLCache sharedURLCache] setDiskCapacity:0];
+  [[NSURLCache sharedURLCache] setMemoryCapacity:0];
+</pre>
+
+
+<p>or</p>
+
+<pre>
+  // Remove all credential on release, but memory used doesn't move!
+  NSURLCredentialStorage *credentialsStorage = [NSURLCredentialStorage sharedCredentialStorage];
+  NSDictionary *allCredentials = [credentialsStorage allCredentials];
+  for (NSURLProtectionSpace *protectionSpace in allCredentials) {
+    NSDictionary *credentials = [credentialsStorage credentialsForProtectionSpace:protectionSpace];
+    for (NSString *credentialKey in credentials) {
+      [credentialsStorage removeCredential:[credentials objectForKey:credentialKey] forProtectionSpace:protectionSpace];
+    }
+  }
+</pre>
+
+
+<p>or</p>
+
+<pre>
+  // Cleanup the HTML document by removing all content
+  // This time, this hack free some additional memory on some websites, mainly big ones with a lot of content
+  [webview stringByEvaluatingJavaScriptFromString:@&quot;document.body.innerHTML='';&quot;];
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<p>But I never reach complete release of memory used by the web component :(</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/10/04/UIWebView-secrets-part1-memory-leaks-on-xmlhttprequest/">UIWebView Secrets - Part1 - Memory Leaks on Xmlhttprequest</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-10-04T15:58:33+02:00" pubdate  data-updated="true" >Oct 4<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>My first blog post on iphone subject reveal a big memory bug when using
+UIWebView component. This is the (only one) component to display some HTML
+content in an iphone interface. UIWebView object has a lot of differents issues
+and I&#8217;m going to highlight the biggest of them. Actually, all XMLHttpRequests
+used in javascript code are fully leaking!!! I mean when you do a request that
+retrieve 100ko of data, your memory used grow up for 100ko! This bug is not
+always active, but almost always. In fact the trigger to enable it is to simply
+open one link in your UIWebView. For example, clicking on a &lt;a&gt; link.</p>
+
+
+<p>But let&#8217;s look at a memory usage graph while we execute this <a href="/public/iphone-sdk/UIWebViewLeaks.zip">simple test application</a>: <img src="/public/iphone-sdk/profile-xmlhttprequest-0-then-1-labeled.png" alt="memory usage graph" style="margin: 0 auto; display: block;" title="memory usage graph" /></p>
+
+
+<ol>
+<li>Create the UIWebView object</li>
+<li>Load a local HTML test file</li>
+<li>Execute 3 XMLHttpRequest to google.com, notice how the memory is freed
+three times after each request!</li>
+<li>Trigger the leak by opening a page that redirect back to our test file</li>
+<li>Execute the same 3 XMLHttpRequest and look how much memory is used and
+totally leaked :/</li>
+<li>We clean the HTML document with document.body.innerHTML=&#8221;; (sometimes free
+some memory, when we have a lot of DOM objects)</li>
+<li>release the UIWebView (almost no memory freed, next post is going to
+analyse that)</li>
+</ol>
+
+
+<p style="text-align: center"><a href="/public/iphone-sdk/UIWebViewLeaks.zip">Test Application</a></p>
+
+
+<br />
+
+
+<p>So, to sum up, usually, when you execute this Javascript in a UIWebView:</p>
+
+<pre>
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4 &amp;&amp; xmlhttp.status == 200) {
+      // Do whatever you want with the result
+      
+    }
+  };
+  xmlhttp.open(&quot;GET&quot;, &quot;http://your.domain/your.request/...&quot;, true);
+  xmlhttp.send();
+</pre>
+
+
+<p>Your are going to have a big memory usage and leak a lot of data!<br /></p>
+
+<br />
+
+
+<p>But there is a hack to solve this problem: revert what is done when you open
+a link.<br />
+In fact, the key property which leads to this leak is the
+<em>WebKitCacheModelPreferenceKey</em> application setting. And when you open a
+link in a UIWebView, this property is automatically set to the value
+<em>&quot;1&quot;</em>. So, the solution is to set it back to <em>0</em> everytime you
+open a link. You may easily do this by adding a <em>UIWebViewDelegate</em> to
+your UIWebView :</p>
+
+
+<pre>
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+  [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@&quot;WebKitCacheModelPreferenceKey&quot;];
+}
+</pre>
+
+
+<p>So are you going to have much less crash due to &quot;Low Memory&quot; :)</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/09/21/CSS-animationCSS-transformSVG-powered-by-Firefox-Kaleidoscope/">CSS animation+CSS transform+SVG Powered by Firefox = Kaleidoscope</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-09-21T00:10:26+02:00" pubdate  data-updated="true" >Sep 21<span>st</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="/public/kaleidoscope/kaleidoscope-tutorial.html" style="font-size: 1em"><img src="/public/kaleidoscope/kaleidoscope.jpg" alt="kaleidoscope result" style="margin: 0 auto; display: block;" title="kaleidoscope result" /></a><br />
+The amazing power of web technologies like CSS, HTML and SVG comes when you mix
+them all together! The arrival of the new mozilla specific CSS property
+<em>-moz-element</em> totally unleashed the power of CSS animation/transition
+when it comes to doing graphical effects. And I&#8217;m pretty sure that we may go
+even more futher by using others standards like HTML and SVG &#8230;<br />
+In order to show you how simple and powerfull these technologies mix can be,
+I&#8217;ve add two extra features on top of this kaleidoscope:</p>
+
+<ul>
+<li>The first one, use a video instead of an image: Video Kaleidoscope</li>
+<li>The second one allow you to specify a custom image by select or drag&#8217;n
+drop: Custom image</li>
+</ul>
+
+
+<p>I find these two features quite powerfull, and what&#8217;s totally awesome is how
+simple they are: only 3 lines of HTML in the first case, tens lines of
+javascript in the second one!</p>
+
+<p style="text-align: center"><a href="/public/kaleidoscope/kaleidoscope-demo.html" style="font-size: 1em">Kaleidoscope demo</a></p>
+
+
+<p style="text-align: right">Need <a href="http://www.mozilla.com/fr/firefox/all-beta.html">Firefox 4 Beta 6</a> or a
+nightly!<br /></p>
+
+
+<p>Finally, you may look at this tutorial that explain point by point how to
+achieve a Kaleidoscope by mixing <em>-moz-element+SVG+CSS animations and
+transform</em>:<br /></p>
+
+<p style="text-align: center"><a href="/public/kaleidoscope/kaleidoscope-tutorial.html" style="font-size: 1em">Kaleidoscope tutorial</a></p>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/08/27/jsctypes-win32api-jetpack-jetintray/">Jsctypes + Win32api + Jetpack = Jetintray</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-08-27T01:04:20+02:00" pubdate  data-updated="true" >Aug 27<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://wiki.mozilla.org/Jsctypes/api">JSCtypes</a>! What a powerfull
+tool, that allows to call native libraries with our simple Javascript.<br />
+<a href="https://jetpack.mozillalabs.com/">Jetpack</a>! What a powerfull tool,
+that allows to build reliably javascript applications, with unittests, memory
+profiling, web IDE, &#8230;<br />
+And <a href="http://en.wikipedia.org/wiki/Windows_API">WinAPI</a> &#8230; a giant C
+library still in production in 2010 that allows to do very various things on
+Windows platform.<br /></p>
+
+<br />
+
+
+<p>Mix all that and you get:</p>
+
+<p style="text-align: center"><a href="http://github.com/ochameau/jetintray" style="font-size: 2em;">JetInTray</a></p>
+
+
+<p>A jetpack API for adding Tray icons on windows via jsctypes and on linux with a
+binary xpcom component (I didn&#8217;t had time to work on a jsctypes version).<br />
+You may checkout this jetpack package directly from <a href="http://github.com/ochameau/jetintray">github</a>.<br />
+Or if you want to learn jsctypes I suggest you to look at files in <em>lib</em>
+directory and to read my two previous posts on jsctypes.</p>
+
+<ul>
+<li>I explained on the <a href="http://blog.techno-barje.fr/post/2010/08/06/JSctypes-reboot">first one</a> how
+to start playing with jsctypes, how to create C-structures and call
+functions.</li>
+<li>Then I showed in the <a href="http://blog.techno-barje.fr/post/2010/08/24/jsctypes-unleashed">second
+post</a>, how to create a JS callback passed to the native library as a
+function pointer.</li>
+</ul>
+
+
+<br />
+
+
+<br />
+
+
+<p>That said, I wanted to highlight some underground hacks around win32api! In
+WinAPI, there is no addEventListener/setEventCallback/addActionListener/&#8230; In
+fact, there is the well known <a href="http://www.toymaker.info/Games/html/wndproc.html">WndProc messages
+function</a>, that receives absolutely all event of the application!! (Yes for
+real!) We define this function as a static function named <em>WndProc</em>. But
+in Jsctypes case, that&#8217;s impossible to define a static function, we can only
+create function pointers. That&#8217;s where comes <strong>the</strong> not so known
+hack which allow to register dynamically such event listener.<br /></p>
+
+<ul>
+<li>First we have to define our listener function following the <a href="http://msdn.microsoft.com/en-us/library/ms633573.aspx">WinAPI datatypes</a>
+<pre>
+Components.utils.import(&quot;resource://gre/modules/ctypes.jsm&quot;);
+var libs = {};
+libs.user32 = ctypes.open(&quot;user32.dll&quot;);
+
+// Define the function pointer type
+var WindowProcType = 
+  ctypes.FunctionType(ctypes.stdcall_abi, ctypes.int,
+    [ctypes.voidptr_t, ctypes.int32_t, ctypes.int32_t, ctypes.int32_t]).ptr;
+
+// Bind a usefull API function
+var DefWindowProc = libs.user32.declare(&quot;DefWindowProcA&quot;, ctypes.winapi_abi, ctypes.int,
+    ctypes.voidptr_t, ctypes.int32_t, ctypes.int32_t, ctypes.int32_t);
+
+// Set our javascript callback
+function windowProcJSCallback(hWnd, uMsg, wParam, lParam) {
+  
+  // ... do something smart with this event!
+  
+  // You HAVE TO call this api function when you don't known how to handle an event
+  // or your apply is going to crash or do nothing
+  return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+// Retrieve a C function pointer for our Javascript callback
+var WindowProcPointer = WindowProcType(windowProcJSCallback);
+</pre></li>
+<li>Then we may fill a WNDCLASS structure with our fresh function pointer. This
+structure is used to create a new <em>window class</em> that use it own WndProc
+(not the default static function). See <a href="http://msdn.microsoft.com/en-us/library/ms633586%28VS.85%29.aspx">msdn doc</a>
+for more information.
+<pre>
+var WNDCLASS = 
+  ctypes.StructType(&quot;WNDCLASS&quot;,
+    [
+      { style  : ctypes.uint32_t },
+      { lpfnWndProc  : WindowProcType }, // here is our function pointer!
+      { cbClsExtra  : ctypes.int32_t },
+      { cbWndExtra  : ctypes.int32_t },
+      { hInstance  : ctypes.voidptr_t },
+      { hIcon  : ctypes.voidptr_t },
+      { hCursor  : ctypes.voidptr_t },
+      { hbrBackground  : ctypes.voidptr_t },
+      { lpszMenuName  : ctypes.char.ptr },
+      { lpszClassName  : ctypes.char.ptr }
+    ]);
+var wndclass = WNDCLASS();
+wndclass.lpszClassName = ctypes.char.array()(&quot;class-custom-wndproc&quot;);
+wndclass.lpfnWndProc = WindowProcType(windowProcCallback);   // &lt;---- here it is!
+RegisterClass(wndclass.address());
+</pre></li>
+<li>After that we may create a hidden window that is created only to catch
+events.
+<pre>
+var CreateWindowEx = 
+  libs.user32.declare( &quot;CreateWindowExA&quot;, ctypes.winapi_abi, ctypes.voidptr_t,
+      ctypes.long,
+      ctypes.char.ptr,
+      ctypes.char.ptr,
+      ctypes.int,
+      ctypes.int,
+      ctypes.int,
+      ctypes.int,
+      ctypes.int,
+      ctypes.voidptr_t,
+      ctypes.voidptr_t,
+      ctypes.voidptr_t,
+      ctypes.voidptr_t
+    );
+var HWND_MESSAGE = -3; // This is the code for message-only window
+                      // http://msdn.microsoft.com/en-us/library/ms632599%28VS.85%29.aspx#message_only
+var win = CreateWindowEx(
+    0, wndclass.lpszClassName,
+    ctypes.char.array()(&quot;messages-only-window&quot;),
+    0, 0, 0, 0, 0,
+    ctypes.voidptr_t(HWND_MESSAGE), null, null, null);
+</pre></li>
+<li>Finally, we only have to bind this window to any component which dispatch
+messages/events in order to receive them in our <em>windowProcJSCallback</em>
+callback. That&#8217;s it!</li>
+</ul>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/08/24/jsctypes-unleashed/">Jsctypes Unleashed</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-08-24T17:53:21+02:00" pubdate  data-updated="true" >Aug 24<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As bugs <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=573066" hreflang="en">573066</a> and <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=585175" hreflang="en">585175</a>
+are fixed and available in last Firefox <a href="http://nightly.mozilla.org/" hreflang="en">nightlies</a>, we can now use JSCtypes at full power!<br /></p>
+
+<p style="text-align: right"><em>Thanks to <a href="http://blog.mozilla.com/dwitte/" hreflang="en">dwitte</a> for quick
+fixes!</em></p>
+
+
+<p>That means :</p>
+
+<ul>
+<li>Complex C-struct usage,</li>
+<li>The possibility to define a JS callback seen by C library as a function
+pointer, and,</li>
+<li>Full Win32 API (also called MFC) supports!</li>
+</ul>
+
+
+<p>Lets see how to practice all that on our previous example: TrayIcon via
+Win32api. We were able to <em>just</em> display an icon in the <a href="/post/2010/08/06/JSctypes-reboot">previous blogpost</a>. Now we are able to
+intercept events from win32api thanks to ctypes.FunctionType. First we define a
+plain old javascript function like this one:</p>
+
+<pre>
+function windowProcCallback(hWnd, uMsg, wParam, lParam) {
+  if (lParam == WM_LBUTTONDOWN) {
+    Components.utils.reportError(&quot;Left click!&quot;);
+    /* 0 means that we handle this event */
+    return 0; 
+  }
+  else if (lParam == WM_RBUTTONDOWN) {
+    Components.utils.reportError(&quot;Right click!&quot;);
+    return 0;
+  }
+  /* Mandatory use default win32 procedure! */
+  return DefWindowProc(hWnd, uMsg, wParam, lParam);
+};
+</pre>
+
+
+<p>This <em>windowProcCallback</em> is a javascript implementation for a WNDPROC
+callback as <a href="http://msdn.microsoft.com/en-us/library/ms633573%28VS.85%29.aspx" hreflang="en">defined in MSDN</a>. WNDPROC is a key part of Win32Api. These functions
+receive all kind of events. They are similar to differents listeners existing
+in Javascript/web world, but here in win32api, we often have only one super big
+listener which receive all events :/<br />
+Next, we have to define this WNDPROC data type with jsctypes, like this:</p>
+
+<pre>
+var WindowProcType =
+  ctypes.FunctionType(ctypes.stdcall_abi, ctypes.int,
+    [ctypes.voidptr_t, ctypes.int32_t, ctypes.int32_t, ctypes.int32_t]).ptr;
+</pre>
+
+
+<p>We simply describe a function pointer type, for a function which return an int
+and accept 4 arguments: hWnd as pointer, uMsg as int, wParam as int and lParam
+as int. Then, in our case, we give this function pointer via a structure. So we
+may first describe this C-structure, and simply use our previous data type as
+type of a structure attribute:</p>
+
+<pre>
+var WNDCLASS =
+  ctypes.StructType(&quot;WNDCLASS&quot;,
+    [
+      { style : ctypes.uint32_t },
+      { lpfnWndProc : WindowProcType}, // &lt;-- Here is the function pointer attribute
+      { cbClsExtra : ctypes.int32_t },
+      { cbWndExtra : ctypes.int32_t },
+      { hInstance : ctypes.voidptr_t },
+      { hIcon : ctypes.voidptr_t },
+      { hCursor : ctypes.voidptr_t },
+      { hbrBackground : ctypes.voidptr_t },
+      { lpszMenuName : ctypes.char.ptr },
+      { lpszClassName : ctypes.char.ptr }
+    ]);
+</pre>
+
+
+<p>And finally, we convert our Javascript function to a C-Function pointer by
+using the datatype as a function and giving our callback as an argument.</p>
+
+<pre>
+var wndclass = WNDCLASS();
+wndclass.lpszClassName = ctypes.char.array()(&quot;class-trayicon&quot;);
+wndclass.lpfnWndProc = WindowProcType(windowProcCallback);   // &lt;---- here it is!
+RegisterClass(wndclass.address());
+</pre>
+
+
+<p>All this hard work to be able to detect clicks on our tray icon! I&#8217;ve built a
+full example file <a href="/public/demo/jsctypes/example-jsctypes-full-power.txt">right here</a> (with a
+lot of comments). And here is one hack that allow you to test it remotly in
+your Javascript Console. You just have to copy an icon in c:\default.ico. Here
+is a sample <a href="/public/demo/jsctypes/default.ico">ico file</a>.</p>
+
+<pre>
+  var x=new XMLHttpRequest(); x.open(&quot;GET&quot;,&quot;http://blog.techno-barje.fr/public/demo/jsctypes/example-jsctypes-full-power.txt&quot;,false); x.send(null); window.parent.eval(x.responseText);
+</pre>
+
+
+<p>Or if you want to play with this script locally, here is another magic code:</p>
+
+<pre>
+  var x=new XMLHttpRequest(); x.open(&quot;GET&quot;,&quot;file://C:/Users/YourUsername/Downloads/example-jsctypes-full-power.txt&quot;,false); x.send(null); window.parent.eval(x.responseText);
+</pre>
+
 </div>
   
   
@@ -133,6 +1135,8 @@
 
 <nav role="pagination">
   <div>
+    
+      <a class="prev" href="/page/2/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -147,11 +1151,23 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2011/09/21/foo/">Foo</a>
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
       </li>
     
       <li class="post">
-        <a href="/2011/09/21/test/">Test</a>
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
       </li>
     
   </ul>
