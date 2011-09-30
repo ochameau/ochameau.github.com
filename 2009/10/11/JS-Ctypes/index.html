@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JS Ctypes - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2009/10/11/JS-Ctypes/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">JS Ctypes</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-11T22:55:46+02:00" pubdate  data-updated="true" >Oct 11<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote>Bug 518721 - Implement jsctypes with raw JSAPI<br />
+Status: SOLVED FIXED!!!<br /></blockquote>
+
+
+<p>That&#8217;s an awesome news for mozilla&#8217;s developpers!<br />
+<a href="https://wiki.mozilla.org/JSctypes">JS Ctypes</a> aims to provide the
+same library than <a href="http://docs.python.org/library/ctypes.html">Python
+Ctypes</a> :</p>
+
+
+<p>You can load any dynamic library (dll, so, dylib) and call
+<b>C</b>-functions directly from your Javascript. In the current implementation
+only simple types are supported : numbers, string, boolean. For now, we can&#8217;t
+play with pointers, nor structures, but these features are <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=513788">planned</a>.</p>
+
+
+<br />
+
+
+<h3>simpler code -&gt; less work -&gt; simpler review</h3>
+
+
+<p>This new feature is going to greatly ease platform specific developpement
+like windows management, system calls, &#8230; For example we&#8217;re able to call
+Windows API directly from Javascript, without having to create, compile and
+maintain any C++ XPCOM!<br />
+One side effect is that it will ease code review for
+https://addons.mozilla.org/ too! Instead of shipping an obscure dynamic library
+with our extension, we may build only a JS-Ctypes wrapper and call directly OS
+libraries or call a common library that can be validated by reviewers with some
+MD5 checks.</p>
+
+
+<br />
+
+
+<h2>simpler code -&gt; less knownledge -&gt; better learning curve</h2>
+
+
+<p>This is going to simplify the use of native code too! You can now build
+native code without having to learn any mozilla &quot;things&quot; (XPCOM, specific build
+layout/system, &#8230;) You will just have to expose your library with a C api and
+write a simple JS-CTypes wrapper.</p>
+
+
+<br />
+
+
+<h2>Hello World!</h2>
+
+
+<ul>
+<li>First retrieve <a href="http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-mozilla-1.9.2/">Firefox
+3.6b1pre nightly</a> or <a href="http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-trunk/">Firefox
+3.7a1pre nightly</a></li>
+<li>On windows, copy and paste this code in your JS console.<br />
+This will display an OS native dialog.<br />
+<i>(Change the dll path if your main windows directory is not on
+C:\WINDOWS!)</i>
+<pre>
+/* Load JS Ctypes Javascript module */
+Components.utils.import(&quot;resource://gre/modules/ctypes.jsm&quot;);
+var Types = ctypes.types;
+
+/* Load windows api dll */
+var lib = ctypes.open(&quot;C:\\WINDOWS\\system32\\user32.dll&quot;);
+
+/* Declare the signature of the function we are going to call */
+var msgBox = lib.declare(&quot;MessageBoxW&quot;,
+                         ctypes.stdcall_abi,
+                         ctypes.int32_t,
+                         ctypes.int32_t,
+                         ctypes.ustring,
+                         ctypes.ustring,
+                         ctypes.int32_t);
+var MB_OK = 3;
+
+/* Do it! */
+var ret = msgBox(0, &quot;Hello world&quot;, &quot;title&quot;, MB_OK);
+
+/* Display the returned value */
+alert(&quot;MessageBox result : &quot;+ret);
+
+lib.close();
+</pre></li>
+</ul>
+
+
+<br />
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-11T22:55:46+02:00" pubdate  data-updated="true" >Oct 11<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/mozilla/'>mozilla</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2009/10/11/JS-Ctypes/" data-via="technobarje" data-counturl="http://techno-barje.fr/2009/10/11/JS-Ctypes/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

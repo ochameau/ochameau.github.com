@@ -1,0 +1,26 @@
+diff -r dc2113b15644 i386/emit.mlp
+--- a/asmcomp/i386/emit.mlp	Fri Jun 20 17:27:04 2008 +0200
++++ b/asmcomp/i386/emit.mlp	Fri Jun 20 17:29:53 2008 +0200
+@@ -878,10 +878,10 @@ let emit_profile () =
+ (* Declare a global function symbol *)
+ 
+ let declare_function_symbol name =
+-  `	.globl	{emit_symbol name}\n`;
++  `.globl	{emit_symbol name}\n`;
+   match Config.system with
+     "linux_elf" | "bsd_elf" | "gnu" ->
+-      `	.type	{emit_symbol name},@function\n`
++      `	.type	{emit_symbol name}, @function\n`
+   | _ -> ()
+ 
+ (* Emission of a function declaration *)
+@@ -907,7 +907,8 @@ let fundecl fundecl =
+   emit_all true fundecl.fun_body;
+   List.iter emit_call_gc !call_gc_sites;
+   emit_call_bound_errors ();
+-  List.iter emit_float_constant !float_constants
++  List.iter emit_float_constant !float_constants;
++  `    .size   {emit_symbol fundecl.fun_name}, .-{emit_symbol fundecl.fun_name}\n`
+ 
+ (* Emission of data *)
+ 

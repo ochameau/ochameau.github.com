@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>UIWebView secrets - part1 - memory leaks on xmlhttprequest - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2010/10/04/UIWebView-secrets-part1-memory-leaks-on-xmlhttprequest/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">UIWebView Secrets - Part1 - Memory Leaks on Xmlhttprequest</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-10-04T15:58:33+02:00" pubdate  data-updated="true" >Oct 4<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><p>My first blog post on iphone subject reveal a big memory bug when using
+UIWebView component. This is the (only one) component to display some HTML
+content in an iphone interface. UIWebView object has a lot of differents issues
+and I&#8217;m going to highlight the biggest of them. Actually, all XMLHttpRequests
+used in javascript code are fully leaking!!! I mean when you do a request that
+retrieve 100ko of data, your memory used grow up for 100ko! This bug is not
+always active, but almost always. In fact the trigger to enable it is to simply
+open one link in your UIWebView. For example, clicking on a &lt;a&gt; link.</p>
+
+
+<p>But let&#8217;s look at a memory usage graph while we execute this <a href="/public/iphone-sdk/UIWebViewLeaks.zip">simple test application</a>: <img src="/public/iphone-sdk/profile-xmlhttprequest-0-then-1-labeled.png" alt="memory usage graph" style="margin: 0 auto; display: block;" title="memory usage graph" /></p>
+
+
+<ol>
+<li>Create the UIWebView object</li>
+<li>Load a local HTML test file</li>
+<li>Execute 3 XMLHttpRequest to google.com, notice how the memory is freed
+three times after each request!</li>
+<li>Trigger the leak by opening a page that redirect back to our test file</li>
+<li>Execute the same 3 XMLHttpRequest and look how much memory is used and
+totally leaked :/</li>
+<li>We clean the HTML document with document.body.innerHTML=&#8221;; (sometimes free
+some memory, when we have a lot of DOM objects)</li>
+<li>release the UIWebView (almost no memory freed, next post is going to
+analyse that)</li>
+</ol>
+
+
+<p style="text-align: center"><a href="/public/iphone-sdk/UIWebViewLeaks.zip">Test Application</a></p>
+
+
+<br />
+
+
+<p>So, to sum up, usually, when you execute this Javascript in a UIWebView:</p>
+
+<pre>
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4 &amp;&amp; xmlhttp.status == 200) {
+      // Do whatever you want with the result
+      
+    }
+  };
+  xmlhttp.open(&quot;GET&quot;, &quot;http://your.domain/your.request/...&quot;, true);
+  xmlhttp.send();
+</pre>
+
+
+<p>Your are going to have a big memory usage and leak a lot of data!<br /></p>
+
+<br />
+
+
+<p>But there is a hack to solve this problem: revert what is done when you open
+a link.<br />
+In fact, the key property which leads to this leak is the
+<em>WebKitCacheModelPreferenceKey</em> application setting. And when you open a
+link in a UIWebView, this property is automatically set to the value
+<em>&quot;1&quot;</em>. So, the solution is to set it back to <em>0</em> everytime you
+open a link. You may easily do this by adding a <em>UIWebViewDelegate</em> to
+your UIWebView :</p>
+
+
+<pre>
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+  [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@&quot;WebKitCacheModelPreferenceKey&quot;];
+}
+</pre>
+
+
+<p>So are you going to have much less crash due to &quot;Low Memory&quot; :)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-10-04T15:58:33+02:00" pubdate  data-updated="true" >Oct 4<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/iphone-sdk/'>iphone-sdk</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2010/10/04/UIWebView-secrets-part1-memory-leaks-on-xmlhttprequest/" data-via="technobarje" data-counturl="http://techno-barje.fr/2010/10/04/UIWebView-secrets-part1-memory-leaks-on-xmlhttprequest/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

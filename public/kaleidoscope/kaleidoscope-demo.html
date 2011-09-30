@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head><title>Web Kaleidoscope demo - CSS animation, CSS transformation, SVG and -moz-element (+ some extras :))</title></head>
+<body>
+
+<style>
+body {
+  text-align: center;
+}
+#source {
+  -moz-transition: -moz-transform 50s linear;
+}
+.source-sized {
+  width: 640px; height: 360px;
+}
+.source-sized.absolute {
+  position: absolute;
+  top: 0; left: 0;
+}
+.source-sized.container {
+  position: relative;
+}
+.show-box {
+  background: black;
+  -moz-box-shadow: 1px 1px 10px #00f;
+  -moz-border-radius: 5px;
+  border: 1px solid black;
+  margin:auto;
+  width: 640px;
+  overflow: hidden;
+}
+#kaleidoscope[dragon="true"] {
+  -moz-box-shadow: 1px 1px 10px 5px #0c0;
+}
+</style>
+
+<!-- hidden html box where we build some graphical element needed for our animation
+     but they are just sort of images buffer, so we don't display them! -->
+<div id="hidden-html-work-room" style="overflow:hidden; height: 0;">
+  <img id="source" class="source-sized" src="kaleidoscope-source.jpg" />
+  <video id="video-source" 
+           src="http://upload.wikimedia.org/wikipedia/commons/7/79/Big_Buck_Bunny_small.ogv"  
+           width="640" height="360" preload="auto"></video>
+  <svg height="0" xmlns="http://www.w3.org/2000/svg">
+    <clipPath id="triangle-clip" clipPathUnits="objectBoundingBox" transform="translate(0,0)">
+      <polygon points="0.25,0.24 0.5,0.5 0.15,0.5" />
+    </clipPath>
+  </svg>
+  <div id="triangle" class="source-sized" style="background: -moz-element(#source); clip-path: url(#triangle-clip);"></div>
+</div>
+
+<h1>Web Kaleidoscope demo</h1>
+<h2>CSS animation, CSS transformation, SVG and -moz-element</h2>
+<div id="kaleidoscope" class="show-box">
+  <!-- Here is the displayed kaleidoscope -->
+  <div class="source-sized container" style="background: black; border: 15px solid black;">
+    <!-- One first part of kaleidoscope -->
+    <div id="quarter" class="source-sized container">
+      <div class="source-sized absolute" style="background: -moz-element(#triangle);"></div>
+      <div class="source-sized absolute" style="background: -moz-element(#triangle); -moz-transform: scaleY(-1);"></div>
+    </div>
+    <!-- Then we duplicate it to do a full circle loop -->
+    <div class="source-sized absolute" style="background: -moz-element(#quarter);  -moz-transform: rotate(60deg);"></div>
+    <div class="source-sized absolute" style="background: -moz-element(#quarter);  -moz-transform: rotate(120deg);"></div>
+    <div class="source-sized absolute" style="background: -moz-element(#quarter);  -moz-transform: rotate(180deg);"></div>
+    <div class="source-sized absolute" style="background: -moz-element(#quarter);  -moz-transform: rotate(240deg);"></div>
+    <div class="source-sized absolute" style="background: -moz-element(#quarter);  -moz-transform: rotate(300deg);"></div>
+  </div>
+</div>
+<p style="text-align: center; font-weight: bold; color:gray">Works only with Firefox 4 Beta 6 or nightlies!</p>
+
+If you want yo know exactly how is built this kaleidoscope go look at <a href="http://blog.techno-barje.fr/public/kaleidoscope/kaleidoscope-tutorial.html">this tutorial</a>.
+
+<script>
+  window.addEventListener("load",function () {
+    
+    enableImage();
+    
+    registerDropTarget();
+    
+  }, false);
+  
+  function enableImage() {
+    // Start animation
+    var source = document.getElementById("source");
+    source.style.MozTransform = "rotate("+(5*360)+"deg)";
+    
+    // Set image as source
+    var triangle = document.getElementById("triangle");
+    triangle.style.background = "-moz-element(#source)";
+    
+    // Stop the video (just in case ...)
+    try {
+    var video = document.getElementById("video-source");
+    video.pause();
+    } catch(e) {alert(e)}
+  }
+  function enableVideo() {
+    // Set video as source
+    var triangle = document.getElementById("triangle");
+    triangle.style.background = "-moz-element(#video-source)";
+    
+    // Launch the video
+    var video = document.getElementById("video-source");
+    video.play();
+    
+    // Cancel rotation
+    var source = document.getElementById("source");
+    source.style.MozTransform = "";
+  }
+  function selectImage() {
+    var el = document.getElementById("fileElem");  
+    el.click();  
+  }
+  function registerDropTarget() {
+    // Register image drop target on kaleidoscope
+    var target = document.getElementById("kaleidoscope");  
+    target.addEventListener("dragenter", function dragenter(e) {  
+      e.stopPropagation();  
+      e.preventDefault();  
+      target.setAttribute("dragon","true");
+    }, false);
+    target.addEventListener("dragleave", function dragenter(e) {  
+      target.removeAttribute("dragon");
+    }, false);
+    target.addEventListener("dragover", function dragover(e) {  
+      e.stopPropagation();  
+      e.preventDefault();
+    }, true);  
+    target.addEventListener("drop", function drop(e) {  
+      e.stopPropagation();  
+      e.preventDefault();  
+      target.removeAttribute("dragon");
+      
+      var dt = e.dataTransfer;
+      
+      handleFiles(dt.files);  
+    } , false);
+  }
+  function handleFiles(files) {
+    // Handle files on file selection and drag'n drop
+    if (files.length<1) return;
+    var file = files[0];
+    
+    if (!file.type.match(/image.*/))
+      return;
+    
+    var source = document.getElementById("source");
+    var reader = new FileReader();  
+    reader.onload = function(e) { source.src = e.target.result; };
+    reader.readAsDataURL(file);
+    
+    enableImage();
+  }  
+</script>
+<style>
+.extra {
+  margin-left: 20px;
+  padding: 10px 20px;
+  display: inline-block;
+  background: #f0f0f0;
+  border: 2px solid gray;
+  -moz-border-radius: 10px;
+  width: 20em;
+  height: 6em;
+}
+.extra h4 {
+  padding: 0;
+  padding-bottom: 5px;
+  margin: 0;
+  font-size: 1.5em;
+}
+#copyright {
+  color: gray;
+  text-align: left;
+  display: inline-block;
+}
+#copyright a {
+  color: #555;
+  
+}
+</style>
+<br />
+<h3>- Web standards combination power -</h3>
+
+<div class="extra">
+<h4>+ &lt;video&gt;</h4>
+  <a href="#" onclick="enableVideo()">Enable video</a> <br/>
+  No more rotation, <br />
+  just playing <a href="http://en.wikipedia.org/wiki/File:Big_Buck_Bunny_small.ogv">this video</a>
+</div>
+<div class="extra">
+<h4>+ Drag'n Drop and File API</h4>
+  <a href="#" onclick="selectImage()"><a href="#" onclick="selectImage()">Select a custom image</a> <br/>
+  or<br />
+  Drop one on the kaleidoscope</a>
+</div>
+
+<form>  
+  <input type="file" id="fileElem" style="overflow:hidden; height:0;" onchange="handleFiles(this.files)">  
+</form>
+
+<br/><br/>
+<div id="copyright">
+  &copy <a href="http://www.flickr.com/photos/olibac/1837033181/">OliBac on flickr</a> for the flower photo (image source)<br />
+  &copy <a href="http://www.bigbuckbunny.org/">Blender Foundation</a> for the Big Buck Bunny video<br />
+  &copy <a href="http://blog.techno-barje.fr/">Alexandre Poirot</a> for this demo<br />
+</div>
+  
+</body>
+</html>

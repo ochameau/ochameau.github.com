@@ -1,0 +1,609 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Mozilla memory profiling - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2009/11/14/Mozilla-memory-profiling/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">Mozilla Memory Profiling</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-14T23:05:23+01:00" pubdate  data-updated="true" >Nov 14<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><p>As a Mozilla hacker, extension developer and Javascript expert, I&#8217;ve been
+really exited to see the <a href="http://www.toolness.com/wp/?p=709">current
+work of Atul Varma</a> on memory profiling in Firefox! It&#8217;s naturally the next
+step of tool to build after <a href="https://addons.mozilla.org/en-US/firefox/addon/9954">XUL Profiler</a>, which
+track CPU consumption and Javascript functions calls.<br />
+So, instead of waiting for web developers to describe their future new &quot;memory&quot;
+firebug tab :), I&#8217;ve searched what information we can retrieve from JS API. And
+I&#8217;ve not limited my scope to web content but I take all Browser objects into
+account.<br /></p>
+
+<br />
+
+
+<p>First I&#8217;ve tried to find a meaningful parent for <strong>every</strong> living
+object.<br />
+In the Mozilla planet we may face with three main types of parents :</p>
+
+<ul>
+<li>window : chrome (browser.xul, popups, jsconsole, sidebars, &#8230;) or content
+(websites,popups,iframes)</li>
+<li>xpcom services</li>
+<li>JS modules</li>
+</ul>
+
+
+<p>(But there is also XBL, sandboxes and some others strange things like
+&quot;Block&quot;)<br /></p>
+
+<br />
+
+
+<p>Here is the first result of this work :</p>
+
+<p style="text-align: center"><a href="/public/another-profiler_techno-barje.fr-1.0.xpi" style="font-size: 2em;">another-profiler_techno-barje.fr-1.0.xpi</a></p>
+
+
+<p><strong>This extension need <a href="https://addons.mozilla.org/fr/firefox/addon/12025">Jetpack 0.6+</a>.</strong>
+It adds a &quot;Open another memory profiler&quot; item in Tools menu and display all
+living windows, xpcoms and modules. Then when you select one of them, it
+displays the simplest profiling ever: number of js objects group by C++ native
+class. I&#8217;ll show you in the next blog post how to display a better
+profiling!<br />
+<img src="/public/another-profiler-1.0.png" alt="another-profiler-1.0.png" style="margin: 0 auto; display: block;" title="another-profiler-1.0.png, nov. 2009" /> But for now, I&#8217;m going to show you all
+the code needed to make this first version.<br /></p>
+
+<br />
+
+
+<p>For the living windows, there is a lot of cases, but it&#8217;s simple :</p>
+
+<pre>
+// Get the list of absolutery ALL windows living in a Firefox session, stored as a Tree
+function getAllWindows() {
+  var windows = [];
+  
+  // Begin by iterating over all top chrome windows (browser, jsconsole, dominspector, etc.)
+  var wm = Components.classes[&quot;@mozilla.org/appshell/window-mediator;1&quot;]
+          .getService(Components.interfaces.nsIWindowMediator);
+  var enumerator = wm.getXULWindowEnumerator(null);
+  while(enumerator.hasMoreElements()) {
+    var win = enumerator.getNext();
+    if (win instanceof Components.interfaces.nsIXULWindow) {
+      // Search for all children windows (sidebar, content, iframes, ...)
+      parseDocshell(win.docShell);
+   }
+  }
+
+  function getWindowByDocShell(docShell) {
+    if (!(docShell instanceof Components.interfaces.nsIInterfaceRequestor))
+      return;
+    return docShell.getInterface(Components.interfaces.nsIDOMWindow);
+  }
+  function parseDocshell(docShell) {
+    if (!docShell) return;
+    var domWindow = getWindowByDocShell(docShell);
+    
+    var topWindow = {
+          type  : &quot;window&quot;,
+          name  : domWindow.document.title,
+          href  : domWindow.location.href,
+          object: domWindow,
+          children: []
+        };
+    windows.push(topWindow);
+    
+    var topWindows = [topWindow];
+    
+    var treeItemType = Components.interfaces.nsIDocShellTreeItem.typeAll;
+    // From inspector@mozilla.org inspector.js appendContainedDocuments
+    // Load all the window's content docShells
+    var containedDocShells = docShell.getDocShellEnumerator(treeItemType,
+                                      Components.interfaces.nsIDocShell.ENUMERATE_FORWARDS);
+    while (containedDocShells.hasMoreElements())
+    {
+      var childShell = containedDocShells.getNext().QueryInterface(Components.interfaces.nsIDocShell);
+      
+      if (childShell == docShell) {
+        // It's the current topWindow
+        continue;
+      }
+      
+      var childDOMWindow = getWindowByDocShell(childShell);
+      if (!childDOMWindow) continue;
+      var parent;
+      for(var i=0; i&lt;topWindows.length; i++) {
+        if (topWindows[i].object == childDOMWindow.parent) {
+          parent = topWindows[i];
+          break;
+        }
+      }
+      var newWindow = {
+        type  : &quot;window&quot;,
+        name  : childDOMWindow.document.title,
+        href  : childDOMWindow.location.href,
+        object: childDOMWindow,
+        children : []
+      };
+      topWindows.push(newWindow);
+      if (parent)
+        parent.children.push(newWindow);
+      else
+        topWindow.children.push(newWindow);
+    }
+    delete topWindows;
+  }
+  
+  // Finally, don't forget *the* hidden window, it's a big one used by many extensions!
+  var hiddenWindow = Components.classes[&quot;@mozilla.org/appshell/appShellService;1&quot;]
+         .getService(Components.interfaces.nsIAppShellService)
+         .hiddenWindow;
+  if (hiddenWindow instanceof Components.interfaces.nsIXULWindow) {
+    parseDocshell(hiddenWindow.docShell);
+  }
+  
+  return windows;
+}
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<p>For XPCOM services, it&#8217;s shorter, but it&#8217; an unknown practice :</p>
+
+<pre>
+// Get the list of all XPCOM services (not the xpcom objects, only services) in a Firefox session
+function getAllXPCOMServices() {
+  var instanciatedServices = [];
+  var serviceManager=Components.manager.QueryInterface(Components.interfaces.nsIServiceManager);
+  var supports = Components.interfaces.nsISupports;
+  for(var cl in Components.classes) {
+    try {
+      if (serviceManager.isServiceInstantiated(Components.classes[cl],supports)) {
+        var service=Components.classes[cl].getService(supports);
+        if (service.wrappedJSObject) {
+          // Get the global object
+          service=service.wrappedJSObject.__parent__;
+          if (!service)
+            service=Components.classes[cl].getService(supports).__parent__;
+          instanciatedServices.push({
+            type   : &quot;xpcom&quot;,
+            name   : cl,
+            object : service
+          });
+        }
+      }
+    } catch(e) {
+      // serviceManager.isServiceInstantiated is throwing if there is no instance ...
+    }
+  }
+  return instanciatedServices;
+}
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<p>But for JS Modules, I&#8217;ve not found any way to get those &#8230;<br />
+The only solution I&#8217;ve got was to do a quick profiling and identify them :</p>
+
+<pre>
+function searchJSModules () {
+  var jsmodules = [];
+  
+  var roots=getGCRoots();
+  for(var r in roots) {
+    var id = roots[r];
+    var info = getObjectInfo(id);
+    var properties = getObjectProperties(id);
+    /*
+    // We can also identify XPCOM by reading global NSGetModule function
+    var nsgetmodule = getObjectProperty(id,&quot;NSGetModule&quot;).NSGetModule;
+    if (nsgetmodule) {
+      print (&quot; --&gt; is an XPCOM&quot;);
+      print (&quot; --&gt; defined in : &quot;+getObjectInfo(nsgetmodule).filename);
+      continue;
+    }
+    */
+    // See if the current object has a EXPORTED_SYMBOLS object
+    // We suppose every JS Module has one ...
+    var exportedsymbols = getObjectProperty(id,&quot;EXPORTED_SYMBOLS&quot;).EXPORTED_SYMBOLS;
+    if (!exportedsymbols) continue;
+    
+    // Then search for the first declared function
+    // Which will allow us to get the file of this module!
+    
+    // Begin to search in EXPORTED_SYMBOLS
+    var symbols = getObjectProperties(exportedsymbols);
+    var filename;
+    for(var i in symbols) {
+      var s = getObjectProperty(id,symbols[i])[symbols[i]];
+      var inf = getObjectInfo(s);
+      if (!inf) continue;
+      if (inf.nativeClass==&quot;Function&quot; &amp;&amp; inf.filename) {
+        filename=inf.filename;
+        break;
+      } else if (inf.nativeClass=&quot;Object&quot;) {
+        var subprops = getObjectProperties(s);
+        for(var j in subprops) {
+          var subs = subprops[j];
+          var subinf = getObjectInfo(subs);
+          if (!subinf) continue;
+          if (subinf.nativeClass==&quot;Function&quot; &amp;&amp; subinf.filename) {
+            filename = subinf.filename;
+            break;
+          }
+        }
+        if (filename) break;
+      }
+    }
+    if (!filename) {
+      // Unable to found a function in exported_symbols objects
+      // now try to find a function defined in global context
+      var table = getObjectTable();
+      var count=0;
+      for (var subid in table) {
+        var subinf = getObjectInfo(parseInt(subid));
+        if (subinf &amp;&amp; subinf.parent == id &amp;&amp; subinf.nativeClass==&quot;Function&quot; &amp;&amp; subinf.filename) {
+          filename = subinf.filename;
+          break;
+        }
+      }
+    }
+    if (filename) {
+      var file = filename;
+      var res = filename.match(/\/([^\/]+\/[^\/]+\/[^\/]+\.\w+)$/);
+      if (res)
+        file = decodeURIComponent(res[1]);
+      jsmodules.push({
+        type  : &quot;jsmodule&quot;,
+        name  : file,
+        file  : filename,
+        object: id
+      });
+    } else {
+      // we were unable to find any function, we may try to search deeper
+    }
+  }
+  
+  return JSON.stringify(jsmodules);
+}
+
+function getAllJSModules() {
+  var factory = Components.classes[&quot;@labs.mozilla.com/jetpackdi;1&quot;]
+               .createInstance(Components.interfaces.nsIJetpack);
+  var endpoint = factory.get();
+  var json = endpoint.profileMemory(searchJSModules.toSource()+&quot;
+searchJSModules()&quot;, &quot;find-jsmodules.js&quot;, 1, null);
+  return JSON.parse(json);
+}
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<p>Finally, here is the function which retrieve objects counts for one parent. It
+use the Jetpack memory profiler XPCOM.</p>
+
+<pre>
+function profileFunction() {
+  var namedObjects=getNamedObjects();
+  
+  // namedObjects[&quot;parent&quot;] is null ... why ?!
+  var parent;
+  for(var i in namedObjects) {
+    if (i==&quot;parent&quot;) {
+      parent = parseInt(namedObjects[i]);
+    }
+  }
+  
+  // Remove web content windows js wrapper
+  var inf = getObjectInfo(parent);
+  if (inf &amp;&amp; inf.nativeClass==&quot;XPCSafeJSObjectWrapper&quot;) {
+    parent = inf.wrappedObject;
+  }
+  
+  var children = {};
+  
+  // Check every JS object
+  var table = getObjectTable();
+  for(var i in table) {
+    var info = getObjectInfo(parseInt(i));
+    
+    // Search if this one is related to the selected parent
+    // ie walk throught all parents in order to find if the current object is a descendant of selected parent
+    if ( info.parent != parent ) {
+      var parentMatch = false;
+      var p = info.parent;
+      while(true) {
+        var subinfo = getObjectInfo(p);
+        if (!subinfo) break;
+        
+        if ( subinfo.id == parent || subinfo.parent == parent ) {
+          // Answer= Yes
+          parentMatch = true;
+          break;
+        }
+        
+        // Walk throught encapsulated objects
+        if (subinfo.outerObject &amp;&amp; subinfo.outerObject!=p) {
+          p = subinfo.outerObject;
+          continue;
+        }
+        
+        p = subinfo.parent;
+      }
+      // Answer= Yes
+      if (!parentMatch) continue;
+    }
+    
+    if (!children[info.nativeClass])
+      children[info.nativeClass] = 0;
+    children[info.nativeClass]++;
+  }
+  
+  return JSON.stringify(children);
+}
+function profileParent(parent) {
+  var factory = Components.classes[&quot;@labs.mozilla.com/jetpackdi;1&quot;]
+               .createInstance(Components.interfaces.nsIJetpack);
+  var endpoint = factory.get();
+  var json = endpoint.profileMemory(profileFunction.toSource()+&quot;
+profileFunction()&quot;, &quot;profile.js&quot;, 1, {parent: parent});
+  return JSON.parse(json);
+}
+</pre>
+
+
+<p style="text-align: right"><a href="https://wiki.mozilla.org/Labs/Jetpack/Binary_Components#Memory_Profiling">More
+information</a></p>
+
+
+<br />
+
+
+<p>Come back for the next blog post to get the 2.0 version :)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-14T23:05:23+01:00" pubdate  data-updated="true" >Nov 14<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/mozilla/'>mozilla</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2009/11/14/Mozilla-memory-profiling/" data-via="technobarje" data-counturl="http://techno-barje.fr/2009/11/14/Mozilla-memory-profiling/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

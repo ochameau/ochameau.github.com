@@ -1,0 +1,39 @@
+﻿<html>
+<head><title>XUL Profiler test JS callgraph</title></head>
+<body>
+
+<script>
+
+function fun_root() {
+  fun_A();
+  fun_B();
+  fun_C();
+}
+function fun_A() {
+  dump("fun A");
+}
+function fun_B() {
+  dump("fun B");
+  var s="";
+  fun_D();
+  for(var i=0; i<1000; i++) {
+    s+="CPU INTENSIVE FUNCTION";
+    fun_D();
+  }
+  fun_D();
+}
+function fun_C() {
+  dump("fun C");
+}
+function fun_D() {
+  dump("fun D");
+}
+window.addEventListener("load",fun_root,false);
+</script>
+
+<div id="container">
+  
+</div>
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Jetpack runner - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2011/03/31/Jetpack-runner/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">Jetpack Runner</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2011-03-31T03:58:47+02:00" pubdate  data-updated="true" >Mar 31<span>st</span>, 2011</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Here is the very first release of Jetpack runner. This firefox extension built
+on top of the Addon SDK is a personal project that aim to ease development of
+firefox extension using the SDK. It is a great exhibit of SDK capabilities as
+we can now develop such tool using the SDK itself! For now, to create an addon
+you need to go thought a python application that only has a command line
+interface: <img src="/public/jetpack_runner/cfx.jpg" alt="cfx.jpg" style="margin: 0 auto; display: block;" title="cfx" /> This is painfull to install
+and even more annoying to use on Windows as there is no really decent command
+line interface. Finally, if we compare to chrome extensions, we only need
+chrome to build an addon! This leads me to build a Firefox extension, that can
+be really easy to install in Firefox and allow to build really cool interfaces
+to create, run and test your addons.<br /></p>
+
+<br />
+
+
+<h2>Jetpack runner features:</h2>
+
+
+<p><img src="/public/jetpack_runner/jr.png" alt="jr.png" style="float: right; margin: 0 0 1em 1em;" title="jr.png, mar. 2011" /></p>
+
+<ul>
+<li>Download and install SDK automatically</li>
+<li>Create addon from templates</li>
+<li>Run an addon</li>
+<li>Execute unit-tests</li>
+<li>Generate firefox extension XPI file or xulrunner application package</li>
+<li>You can run these either in current firefox instance or run them in a new
+one</li>
+<li>We can execute a package as a firefox extension or as a xulrunner
+application</li>
+</ul>
+
+
+<br />
+
+
+<br />
+
+
+<h2>Jetpack runner first steps:</h2>
+
+
+<p>On extension installation, a tab opens automatically on &quot;jetpack:&quot; url, the
+main jetpack runner interface. That allow to download and install a precise SDK
+release: <img src="/public/jetpack_runner/jr-first-run.jpg" alt="jr-first-run.jpg" style="margin: 0 auto; display: block;" title="jr-first-run.jpg, mar. 2011" /> Then it displays a list of packages provided
+by addon SDK. &quot;addon-sdk&quot; is the main package to play with. <img src="/public/jetpack_runner/jr-packages.jpg" alt="jr-packages.jpg" style="margin: 0 auto; display: block;" title="jr-packages.jpg, mar. 2011" /> After
+clicking on &quot;Create addon&quot; button, you would easily create a new one by filling
+obvious form and selecting a template addon: <img src="/public/jetpack_runner/jr-templates.jpg" alt="jr-templates.jpg" style="margin: 0 auto; display: block;" title="jr-templates.jpg, mar. 2011" /> And
+then, you end up on your newly created addon package page, where you can run
+it, execute unit tests or download as a firefox extension XPI file: <img src="/public/jetpack_runner/jr-addon.jpg" alt="jr-addon.jpg" style="margin: 0 auto; display: block;" title="jr-addon.jpg, mar. 2011" /><br /></p>
+
+<br />
+
+
+<h2>Jetpack runner!!!</h2>
+
+
+<p>Last but not least, here is a link to install it or to checkout the
+source.<br /></p>
+
+<br />
+
+
+<p><b>Firefox Extension:</b><br />
+<a href="/public/jetpack_runner/jetpack-runner-0.1.1.xpi">jetpack-runner-0.1.1.xpi</a><br /></p>
+
+<br />
+
+
+<p><b>Source code:</b><br />
+<a href="https://github.com/ochameau/jetpack-runner">Github project</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2011-03-31T03:58:47+02:00" pubdate  data-updated="true" >Mar 31<span>st</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/mozilla/'>mozilla</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2011/03/31/Jetpack-runner/" data-via="technobarje" data-counturl="http://techno-barje.fr/2011/03/31/Jetpack-runner/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Mozilla memory profiling, part 2: a working tool - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2009/11/25/Mozilla-memory-profiling%2C-part-2/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">Mozilla Memory Profiling, Part 2: A Working Tool</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-25T22:57:42+01:00" pubdate  data-updated="true" >Nov 25<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Here is another part of my work on memory analysis in Mozilla :</p>
+
+<p style="text-align: center"><a href="/public/another-profiler/another-profiler_techno-barje.fr.xpi" style="font-size: 2em;">another-profiler_techno-barje.fr.xpi</a></p>
+
+
+<br />
+
+
+<p>This new version of &quot;Another memory profiler&quot; is now an effective tool, which
+display a lot of information about all objects living in your Firefox instance!
+By <em>all</em> I mean not only website javascript objects, but all objects
+used by Firefox in its windows, sidebars, extensions, all tabs, iframes, etc.
+The previous version allowed you only to select one component : a DOM
+window(website, sub-iframe or any XUL window), a XPCOM service or a JS Module
+:<br /></p>
+
+<br />
+
+
+<p><img src="/public/another-profiler/another-components-list.png" alt="another-components-list.png" style="margin: 0 auto; display: block; border: 1px solid black" title="another-components-list.png, nov. 2009" /></p>
+
+<div style="text-align: center; font-weight: bold">Component selection</div>
+
+
+<br />
+
+
+<p>Now you can get a report about currently living objects : the ones that are
+still used because there is at least one reference to each of them. This report
+first display all javascript files involved in your component :<br /></p>
+
+<br />
+
+
+<p><img src="/public/another-profiler/another-lines-browser.png" alt="another-lines-browser.png" style="margin: 0 auto; display: block; border: 1px solid black" title="another-lines-browser.png, nov. 2009" /></p>
+
+<div style="text-align: center; font-weight: bold">File selection</div>
+
+
+<br />
+
+
+<p>By selecting one file, you are seeing the number of living object sorted by
+there instantiation line :<br /></p>
+
+<br />
+
+
+<p><img src="/public/another-profiler/another-objects-browser.png" alt="another-objects-browser.png" style="margin: 0 auto; display: block;" title="another-objects-browser.png, nov. 2009" /></p>
+
+<div style="text-align: center; font-weight: bold">Living objects
+information</div>
+
+
+<br />
+
+
+<p>Finally, this tool display objects counts for each line sorted by there type.
+But Javascript is not a strongly typed language, so it&#8217;s not really easy to
+sort its objects by a type! That&#8217;s why there are several way to describe a JS
+object :</p>
+
+<ul>
+<li>Define a JS object by its attributes, like Atul Varma is doing in <a href="http://www.toolness.com/wp/?p=709">its current work</a>,</li>
+<li>By its JS Prototype name, very usefull &quot;typing&quot; when you are using
+Prototype and build Object-Oriented JS,</li>
+<li>We are facing some specialized objects like all DOM objects :
+HTMLFormElement, HTMLDivElement, &#8230;</li>
+<li>And finally all native types, like Array, String, Date, RegExp, &#8230;
+etc.</li>
+</ul>
+
+
+<br />
+
+
+<br />
+
+
+<p>Finally, let&#8217;s see how to make this extension work :</p>
+
+<ul>
+<li><strong>First</strong> It contains a binary component which is only built
+for Firefox 3.5 and 3.6 for Windows and Linux-32.</li>
+<li><strong>Secondly</strong> The memory profiling component is a patched
+version of the Mozilla Jetpack&#8217;s one, so take care to disable Jetpack, before
+testing this!</li>
+<li><strong>Then</strong> In order to get the maximum information about your
+living JS object, I strongly encourage you to set these two prefs to false :
+<pre>
+javascript.options.jit.content = false
+javascript.options.jit.chrome = false
+</pre>
+(That&#8217;s because Tracemonkey optimise loops and seems to embed empty stack frame
+information on these loop&#8217;s execution &#8230;)</li>
+<li>That being said, you just have to install this extension <a href="/public/another-profiler/another-profiler_techno-barje.fr.xpi">another-profiler_techno-barje.fr.xpi</a>,
+go to your Tools menu and click on &quot;Open another memory profiler&quot;.</li>
+</ul>
+
+
+<br />
+
+
+<br />
+
+
+<p><strong>Come back for the next post for some more explanation on displayed
+results with simple scripts examples.</strong></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-25T22:57:42+01:00" pubdate  data-updated="true" >Nov 25<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/mozilla/'>mozilla</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2009/11/25/Mozilla-memory-profiling%2C-part-2/" data-via="technobarje" data-counturl="http://techno-barje.fr/2009/11/25/Mozilla-memory-profiling%2C-part-2/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

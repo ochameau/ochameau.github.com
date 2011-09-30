@@ -1,0 +1,1931 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/page/2/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/08/06/JSctypes-reboot/">JSctypes Round Two</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-08-06T01:39:55+02:00" pubdate  data-updated="true" >Aug 6<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Jsctypes has been introduced in Firefox 3.6 with simple C function call and
+only simple types: int, char, string, &#8230; But the next iteration of jsctypes
+that is coming in Firefox 4 is going to allow full C binding, with support of C
+structures and the ability to define a javascript function and give it to C
+library as a function pointer.</p>
+
+
+<p>No more compilation, no more mozilla sdk download, nor XPCOM stuff, just
+plain javascript and only a tiny part of function and datatype declaration
+before doing a native binding!</p>
+
+
+<p>But let the code talk! Here is an example that display a tray icon on
+windows. You can copy and paste this code in your Javascript Console in Firefox
+4 beta, just do not forget to change the icon path defined in the loadimage
+function call.</p>
+
+
+<pre>
+  /* simply load &quot;ctypes&quot; object */
+  Components.utils.import(&quot;resource://gre/modules/ctypes.jsm&quot;);
+  
+  /* Load libraries that we are going to use */
+  var libuser32 = ctypes.open(&quot;user32.dll&quot;);
+  var libshell32 = ctypes.open(&quot;shell32.dll&quot;);
+
+  /* Here is the tedious work of declaring functions arguments types and struct attributes types */
+  /* In fact it's quite easy, you just have to find which precise type are using your native functions/struct */
+  /* but it may be hard to known, for example in windows API, which precise type is behing their &quot;HANDLE&quot; type ... */
+  /* I recommend you to find and look at python ctype binding source code because they already had done this work */
+    
+  /*
+  HANDLE WINAPI LoadImage(
+    __in_opt  HINSTANCE hinst,
+    __in      LPCTSTR lpszName,
+    __in      UINT uType,
+    __in      int cxDesired,
+    __in      int cyDesired,
+    __in      UINT fuLoad
+  );
+  */
+  var loadimage = libuser32.declare(&quot;LoadImageA&quot;,
+    ctypes.stdcall_abi,
+    ctypes.int,
+    ctypes.int,
+    ctypes.char.ptr,
+    ctypes.int,
+    ctypes.int,
+    ctypes.int,
+    ctypes.int);
+  const LR_LOADFROMFILE = 16;
+  const IMAGE_ICON = 1;
+  
+  var notificationdata = ctypes.StructType(&quot;NOTIFICATIONDATA&quot;,
+                                [{ cbSize  : ctypes.int          },
+                                 { hWnd    : ctypes.int          },
+                                 { uID     : ctypes.int          },
+                                 { uFlags  : ctypes.int          },
+                                 { uCallbackMessage : ctypes.int },
+                                 { hIcon        : ctypes.int     },
+                                 { szTip        : ctypes.char.array(64) },
+                                 { dwState      : ctypes.int     },
+                                 { dwStateMask  : ctypes.int     },
+                                 { szInfo       : ctypes.char.array(256) },
+                                 { uTimeoutOrVersion : ctypes.int },
+                                 { szInfoTitle  : ctypes.char.array(64) },
+                                 { dwInfoFlags  : ctypes.int },
+                                 { guidItem     : ctypes.int },
+                                 { hBalloonIcon : ctypes.int }
+                                ]);
+  const NIF_ICON = 0x00000002;
+  
+  /*
+  BOOL Shell_NotifyIcon(
+    __in  DWORD dwMessage,
+    __in  PNOTIFYICONDATA lpdata
+  );
+  */
+  var notifyicon = libshell32.declare(&quot;Shell_NotifyIcon&quot;,
+                                    ctypes.stdcall_abi,
+                                    ctypes.bool,
+                                    ctypes.int,
+                                    notificationdata.ptr);
+  const NIM_ADD = 0x00000000;
+  
+
+  /* And now, the &quot;real&quot; code that is calling C functions */
+
+  /* load our ico file */
+  var hIcon = loadimage(0, &quot;c:\\default.ico&quot;, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+  
+  /* create a C struct that is defining a notification in tray */
+  var icon = notificationdata();
+  icon.cbSize = notificationdata.size;
+  icon.uFlags = NIF_ICON;
+  icon.szTip = &quot;My Tray Icon&quot;;
+  icon.hIcon = hIcon;
+  
+  /* Display this notification! */
+  notifyicon(NIM_ADD, icon.address());
+
+</pre>
+
+
+<p>We will be able to go futher and define a function callback to handle click
+events on the trayicon, but there is currently a bug which cause some crashes
+when using ctypes.FunctionType on windows. (ctypes.FunctionType allow to
+transform a custom Javascript function to a C function pointer)<br />
+Here is related bugs, which are still in process:</p>
+
+
+<ul>
+<li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=573066" hreflang="en">Bug 573066 - Fix ctypes stdcall closure tests</a></li>
+<li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=585175" hreflang="en">Bug 585175 - Don&#8217;t automangle ctypes stdcall symbols for WINAPI</a></li>
+</ul>
+
+
+<p>The first leads to crashes with FunctionType, and the second may lead to
+lib.declare with unfindable symbols errors when using ctypes.stdcall_abi.</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/02/11/Freemonkeys/">Freemonkeys</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-02-11T23:32:44+01:00" pubdate  data-updated="true" >Feb 11<span>th</span>, 2010</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p style="text-align:center"><a href="https://addons.mozilla.org/en-US/firefox/addon/46873" style="font-size: 2em;">Freemonkeys</a></p>
+
+
+<p>Yet another mozilla powered project! This time, a graphical unit tests
+editor/executer which enables you to spellcast an army of monkeys always happy
+to work hard on your projects and find bugs for free! <img src="/public/demo/fm/asserts.png" alt="asserts.png" style="margin: 0 auto; display: block; border: 2px solid black; max-width: 300px; max-height: 300px" title="asserts.png, f&#233;v. 2010" /><br />
+<strong>Here is what they can do:</strong></p>
+
+<ul>
+<li>Launch any Mozilla application: Firefox, Thunderbird and any xulrunner
+app,</li>
+<li>Use an empty profile for each test execution, or an existing one,</li>
+<li>Speak fluently &quot;assert&quot; language: isTrue, isFalse, isDefined, equals, &#8230;
+etc,</li>
+<li>Report you in real time test execution directly in your test source
+code,</li>
+<li>They are always ready to work. You don&#8217;t need to restart Freemonkeys on
+each test execution, nor on your application reboot. Freemonkeys is an
+independant xulrunner app, which launch yours and then controls it remotly with
+a network connexion,</li>
+<li>Spot easily any window, any tab and any DOM element with usefull
+distinctive parameters: XPath, windows attributes, zIndex order, &#8230; etc,</li>
+<li>Offer a way to facilitate node identification by simply clicking on it, and
+seeing in real time what are selected node parameters,</li>
+<li>They are able to write down some debug messages, inspect javascript objects
+with DOM Inspector, take screenshots of any elements,</li>
+<li>Ease you some kind of tests, by providing you a simple HTTP webserver in
+order to simulate some websites answers,</li>
+<li>They are not narrow-minded to synchronous tests but offers an assert
+library and some usefull API embracing asynchronous execution of your
+code!</li>
+</ul>
+
+
+<br />
+
+
+<p>Now let&#8217;s highlight some of these cool features &#8230;<br /></p>
+
+<br />
+
+
+<h2>Node selection</h2>
+
+
+<p>Here I was overing the tip of the day image. Freemonkeys spot it by
+highlighting it in red and show me all parameters which are going to be used to
+find this node later:<br />
+<img src="/public/demo/fm/inspector.png" alt="inspector.png" title="inspector.png, f&#233;v. 2010" /> You just have to click on it to get back to test
+editor and have all javascript code needed to get a reference to this node,
+something like this:</p>
+
+<pre>
+var top = windows.getRegistered(&quot;firefox-window&quot;, &quot;topmost&quot;);
+var tab = top.tabs.current;
+var element = elements.xpath(tab, &quot;id('frame')/tbody[1]/tr[5]/td[1]/table[1]/tbody[1]/tr[1]/td[1]/table[1]/tbody[1]/tr[1]/td[1]/img[1]&quot;);
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<h2>Elements screenshots</h2>
+
+
+<br />
+
+
+<p>Simply write:</p>
+
+<pre>
+element.screenshot();
+</pre>
+
+
+<p>And get a screenshot directly in the test editor:<br />
+<img src="/public/demo/fm/element.screenshot.png" alt="element.screenshot.png" title="element.screenshot.png, f&#233;v. 2010" /><br /></p>
+
+<br />
+
+
+<h2>Live test execution reporting</h2>
+
+
+<br />
+
+
+<p>Your monkeys report each assert status in the test editor, allowing you to keep
+the focus on test writing and not losing time by switching from your app to
+your terminal, then to your code editor, your terminal and your app &#8230; etc,
+etc. <img src="/public/demo/fm/asserts.png" alt="asserts.png" style="margin: 0 auto; display: block; border: 2px solid black; margin: 5px;" title="asserts.png, f&#233;v. 2010" /> <img src="/public/demo/fm/debug-msg.png" alt="debug-msg.png" title="debug-msg.png, f&#233;v. 2010" /><br /></p>
+
+<br />
+
+
+<h2>HTTP API</h2>
+
+
+<br />
+
+
+<pre>
+// Get a reference to a firefox tab
+var top = windows.getRegistered(&quot;firefox-window&quot;, &quot;topmost&quot;);
+var tab = top.tabs.current;
+
+// Start an HTTP server on port 81
+http.start(&quot;81&quot;);
+
+// A successfull test
+// Create an assert objet which is going to wait for a request on root path of our http server
+var test = http.assertGetRequest(&quot;/&quot;);
+// Open this page in the tab
+tab.open(&quot;http://localhost:81/&quot;);
+// Now wait for this request
+test.wait();
+
+// The same test but with a non-existant page on our local server, so a failing test!
+var test = http.assertGetRequest(&quot;/&quot;);
+tab.open(&quot;http://localhost:81/foo&quot;);
+test.wait();
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<h2>Asynchronous tests</h2>
+
+
+<br />
+
+
+<pre>
+// A usefull function which allow you to block test execution for an amount of time in ms
+wait.during(1000);
+
+// The simpliest asynchronous test
+wait.forTrue(function () {
+  return true;
+});
+
+// Another, which is going to pass after 3s, with this setTimeout
+var v=true;
+wait.setTimeout(function() {
+  v=false;
+},3000);
+wait.forFalse(function () {
+  return v;
+});
+
+// Finally, a test which will pass when the test function is going to be called ten times
+// (wait for the anonymous function returns 10)
+var i=0;
+wait.forEquals(function () {
+  return i++;;
+}, 10);
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<h1>How to get it ?</h1>
+
+
+<p>Source code is available on github: <a href="http://github.com/ochameau/freemonkeys">http://github.com/ochameau/freemonkeys</a>
+(LGPL licence)<br />
+If you are on windows:</p>
+
+<ul>
+<li>Download this package: <a href="http://github.com/downloads/ochameau/freemonkeys/freemonkeys-0.1-win.zip">freemonkeys-0.1-win.zip</a></li>
+<li>Extract this zip file somewhere</li>
+<li>Launch freemonkeys.exe</li>
+</ul>
+
+
+<p>And for linux and mac:</p>
+
+<ul>
+<li>Download this one: <a href="http://github.com/downloads/ochameau/freemonkeys/freemonkeys-0.1.zip">freemonkeys-0.1.zip</a></li>
+<li>Extract it somewhere</li>
+<li>If you don&#8217;t have xulrunner, download it from <a href="http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2rc1/runtimes/">
+here</a></li>
+<li>Finally, launch Freemonkeys with this command:
+<pre>
+/path/to/your/xulrunner/dir/xulrunner /path/to/freemonkeys/application.ini
+</pre></li>
+</ul>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/12/05/Session-per-tab-in-Firefox/">Session Per Tab in Firefox</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-12-05T20:10:32+01:00" pubdate  data-updated="true" >Dec 5<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The brand new version of Yoono, <a href="http://www.yoono.com">Yoono7</a>
+brings a <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=117222">long-awaited</a> Firefox
+feature: the possibility to sign-in on the same website with multiple accounts
+in different tabs or windows.<br /></p>
+
+<br />
+
+
+<p>Althought this new feature is a big technical challenge, for the end user, it&#8217;s
+really simple and non-intrusive! This feature only add one simple &quot;profile&quot;
+selector on the left of the URL bar : <img src="/public/accounts/urlbar-global.png" alt="urlbar-global.png" style="margin: 0 auto; display: block;" title="urlbar-global.png, d&#233;c. 2009" /> This
+is the default status of the selector, it simply says that the current firefox
+behavior is &quot;as before&quot;, using the same global session for all tabs.<br />
+Let&#8217;s look it when we enable session per tab on different profiles : <img src="/public/accounts/urlbar-gmail.png" alt="urlbar-gmail.png" style="margin: 0 auto; display: block;" title="urlbar-gmail.png, d&#233;c. 2009" />
+<img src="/public/accounts/urlbar-facebook.png" alt="urlbar-facebook.png" style="margin: 0 auto; display: block;" title="urlbar-facebook.png, d&#233;c. 2009" /> <img src="/public/accounts/urlbar-witter.png" alt="urlbar-witter.png" style="margin: 0 auto; display: block;" title="urlbar-witter.png, d&#233;c. 2009" /></p>
+
+<p>When you start the browser, open a bookmark, do a search or enter manually
+an URL, your request is loaded with the default global session (ie &quot;as
+before&quot;). But when you select a profile with this selector, the current tab is
+reloaded in order to use one specific totally independant session. Futhermore,
+if this website open a new tab or window, or if you click on a link, the new
+tab, window or webpage is going to use the same specific session.</p>
+
+
+<br />
+
+
+<p>But let&#8217;s see how to use this feature from the beginning.</p>
+
+<ol>
+<li style="clear:both"><img src="/public/accounts/perso-add.png" alt="perso-add.png" style="float: right; margin: 0 0 1em 1em;" title="perso-add.png, d&#233;c. 2009" /> <img src="/public/accounts/default-menu.png" alt="default-menu.png" style="float: right; margin: 0 0 1em 1em;" title="default-menu.png, d&#233;c. 2009" /> First, we create one session linked to a
+personnal account. In this example I take gmail, but it can be any website :
+twitter, facebook, flickr, &#8230; whatever! To do so we click on the profile
+selector and get menu on the left and we click on &quot;+ new profiles&quot; and get the
+right&#8217;s one.</li>
+<li style="clear:both">We are redirected to the homepage URL, where we must
+sign-in for this personnal account: poirot.alex. <img src="/public/accounts/perso-signin.png" alt="perso-signin.png" style="margin: 0 auto; display: block;" title="perso-signin.png, d&#233;c. 2009" /><br />
+And we are now signed in for this &quot;Personnal gmail&quot; session : <img src="/public/accounts/private-signed.png" alt="private-signed.png" style="margin: 0 auto; display: block;" title="private-signed.png, d&#233;c. 2009" /><br /></li>
+<li style="clear:both"><img src="/public/accounts/add-pro.png" alt="add-pro.png" style="float: right; margin: 0 0 1em 1em;" title="add-pro.png, d&#233;c. 2009" /> Then, we do the same for one professional account:
+yoono.test.<br />
+<img src="/public/accounts/header-pro-signin.png" alt="header-pro-signin.png" style="margin: 0 auto; display: block;" title="header-pro-signin.png, d&#233;c. 2009" /><br />
+<img src="/public/accounts/header-pro-signed.png" alt="header-pro-signed.png" style="margin: 0 auto; display: block;" title="header-pro-signed.png, d&#233;c. 2009" /><br /></li>
+<li style="clear:both"><img src="/public/accounts/home-private.png" alt="home-private.png" style="float: right; margin: 0 0 1em 1em;" title="home-private.png, d&#233;c. 2009" /> Later, we can reopen one of these sessions
+directly to the homepage with the profile selector and get automatically signed
+in. The &quot;switch to&quot; link doesn&#8217;t go to the homepage and only reload the current
+tab with the selected session (very usefull for Facebook connect, sharing,
+&#8230;). <img src="/public/accounts/private-signed.png" alt="private-signed.png" style="margin: 0 auto; display: block;" title="private-signed.png, d&#233;c. 2009" /></li>
+</ol>
+
+
+<br />
+
+
+<p style="text-align: center;font-weight: bold; font-size: 1.2em">So we can
+open as many different account in multiple tabs or windows!</p>
+
+
+<br />
+
+
+<br />
+
+
+<h2>Important note:</h2>
+
+
+<p>The current version of Yoono7 doesn&#8217;t allow custom profile creation. The only
+profiles you can use is the ones automatically created for each account
+registered in the yoono&#8217;s sidebar. But watch for the next minor releases of
+Yoono7, we are going to ship all this very soon!<br /></p>
+
+<br />
+
+
+<h2>Another demo of this feature in video:</h2>
+
+
+<div class="external-media" style="margin: 1em auto; text-align: center;">
+<object type="application/x-shockwave-flash" data="http://www.youtube.com/v/V51S6BxTPiw&amp;hl=en_US&amp;fs=1" width="480" height="385"><param name="movie" value="http://www.youtube.com/v/V51S6BxTPiw&amp;hl=en_US&amp;fs=1" />
+<param name="wmode" value="transparent" /></object></div>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/11/25/Mozilla-memory-profiling%2C-part-2/">Mozilla Memory Profiling, Part 2: A Working Tool</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-25T22:57:42+01:00" pubdate  data-updated="true" >Nov 25<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Here is another part of my work on memory analysis in Mozilla :</p>
+
+<p style="text-align: center"><a href="/public/another-profiler/another-profiler_techno-barje.fr.xpi" style="font-size: 2em;">another-profiler_techno-barje.fr.xpi</a></p>
+
+
+<br />
+
+
+<p>This new version of &quot;Another memory profiler&quot; is now an effective tool, which
+display a lot of information about all objects living in your Firefox instance!
+By <em>all</em> I mean not only website javascript objects, but all objects
+used by Firefox in its windows, sidebars, extensions, all tabs, iframes, etc.
+The previous version allowed you only to select one component : a DOM
+window(website, sub-iframe or any XUL window), a XPCOM service or a JS Module
+:<br /></p>
+
+<br />
+
+
+<p><img src="/public/another-profiler/another-components-list.png" alt="another-components-list.png" style="margin: 0 auto; display: block; border: 1px solid black" title="another-components-list.png, nov. 2009" /></p>
+
+<div style="text-align: center; font-weight: bold">Component selection</div>
+
+
+<br />
+
+
+<p>Now you can get a report about currently living objects : the ones that are
+still used because there is at least one reference to each of them. This report
+first display all javascript files involved in your component :<br /></p>
+
+<br />
+
+
+<p><img src="/public/another-profiler/another-lines-browser.png" alt="another-lines-browser.png" style="margin: 0 auto; display: block; border: 1px solid black" title="another-lines-browser.png, nov. 2009" /></p>
+
+<div style="text-align: center; font-weight: bold">File selection</div>
+
+
+<br />
+
+
+<p>By selecting one file, you are seeing the number of living object sorted by
+there instantiation line :<br /></p>
+
+<br />
+
+
+<p><img src="/public/another-profiler/another-objects-browser.png" alt="another-objects-browser.png" style="margin: 0 auto; display: block;" title="another-objects-browser.png, nov. 2009" /></p>
+
+<div style="text-align: center; font-weight: bold">Living objects
+information</div>
+
+
+<br />
+
+
+<p>Finally, this tool display objects counts for each line sorted by there type.
+But Javascript is not a strongly typed language, so it&#8217;s not really easy to
+sort its objects by a type! That&#8217;s why there are several way to describe a JS
+object :</p>
+
+<ul>
+<li>Define a JS object by its attributes, like Atul Varma is doing in <a href="http://www.toolness.com/wp/?p=709">its current work</a>,</li>
+<li>By its JS Prototype name, very usefull &quot;typing&quot; when you are using
+Prototype and build Object-Oriented JS,</li>
+<li>We are facing some specialized objects like all DOM objects :
+HTMLFormElement, HTMLDivElement, &#8230;</li>
+<li>And finally all native types, like Array, String, Date, RegExp, &#8230;
+etc.</li>
+</ul>
+
+
+<br />
+
+
+<br />
+
+
+<p>Finally, let&#8217;s see how to make this extension work :</p>
+
+<ul>
+<li><strong>First</strong> It contains a binary component which is only built
+for Firefox 3.5 and 3.6 for Windows and Linux-32.</li>
+<li><strong>Secondly</strong> The memory profiling component is a patched
+version of the Mozilla Jetpack&#8217;s one, so take care to disable Jetpack, before
+testing this!</li>
+<li><strong>Then</strong> In order to get the maximum information about your
+living JS object, I strongly encourage you to set these two prefs to false :
+<pre>
+javascript.options.jit.content = false
+javascript.options.jit.chrome = false
+</pre>
+(That&#8217;s because Tracemonkey optimise loops and seems to embed empty stack frame
+information on these loop&#8217;s execution &#8230;)</li>
+<li>That being said, you just have to install this extension <a href="/public/another-profiler/another-profiler_techno-barje.fr.xpi">another-profiler_techno-barje.fr.xpi</a>,
+go to your Tools menu and click on &quot;Open another memory profiler&quot;.</li>
+</ul>
+
+
+<br />
+
+
+<br />
+
+
+<p><strong>Come back for the next post for some more explanation on displayed
+results with simple scripts examples.</strong></p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/11/22/Firefox-Everywhere/">Firefox Everywhere</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-22T23:37:47+01:00" pubdate  data-updated="true" >Nov 22<span>nd</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>After <a href="/post/2009/11/06/Yoono-Desktop-Portable">Yoono Desktop
+Portable</a>, here is Firefox Everywhere : a customized Firefox package which
+can be executed on any OS : Windows, Linux, MacOS and with a shared profile
+directory allowing you to travel with all your Firefox data on a usb stick!</p>
+
+<p style="text-align: center">Check out this surf session starting on Windows,
+<img src="/public/firefox-portable/firefox-portable-win.png" alt="firefox-portable-win.png" style="margin: 0 auto; display: block; border: 1px solid black;" title="firefox-portable-win.png, nov. 2009" /> Then on Linux, <img src="/public/firefox-portable/firefox-portable-linux.png" alt="firefox-portable-linux.png" style="margin: 0 auto; display: block; border: 1px solid black;" title="firefox-portable-linux.png, nov. 2009" /> And finally on a Mac! <img src="/public/firefox-portable/firefox-portable-mac.png" alt="firefox-portable-mac.png" style="margin: 0 auto; display: block; border: 1px solid black" title="firefox-portable-mac.png, nov. 2009" /></p>
+
+
+<p style="text-align: center;font-size: 1.2em;">FirefoxEverywhere</p>
+
+
+<p><strong>Download:</strong></p>
+
+<ul>
+<li>The <a href="http://bit.ly/firefox-portable-all">Full edition</a> (69MB)
+which works with all OS</li>
+<li>or the <a href="http://bit.ly/firefox-portable-win">Windows only
+version</a> (13MB)</li>
+<li>or the <a href="http://bit.ly/firefox-portable-mac">MacOs only version</a>
+(26MB)</li>
+</ul>
+
+
+<p><strong>Tips:</strong></p>
+
+<ul>
+<li><ins>Don&#8217;t forget to properly disconnect your usb stick, or your profile
+may explode!</ins></li>
+<li>This version is based on Firefox 3.6 branch in order to gain startup
+performance improvements of this incoming version! So don&#8217;t be afraid to have a
+browser named Namoroka instead of Firefox.</li>
+<li>On Windows, execute: launch-windows.exe</li>
+<li>On MacOS, launch-macos.command</li>
+<li>On Linux, either launch-linux-64.sh or launch-linux.sh(for 32bits)</li>
+</ul>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/11/14/Mozilla-memory-profiling/">Mozilla Memory Profiling</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-14T23:05:23+01:00" pubdate  data-updated="true" >Nov 14<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As a Mozilla hacker, extension developer and Javascript expert, I&#8217;ve been
+really exited to see the <a href="http://www.toolness.com/wp/?p=709">current
+work of Atul Varma</a> on memory profiling in Firefox! It&#8217;s naturally the next
+step of tool to build after <a href="https://addons.mozilla.org/en-US/firefox/addon/9954">XUL Profiler</a>, which
+track CPU consumption and Javascript functions calls.<br />
+So, instead of waiting for web developers to describe their future new &quot;memory&quot;
+firebug tab :), I&#8217;ve searched what information we can retrieve from JS API. And
+I&#8217;ve not limited my scope to web content but I take all Browser objects into
+account.<br /></p>
+
+<br />
+
+
+<p>First I&#8217;ve tried to find a meaningful parent for <strong>every</strong> living
+object.<br />
+In the Mozilla planet we may face with three main types of parents :</p>
+
+<ul>
+<li>window : chrome (browser.xul, popups, jsconsole, sidebars, &#8230;) or content
+(websites,popups,iframes)</li>
+<li>xpcom services</li>
+<li>JS modules</li>
+</ul>
+
+
+<p>(But there is also XBL, sandboxes and some others strange things like
+&quot;Block&quot;)<br /></p>
+
+<br />
+
+
+<p>Here is the first result of this work :</p>
+
+<p style="text-align: center"><a href="/public/another-profiler_techno-barje.fr-1.0.xpi" style="font-size: 2em;">another-profiler_techno-barje.fr-1.0.xpi</a></p>
+
+
+<p><strong>This extension need <a href="https://addons.mozilla.org/fr/firefox/addon/12025">Jetpack 0.6+</a>.</strong>
+It adds a &quot;Open another memory profiler&quot; item in Tools menu and display all
+living windows, xpcoms and modules. Then when you select one of them, it
+displays the simplest profiling ever: number of js objects group by C++ native
+class. I&#8217;ll show you in the next blog post how to display a better
+profiling!<br />
+<img src="/public/another-profiler-1.0.png" alt="another-profiler-1.0.png" style="margin: 0 auto; display: block;" title="another-profiler-1.0.png, nov. 2009" /> But for now, I&#8217;m going to show you all
+the code needed to make this first version.<br /></p>
+
+<br />
+
+
+<p>For the living windows, there is a lot of cases, but it&#8217;s simple :</p>
+
+<pre>
+// Get the list of absolutery ALL windows living in a Firefox session, stored as a Tree
+function getAllWindows() {
+  var windows = [];
+  
+  // Begin by iterating over all top chrome windows (browser, jsconsole, dominspector, etc.)
+  var wm = Components.classes[&quot;@mozilla.org/appshell/window-mediator;1&quot;]
+          .getService(Components.interfaces.nsIWindowMediator);
+  var enumerator = wm.getXULWindowEnumerator(null);
+  while(enumerator.hasMoreElements()) {
+    var win = enumerator.getNext();
+    if (win instanceof Components.interfaces.nsIXULWindow) {
+      // Search for all children windows (sidebar, content, iframes, ...)
+      parseDocshell(win.docShell);
+   }
+  }
+
+  function getWindowByDocShell(docShell) {
+    if (!(docShell instanceof Components.interfaces.nsIInterfaceRequestor))
+      return;
+    return docShell.getInterface(Components.interfaces.nsIDOMWindow);
+  }
+  function parseDocshell(docShell) {
+    if (!docShell) return;
+    var domWindow = getWindowByDocShell(docShell);
+    
+    var topWindow = {
+          type  : &quot;window&quot;,
+          name  : domWindow.document.title,
+          href  : domWindow.location.href,
+          object: domWindow,
+          children: []
+        };
+    windows.push(topWindow);
+    
+    var topWindows = [topWindow];
+    
+    var treeItemType = Components.interfaces.nsIDocShellTreeItem.typeAll;
+    // From inspector@mozilla.org inspector.js appendContainedDocuments
+    // Load all the window's content docShells
+    var containedDocShells = docShell.getDocShellEnumerator(treeItemType,
+                                      Components.interfaces.nsIDocShell.ENUMERATE_FORWARDS);
+    while (containedDocShells.hasMoreElements())
+    {
+      var childShell = containedDocShells.getNext().QueryInterface(Components.interfaces.nsIDocShell);
+      
+      if (childShell == docShell) {
+        // It's the current topWindow
+        continue;
+      }
+      
+      var childDOMWindow = getWindowByDocShell(childShell);
+      if (!childDOMWindow) continue;
+      var parent;
+      for(var i=0; i&lt;topWindows.length; i++) {
+        if (topWindows[i].object == childDOMWindow.parent) {
+          parent = topWindows[i];
+          break;
+        }
+      }
+      var newWindow = {
+        type  : &quot;window&quot;,
+        name  : childDOMWindow.document.title,
+        href  : childDOMWindow.location.href,
+        object: childDOMWindow,
+        children : []
+      };
+      topWindows.push(newWindow);
+      if (parent)
+        parent.children.push(newWindow);
+      else
+        topWindow.children.push(newWindow);
+    }
+    delete topWindows;
+  }
+  
+  // Finally, don't forget *the* hidden window, it's a big one used by many extensions!
+  var hiddenWindow = Components.classes[&quot;@mozilla.org/appshell/appShellService;1&quot;]
+         .getService(Components.interfaces.nsIAppShellService)
+         .hiddenWindow;
+  if (hiddenWindow instanceof Components.interfaces.nsIXULWindow) {
+    parseDocshell(hiddenWindow.docShell);
+  }
+  
+  return windows;
+}
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<p>For XPCOM services, it&#8217;s shorter, but it&#8217; an unknown practice :</p>
+
+<pre>
+// Get the list of all XPCOM services (not the xpcom objects, only services) in a Firefox session
+function getAllXPCOMServices() {
+  var instanciatedServices = [];
+  var serviceManager=Components.manager.QueryInterface(Components.interfaces.nsIServiceManager);
+  var supports = Components.interfaces.nsISupports;
+  for(var cl in Components.classes) {
+    try {
+      if (serviceManager.isServiceInstantiated(Components.classes[cl],supports)) {
+        var service=Components.classes[cl].getService(supports);
+        if (service.wrappedJSObject) {
+          // Get the global object
+          service=service.wrappedJSObject.__parent__;
+          if (!service)
+            service=Components.classes[cl].getService(supports).__parent__;
+          instanciatedServices.push({
+            type   : &quot;xpcom&quot;,
+            name   : cl,
+            object : service
+          });
+        }
+      }
+    } catch(e) {
+      // serviceManager.isServiceInstantiated is throwing if there is no instance ...
+    }
+  }
+  return instanciatedServices;
+}
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<p>But for JS Modules, I&#8217;ve not found any way to get those &#8230;<br />
+The only solution I&#8217;ve got was to do a quick profiling and identify them :</p>
+
+<pre>
+function searchJSModules () {
+  var jsmodules = [];
+  
+  var roots=getGCRoots();
+  for(var r in roots) {
+    var id = roots[r];
+    var info = getObjectInfo(id);
+    var properties = getObjectProperties(id);
+    /*
+    // We can also identify XPCOM by reading global NSGetModule function
+    var nsgetmodule = getObjectProperty(id,&quot;NSGetModule&quot;).NSGetModule;
+    if (nsgetmodule) {
+      print (&quot; --&gt; is an XPCOM&quot;);
+      print (&quot; --&gt; defined in : &quot;+getObjectInfo(nsgetmodule).filename);
+      continue;
+    }
+    */
+    // See if the current object has a EXPORTED_SYMBOLS object
+    // We suppose every JS Module has one ...
+    var exportedsymbols = getObjectProperty(id,&quot;EXPORTED_SYMBOLS&quot;).EXPORTED_SYMBOLS;
+    if (!exportedsymbols) continue;
+    
+    // Then search for the first declared function
+    // Which will allow us to get the file of this module!
+    
+    // Begin to search in EXPORTED_SYMBOLS
+    var symbols = getObjectProperties(exportedsymbols);
+    var filename;
+    for(var i in symbols) {
+      var s = getObjectProperty(id,symbols[i])[symbols[i]];
+      var inf = getObjectInfo(s);
+      if (!inf) continue;
+      if (inf.nativeClass==&quot;Function&quot; &amp;&amp; inf.filename) {
+        filename=inf.filename;
+        break;
+      } else if (inf.nativeClass=&quot;Object&quot;) {
+        var subprops = getObjectProperties(s);
+        for(var j in subprops) {
+          var subs = subprops[j];
+          var subinf = getObjectInfo(subs);
+          if (!subinf) continue;
+          if (subinf.nativeClass==&quot;Function&quot; &amp;&amp; subinf.filename) {
+            filename = subinf.filename;
+            break;
+          }
+        }
+        if (filename) break;
+      }
+    }
+    if (!filename) {
+      // Unable to found a function in exported_symbols objects
+      // now try to find a function defined in global context
+      var table = getObjectTable();
+      var count=0;
+      for (var subid in table) {
+        var subinf = getObjectInfo(parseInt(subid));
+        if (subinf &amp;&amp; subinf.parent == id &amp;&amp; subinf.nativeClass==&quot;Function&quot; &amp;&amp; subinf.filename) {
+          filename = subinf.filename;
+          break;
+        }
+      }
+    }
+    if (filename) {
+      var file = filename;
+      var res = filename.match(/\/([^\/]+\/[^\/]+\/[^\/]+\.\w+)$/);
+      if (res)
+        file = decodeURIComponent(res[1]);
+      jsmodules.push({
+        type  : &quot;jsmodule&quot;,
+        name  : file,
+        file  : filename,
+        object: id
+      });
+    } else {
+      // we were unable to find any function, we may try to search deeper
+    }
+  }
+  
+  return JSON.stringify(jsmodules);
+}
+
+function getAllJSModules() {
+  var factory = Components.classes[&quot;@labs.mozilla.com/jetpackdi;1&quot;]
+               .createInstance(Components.interfaces.nsIJetpack);
+  var endpoint = factory.get();
+  var json = endpoint.profileMemory(searchJSModules.toSource()+&quot;
+searchJSModules()&quot;, &quot;find-jsmodules.js&quot;, 1, null);
+  return JSON.parse(json);
+}
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<p>Finally, here is the function which retrieve objects counts for one parent. It
+use the Jetpack memory profiler XPCOM.</p>
+
+<pre>
+function profileFunction() {
+  var namedObjects=getNamedObjects();
+  
+  // namedObjects[&quot;parent&quot;] is null ... why ?!
+  var parent;
+  for(var i in namedObjects) {
+    if (i==&quot;parent&quot;) {
+      parent = parseInt(namedObjects[i]);
+    }
+  }
+  
+  // Remove web content windows js wrapper
+  var inf = getObjectInfo(parent);
+  if (inf &amp;&amp; inf.nativeClass==&quot;XPCSafeJSObjectWrapper&quot;) {
+    parent = inf.wrappedObject;
+  }
+  
+  var children = {};
+  
+  // Check every JS object
+  var table = getObjectTable();
+  for(var i in table) {
+    var info = getObjectInfo(parseInt(i));
+    
+    // Search if this one is related to the selected parent
+    // ie walk throught all parents in order to find if the current object is a descendant of selected parent
+    if ( info.parent != parent ) {
+      var parentMatch = false;
+      var p = info.parent;
+      while(true) {
+        var subinfo = getObjectInfo(p);
+        if (!subinfo) break;
+        
+        if ( subinfo.id == parent || subinfo.parent == parent ) {
+          // Answer= Yes
+          parentMatch = true;
+          break;
+        }
+        
+        // Walk throught encapsulated objects
+        if (subinfo.outerObject &amp;&amp; subinfo.outerObject!=p) {
+          p = subinfo.outerObject;
+          continue;
+        }
+        
+        p = subinfo.parent;
+      }
+      // Answer= Yes
+      if (!parentMatch) continue;
+    }
+    
+    if (!children[info.nativeClass])
+      children[info.nativeClass] = 0;
+    children[info.nativeClass]++;
+  }
+  
+  return JSON.stringify(children);
+}
+function profileParent(parent) {
+  var factory = Components.classes[&quot;@labs.mozilla.com/jetpackdi;1&quot;]
+               .createInstance(Components.interfaces.nsIJetpack);
+  var endpoint = factory.get();
+  var json = endpoint.profileMemory(profileFunction.toSource()+&quot;
+profileFunction()&quot;, &quot;profile.js&quot;, 1, {parent: parent});
+  return JSON.parse(json);
+}
+</pre>
+
+
+<p style="text-align: right"><a href="https://wiki.mozilla.org/Labs/Jetpack/Binary_Components#Memory_Profiling">More
+information</a></p>
+
+
+<br />
+
+
+<p>Come back for the next blog post to get the 2.0 version :)</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/11/10/Google-Chrome-vs-Mozilla-Firefox%28with-Jetpack%29/">Hackability Test : Google Chrome vs Mozilla Firefox (With Jetpack)</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-10T12:25:10+01:00" pubdate  data-updated="true" >Nov 10<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Here is a small summary of what we are able to extend in Chrome and
+Firefox(with Jetpack).<br /></p>
+
+<br />
+
+
+<br />
+
+
+<h1>How to add a new item in context menu (right click menu)</h1>
+
+
+<p><strong>In Chrome</strong></p>
+
+<p>You just can&#8217;t, <a href="http://www.google.com/support/forum/p/Chrome/thread?tid=375371626e2ba749&amp;hl=en">
+see here</a>.</p>
+
+
+<p><strong>In Firefox, with Jetpack</strong></p>
+
+<pre>
+jetpack.future.import(&quot;menu&quot;);
+jetpack.future.import(&quot;selection&quot;);
+
+jetpack.menu.context.page.add(function(context)({
+   label: &quot;My context menu item&quot;,
+   command: function(target) {
+     
+     // Do something fun with this selection
+     jetpack.notifications.show( &quot;Current selection : &quot;+jetpack.selection.text );
+     
+   }
+ }));
+</pre>
+
+
+<p><img src="/public/jetpack-context.png" alt="jetpack-context.png" style="margin: 0 auto; display: block; border: 1px solid black" title="jetpack-context.png, nov. 2009" /> <a href="https://wiki.mozilla.org/Labs/Jetpack/JEP/14">A lot more information
+here</a><br /></p>
+
+<br />
+
+
+<br />
+
+
+<h1>How to add a sidebar ?</h1>
+
+
+<p><strong>In Chrome</strong></p>
+
+<p>You just can&#8217;t, it&#8217;s a well known limitation, but nobody say it loud.</p>
+
+
+<p><strong>In Firefox, with Jetpack</strong></p>
+
+<pre>
+jetpack.future.import(&quot;slideBar&quot;);
+jetpack.slideBar.append({
+   url: &quot;about:blank&quot;,
+   width: 220,
+   persist: true,
+   autoReload: false,
+   onReady: function(slide){
+
+     // Do something fun with this sidebar
+     var doc = slide.contentDocument;
+     doc.body.innerHTML=&quot;Hello world from techno-barje!&quot;
+
+   }
+ });
+</pre>
+
+
+<p><img src="/public/jetpack-slidebar.png" alt="jetpack-slidebar.png" style="margin: 0 auto; display: block; border: 1px solid black" title="jetpack-slidebar.png, nov. 2009" /> <a href="https://wiki.mozilla.org/Labs/Jetpack/JEP/16">More details here</a><br /></p>
+
+<br />
+
+
+<br />
+
+
+<h1>How to have settings and display them to users ?</h1>
+
+
+<p><strong>In Chrome</strong></p>
+
+<p>You have to add custom menu somewhere, as you want. So each extension may
+display a different way to fill up their settings &#8230;</p>
+
+
+<p><strong>In Firefox, with Jetpack</strong></p>
+
+<pre>
+var manifest = {
+  settings: [
+    {
+      name: &quot;twitter&quot;,
+      type: &quot;group&quot;,
+      label: &quot;Twitter&quot;,
+      settings: [
+        { name: &quot;username&quot;, type: &quot;text&quot;, label: &quot;Username&quot; },
+        { name: &quot;password&quot;, type: &quot;password&quot;, label: &quot;Password&quot; }
+      ]
+    },
+    {
+      name: &quot;facebook&quot;,
+      type: &quot;group&quot;,
+      label: &quot;Facebook&quot;,
+      settings: [
+        { name: &quot;username&quot;, type: &quot;text&quot;, label: &quot;Username&quot;, default: &quot;jdoe&quot; },
+        { name: &quot;password&quot;, type: &quot;password&quot;, label: &quot;Secret&quot; }
+      ]
+    },
+    { name: &quot;music&quot;, type: &quot;boolean&quot;, label: &quot;Music&quot;, default: true },
+    { name: &quot;volume&quot;, type: &quot;range&quot;, label: &quot;Volume&quot;, min: 0, max: 10, default: 5 },
+    { name: &quot;size&quot;, type: &quot;number&quot;, label: &quot;Size&quot; },
+    { name: &quot;mood&quot;, type: &quot;member&quot;, label: &quot;Mood&quot;, set: [&quot;happy&quot;, &quot;sad&quot;, &quot;nonchalant&quot;] }
+  ]
+};
+</pre>
+
+
+<p><img src="/public/jetpack-settings.png" alt="jetpack-settings.png" style="margin: 0 auto; display: block; border: 1px solid black" title="jetpack-settings.png, nov. 2009" /> <a href="https://wiki.mozilla.org/Labs/Jetpack/JEP/24">Full planned API</a>(work in
+progress)<br />
+<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=511764">You can track
+progress here</a><br />
+<a href="http://mykzilla.org/jetpack/settings-test.html">Jetpack demo
+here</a><br /></p>
+
+<br />
+
+
+<br />
+
+
+<h1>How to display a system notification (or something like) ?</h1>
+
+
+<p><strong>In Chrome</strong></p>
+
+<p>You may display a custom HTML popup, but you will have to handle youself
+display/hide of this popup, his style and each extension will have his
+notification system &#8230;</p>
+
+
+<p><strong>In Firefox, with Jetpack</strong></p>
+
+<pre>
+jetpack.notifications.show({title: 'hai2u', body: 'o hai.', icon: 'http://www.mozilla.org/favicon.ico'}); 
+</pre>
+
+
+<p><img src="/public/jetpack-notifications.png" alt="jetpack-notifications.png" style="margin: 0 auto; display: block; border: 1px solid black" title="jetpack-notifications.png, nov. 2009" /> <a href="https://jetpack.mozillalabs.com/api.html">More info here</a><br /></p>
+
+<br />
+
+
+<br />
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/11/02/Ocaml-native-code-debugging/">Ocaml Native Code Debugging</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-02T23:47:49+01:00" pubdate  data-updated="true" >Nov 2<span>nd</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Note: english translation of my <a href="/post/2008/11/09/Ocaml-native-code-debugging">previous post</a></p>
+
+
+<p><img src="/public/./.t-caml-valid-callgraph_s.jpg" alt="t-caml-valid-callgraph.png" style="float:right; margin: 0 0 1em 1em;" title="t-caml-valid-callgraph.png, juin 2008" /></p>
+
+
+<p>Now that <a href="http://caml.inria.fr/mantis/bug_view_page.php?bug_id=4642" hreflang="en">Improve gnu ELF</a> bug is commited in ocaml 3.11+, KCachegrind
+can generate beautifull callgraphs.</p>
+
+
+<p>This patch consist in adding .size instructions (in ELF assembly code) in
+order to allow valgrind to interpret all symbols (camlT_entry, camlT_foo,
+camlT_bar, ..) and it can so display symbols names instead of their hexadecimal
+numbers!!!</p>
+
+
+<h2>ELF instructions for debug</h2>
+
+
+<p>Now, we may want these tools to be able to display file name and line number
+for all functions.(File name is present in symbols name but it doesn&#8217;t allow
+full usage of these tools)</p>
+
+
+<p>Let&#8217;s see how&#8217;s gcc working&#160;:</p>
+
+
+<pre>
+  int bar(int a) {
+        return 1+a;
+  }
+  
+  int foo(int a) {
+        return 2+bar(a);
+  }
+  
+  int main() {
+        foo(3);
+  }
+</pre>
+
+
+<pre>
+  $ gcc -O0 -g -S t.c
+</pre>
+
+
+<pre>
+  .globl bar
+        .type   bar, @function
+  bar:
+  .LFB2:
+        .file 1 &quot;t.c&quot;
+        .loc 1 1 0
+        pushq   %rbp
+  .LCFI0:
+        movq    %rsp, %rbp
+  .LCFI1:
+        movl    %edi, -4(%rbp)
+        .loc 1 2 0
+        movl    -4(%rbp), %eax
+        incl    %eax
+        .loc 1 3 0
+        leave
+        ret
+  .LFE2:
+        .size   bar, .-bar
+  .globl foo
+        .type   foo, @function
+</pre>
+
+
+<p>Usefull instructions are .file and .loc&#160;:</p>
+
+
+<ul>
+<li>.file define a file path and bind it to an id<br /></li>
+</ul>
+
+
+<p>-&gt; .file $file_id&quot;$file_path&quot;</p>
+
+
+<ul>
+<li>.loc define a file, a line and column number to the next
+instructions<br /></li>
+</ul>
+
+
+<p>-&gt; .loc $file_id$ $line$ $column$</p>
+
+
+<h2>Suggested solution</h2>
+
+
+<p>The compiler module which emits these instructions is&#160;: <a href="http://camlcvs.inria.fr/cgi-bin/cvsweb/ocaml/asmcomp/i386/emit.mlp?rev=1.41.2.2;only_with_tag=release311" hreflang="en">asmcomp/i386/emit.mlp</a><br />
+And especially this &quot;fundecl&quot; function&#160;:</p>
+
+
+<pre>
+  let fundecl fundecl =
+    function_name := fundecl.fun_name;
+    fastcode_flag := fundecl.fun_fast;
+    (* ... *)
+    `   .globl  {emit_symbol fundecl.fun_name}
+`;
+    `{emit_symbol fundecl.fun_name}:
+`;
+    if !Clflags.gprofile then emit_profile();
+    let n = frame_size() - 4 in
+    if n &gt; 0 then
+      ` subl    ${emit_int n}, %esp
+`;
+    `{emit_label !tailrec_entry_point}:
+`;
+    emit_all true fundecl.fun_body;
+    List.iter emit_call_gc !call_gc_sites;
+    emit_call_bound_errors ();
+    List.iter emit_float_constant !float_constants;
+    match Config.system with
+      &quot;linux_elf&quot; | &quot;bsd_elf&quot; | &quot;gnu&quot; -&gt;
+        `       .type   {emit_symbol fundecl.fun_name},@function
+`;
+        `       .size   {emit_symbol fundecl.fun_name},.-{emit_symbol fundecl.fun_name}
+`
+    | _ -&gt; ()
+</pre>
+
+
+<p>Except that the only data we have is the fundecl variable&#160;:</p>
+
+
+<pre>
+  type fundecl = 
+  { fun_name: string;
+    fun_body: instruction;
+    fun_fast: bool } 
+  type instruction =
+  { mutable desc: instruction_desc;
+    mutable next: instruction;
+    arg: Reg.t array;
+    res: Reg.t array;
+    dbg: Debuginfo.t;
+    live: Reg.Set.t }
+</pre>
+
+
+<p>There is a dbg attribute on instructions but it&#8217;s rarely set. (One
+compilation with -dlinear option allow to see this fact)</p>
+
+
+<p>I&#8217;ve decided to add a <em>fun_dbg&#160;: Debuginfo.t</em> attribute on
+&quot;fundecl&quot; type and fill it in all compilation steps. It may more clever to work
+on this (often-empty) &quot;dbg&quot; attribute&#160;? (it would allow to add position
+information on all instructions, it can be usefull for valgrind and gdb) This
+patch is not optimised because it repeats .file instruction for each .loc and
+so it repeats it on each function header.</p>
+
+
+<p>-&gt; <a href="/public/patch-file-and-loc-v1-cvs-2008-11-11.patch">Patch
+based on release311 branch, but works on current trunk</a><br />
+<br /></p>
+
+
+<p>Now let&#8217;s see what brings this patch</p>
+
+
+<h2>gdb results</h2>
+
+
+<pre>
+  $ ocamlopt -g -inline 0 t.ml
+  $ gdb a.out
+  (gdb) break t.ml:6
+  Breakpoint 1 at 0x8049940: file t.ml, line 6.
+  (gdb) run
+  Starting program: /home/alex/callgraph/a.out 
+  
+  Breakpoint 1, camlT__foo_60 () at t.ml:6
+  6       let foo i  =
+  Current language:  auto; currently asm
+
+  (gdb) backtrace
+  #0  camlT__foo_60 () at t.ml:7
+  #1  0x0804c570 in camlT__entry () at t.ml:12
+  #2  0x0806e4b7 in caml_start_program ()
+  
+  (gdb) step 1
+  camlT__bar_58 () at t.ml:2
+  2       let bar i =
+  
+  (gdb) list
+  1
+  2       let bar i =
+  3               1+i
+  4       ;;
+  5
+  6       let foo i  =
+  7               2+(bar i )
+  8       ;;
+  9
+  10      let () =
+</pre>
+
+
+<h2>gprof results</h2>
+
+
+<pre>
+  $ ocamlopt -g -p -inline 0 t.ml
+  $ ./a.out
+  $ gprof -A
+  *** File /home/alex/callgraph/t.ml:
+                  
+           1 -&gt; let bar i =
+                        Thread.delay 3.0;
+                        1+i
+                ;;
+                
+           1 -&gt; let foo i  =
+                        2+(bar i )
+                ;;
+                
+                let () =
+           1 -&gt;         let closure() = 3 in
+                        print_int ( foo (closure()) )
+                ;;
+                
+  Top 10 Lines:
+
+     Line      Count
+        2          1
+        7          1
+       12          1
+
+  Execution Summary:
+
+        3   Executable lines in this file
+        3   Lines executed
+   100.00   Percent of the file executed
+
+        3   Total number of line executions
+     1.00   Average executions per line
+</pre>
+
+
+<h2>valgrind/kcachegrind results</h2>
+
+
+<pre>
+  $ ocamlopt -g -inline 0 t.ml
+  $ valgrind --tool=callgrind ./a.out
+  $ callgrind_annotate callgrind.out.2152 t.ml
+  --------------------------------------------------------------------------------
+  -- User-annotated source: t.ml
+  --------------------------------------------------------------------------------
+  .  
+  8  let bar i =
+  77,715  =&gt; thread.ml:camlThread__delay_75 (1x)
+  .      Thread.delay 3.0;
+  .      1+i
+  .  ;;
+  .  
+  3  let foo i  = 
+  77,723  =&gt; t.ml:camlT__bar_58 (1x)
+  .      2+(bar i )
+  .  ;;
+  .  
+  .  let () =
+  13          let closure() = 3 in
+  1,692  =&gt; pervasives.ml:camlPervasives__output_string_215 (1x)
+  2,312  =&gt; pervasives.ml:camlPervasives__string_of_int_154 (1x)
+  77,726  =&gt; t.ml:camlT__foo_60 (1x)
+  .      print_int ( foo (closure()) )
+  .  ;;
+  .  
+  $ kcachegrind callgrind.out.2152
+</pre>
+
+
+<p><img src="/public/./.kcachegrind-file-and-line_m.jpg" alt="kcachegrind-file-and-line.png" style="display:block; margin:0 auto;" title="kcachegrind-file-and-line.png, nov 2008" /></p>
+
+
+<p><br />
+<br /></p>
+
+
+<h2>And next&#160;?</h2>
+
+
+<p>We first need to wait approval for this new feature by ocaml community, I&#8217;ve
+submitted it <a href="http://caml.inria.fr/mantis/view.php?id=4888" hreflang="en">there</a>.<br />
+I someone from INRIA read this &#8230; Don&#8217;t hesitate to contact me, I&#8217;m open to
+work on a different approach.<br />
+After that, we may hope a lot of new features, like&#160;:</p>
+
+
+<ul>
+<li>breakpoints on any caml line (not only function call)</li>
+<li>gdb plugin allowing to read value in a breakpoint!</li>
+</ul>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/10/31/Yoono-Desktop-Portable/">Yoono Desktop Portable</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-31T01:11:14+01:00" pubdate  data-updated="true" >Oct 31<span>st</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Here is a new Yoono feature that really need some emphasis!</p>
+
+<p style="text-align: center"><a href="http://blog.yoono.com/2009/10/get-yoono-desktop-to-go/" style="font-size: 1.5em">Yoono Desktop Portable</a></p>
+
+
+<p>This new version allows you to launch the Yoono&#8217;s social network aggregation
+tool directly from a usb key. And the most important point is that your profile
+is saved on it, so no personal data is saved in the computer you&#8217;re using and
+all your settings and socials updates travel with you.<br />
+The icing on the cake is that it&#8217;s even more &quot;portable&quot; than just that! You can
+even launch this application on Windows <ins>AND</ins> MacOS!!!</p>
+
+
+<p><strong>Only two steps to test this :</strong></p>
+
+
+<ul>
+<li>Unzip <a href="http://cache.yoono.com/download/desktop/yoono-desktop-portable.zip">yoono-desktop-portable.zip</a>
+somewhere on a usbkey</li>
+<li>On windows, launch <em>&quot;Yoono Desktop Portable.exe&quot;</em></li>
+<li>On macos, launch <em>&quot;Yoono Desktop Portable&quot;</em></li>
+</ul>
+
+
+<p><img src="/public/YoonoDesktopShort.png" alt="YoonoDesktopShort.png" style="margin: 0 auto; display: block;" title="YoonoDesktopShort.png, nov. 2009" /></p>
+
+<p>The only drawback is usb drive read/write performance. Depending on drive
+model Yoono Desktop appears to take long time to load. But we are going to gain
+a huge speed up with <a href="http://autonome.wordpress.com/tag/performance/">current work</a> on mozilla
+platform about startup performance. So don&#8217;t forget to check out yoono desktop
+portable when Firefox 3.6 is out! (release planned before the end of the
+year)</p>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/10/31/sabnzbFox/">SabnzbFox</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-31T00:27:56+01:00" pubdate  data-updated="true" >Oct 31<span>st</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Now, a real world usage of my <a href="/post/2009/10/30/Catch-all-requests-to-a-specific-mime-type/file-extension-in-Firefox">
+previous JS Module</a>.<br /></p>
+
+<br />
+
+
+<p style="text-align:center"><a href="https://addons.mozilla.org/en-US/firefox/addon/46873" style="font-size: 2em;">SabnzbdFox</a></p>
+
+
+<br />
+
+
+<p><strong>SabnzbdFox features</strong></p>
+
+<ul>
+<li>Catch absolutely all NZB file requests</li>
+<li>Automatically save all these files to a specific directory (not limited to
+sabnzbd usage!)</li>
+<li>Or Automatically upload to sabnzbd server via its <a href="http://sabnzbd.wikidot.com/automation-support">web-API</a></li>
+<li>Display current downloads count</li>
+</ul>
+
+
+<p><strong>SabnzbdFox prerequisites</strong></p>
+
+<ul>
+<li>Firefox</li>
+<li><a href="http://www.sabnzbd.org/">Sabnzbd</a> or any newsreader which
+automatically read nzb files in a directory.</li>
+</ul>
+
+
+<p style="text-align: center">install <a href="https://addons.mozilla.org/en-US/firefox/addon/46873">SabnzbdFox on
+addons.mozilla.org</a></p>
+
+
+<p><img src="/public/sabnzbd-screenshot.png" alt="sabnzbdfox" style="margin: 0 auto; display: block; border: 2px solid black; margin-bottom: 5px;" title="sabnzbdfox" /></p>
+</div>
+  
+  
+
+
+  </article>
+
+<nav role="pagination">
+  <div>
+    
+      <a class="prev" href="/page/3/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</nav>
+
+</div>
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

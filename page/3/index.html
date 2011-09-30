@@ -1,0 +1,1589 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/page/3/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/10/30/Catch-all-requests-to-a-specific-mime-type-file-extension-in-Firefox/">Catch All Requests to a Specific Mime Type/file Extension in Firefox</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-30T23:55:33+01:00" pubdate  data-updated="true" >Oct 30<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Here is a Mozilla Javascript Module which allow to catch <ins>absolutely</ins>
+all requests based on their Content-Type Http header (ie Mime type) or their
+filename.</p>
+
+<p style="text-align:center"><strong><a href="/public/contentTypeObserver.js">contentTypeObserver.js</a></strong><br />
+(under LGPL License)</p>
+
+
+<p>Normally, it would be simple to catch all firefox request by adding a
+nsIURIContentListener like this :</p>
+
+<pre>
+Components.classes[&quot;@mozilla.org/uriloader;1&quot;].getService(Components.interfaces.nsIURILoader).registerContentListener( ...nsIURIContentListener... );
+</pre>
+
+
+<p>But for some reason, this listener is bypassed <a href="http://mxr.mozilla.org/mozilla-central/source/uriloader/base/nsURILoader.cpp#403">
+here</a> when the HTTP request contains a Content-Disposition header :(<br />
+So I give you there all Mozilla black magic needed to catch really all
+requests.<br /></p>
+
+<p style="font-weight: bold; text-align: center">Hello world</p>
+
+
+<pre>
+Components.utils.import(&quot;resource://your-extension/contentTypeObserver.js&quot;); 
+var contentTypeObserver = {};
+
+// Tell if we must catch requests with this content-type
+// requestInfo is an object with 3 attributes : contentType, contentLength and fileName.
+contentTypeObserver.getRequestListener = function (requestInfo) {
+  // Return a new instance of nsIWebProgressListener
+  // (a new instance to avoid conflicts with multiple simultaneous downloads)
+  return {
+    onStartRequest : function (request, context) {
+
+    },
+    onStopRequest : function (request, context, statusCode) {
+
+    },
+    onDataAvailable : function (request, context, inputStream, offset, count) {
+
+    }
+  };
+  // There is an helper function that allow to automatically save this request to a file,
+  // you just have to pass destinationFile argument which hold a nsIFile instance :
+  return createSaveToFileRequestListener(requestInfo, destinationFile, function () { dump(&quot;file : &quot;+destinationFile.spec+&quot; downloaded!
+&quot;); }
+}
+
+addContentTypeObserver(contentTypeObserver);
+</pre>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/10/11/JS-Ctypes/">JS Ctypes</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-11T22:55:46+02:00" pubdate  data-updated="true" >Oct 11<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote>Bug 518721 - Implement jsctypes with raw JSAPI<br />
+Status: SOLVED FIXED!!!<br /></blockquote>
+
+
+<p>That&#8217;s an awesome news for mozilla&#8217;s developpers!<br />
+<a href="https://wiki.mozilla.org/JSctypes">JS Ctypes</a> aims to provide the
+same library than <a href="http://docs.python.org/library/ctypes.html">Python
+Ctypes</a> :</p>
+
+
+<p>You can load any dynamic library (dll, so, dylib) and call
+<b>C</b>-functions directly from your Javascript. In the current implementation
+only simple types are supported : numbers, string, boolean. For now, we can&#8217;t
+play with pointers, nor structures, but these features are <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=513788">planned</a>.</p>
+
+
+<br />
+
+
+<h3>simpler code -&gt; less work -&gt; simpler review</h3>
+
+
+<p>This new feature is going to greatly ease platform specific developpement
+like windows management, system calls, &#8230; For example we&#8217;re able to call
+Windows API directly from Javascript, without having to create, compile and
+maintain any C++ XPCOM!<br />
+One side effect is that it will ease code review for
+https://addons.mozilla.org/ too! Instead of shipping an obscure dynamic library
+with our extension, we may build only a JS-Ctypes wrapper and call directly OS
+libraries or call a common library that can be validated by reviewers with some
+MD5 checks.</p>
+
+
+<br />
+
+
+<h2>simpler code -&gt; less knownledge -&gt; better learning curve</h2>
+
+
+<p>This is going to simplify the use of native code too! You can now build
+native code without having to learn any mozilla &quot;things&quot; (XPCOM, specific build
+layout/system, &#8230;) You will just have to expose your library with a C api and
+write a simple JS-CTypes wrapper.</p>
+
+
+<br />
+
+
+<h2>Hello World!</h2>
+
+
+<ul>
+<li>First retrieve <a href="http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-mozilla-1.9.2/">Firefox
+3.6b1pre nightly</a> or <a href="http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-trunk/">Firefox
+3.7a1pre nightly</a></li>
+<li>On windows, copy and paste this code in your JS console.<br />
+This will display an OS native dialog.<br />
+<i>(Change the dll path if your main windows directory is not on
+C:\WINDOWS!)</i>
+<pre>
+/* Load JS Ctypes Javascript module */
+Components.utils.import(&quot;resource://gre/modules/ctypes.jsm&quot;);
+var Types = ctypes.types;
+
+/* Load windows api dll */
+var lib = ctypes.open(&quot;C:\\WINDOWS\\system32\\user32.dll&quot;);
+
+/* Declare the signature of the function we are going to call */
+var msgBox = lib.declare(&quot;MessageBoxW&quot;,
+                         ctypes.stdcall_abi,
+                         ctypes.int32_t,
+                         ctypes.int32_t,
+                         ctypes.ustring,
+                         ctypes.ustring,
+                         ctypes.int32_t);
+var MB_OK = 3;
+
+/* Do it! */
+var ret = msgBox(0, &quot;Hello world&quot;, &quot;title&quot;, MB_OK);
+
+/* Display the returned value */
+alert(&quot;MessageBox result : &quot;+ret);
+
+lib.close();
+</pre></li>
+</ul>
+
+
+<br />
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/10/02/How-to-setup-a-mozilla-extension-update-server/">How to Setup a Mozilla Extension Update Server</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-02T21:19:13+02:00" pubdate  data-updated="true" >Oct 2<span>nd</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;ve shared in the previous post a command line version of Mccoy. Here is a new
+tutorial on how to use it!<br /></p>
+
+<h3>Prerequisite</h3>
+
+
+<ul>
+<li>a HTTP server</li>
+<li>Patched version of mccoy, with command line capabilities : <a href="/public/mccoy.tar.gz">mccoy.tar.gz</a></li>
+<li>This start kit : <a href="/public/mccoy-test.tar.gz">mccoy-test.tar.gz</a>
+which bundle a sample extension and one update.xml file</li>
+</ul>
+
+
+<pre>
+$ cd /one/of/your/htdocs/dir
+$ wget http://blog.techno-barje.fr/public/mccoy.tar.gz
+$ tar zxvf mccoy.tar.gz
+$ wget http://blog.techno-barje.fr/public/mccoy-test.tar.gz
+$ tar zxvf mccoy-test.tar.gz
+$ cd mccoy-test/
+$ ls
+update.xml  workdir  xpis
+</pre>
+
+
+<br />
+
+
+<br />
+
+
+<h3>Setup your XPI with valid update information</h3>
+
+
+<p><strong>Create a new key in Mccoy</strong></p>
+
+<pre>
+mccoy-test $ cd workdir/
+workdir $ ls
+chrome  chrome.manifest  install.rdf
+workdir $ ../../mccoy -createKey myextensionkey
+Creating key with name : myextensionkey
+Public key : MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDbV+ZGXs658dOm/+4YtT+VzT5JWzMFYiQ8155fnMkOJCina2yDEBq8Lvi5qF5SyoMDkqaYeO51LR+B4p1g7oWmBW9HbOz3eA9lD/AHUR1SHiJAX7RQq8v9sPSkYta+LyVrCMFgpTmhOWPUXOnwalmL7syGkXyjxHqHCYz+s3d22QIDAQAB
+The key has been successfully created!
+</pre>
+
+
+<p>Remember the name of your key (if you forgot the name, you can later execute
+<em>mccoy -listKeys</em>)<br />
+<strong>Inject the public key in your extension</strong></p>
+
+<pre>
+workdir $ ./mccoy -installKey install.rdf -key myextensionkey
+Public key inserted!
+</pre>
+
+
+<p>This will set the <em>updateKey</em> attribute with the public key. (you can
+later retrieve the public key with <em>mccoy -publicKey myextension</em>)<br />
+<strong>Set the updateURL attribute of the install.rdf with the URL of the
+update.xml file located in mccoy-test/update.xml</strong></p>
+
+<pre>
+workdir $ vi update.rdf
+</pre>
+
+
+<p><strong>Build the first xpi</strong></p>
+
+<pre>
+$ zip -r ../xpis/mccoy-test-0.1.xpi .
+</pre>
+
+
+<br />
+
+
+<p><strong>&#187;&#187; now install this XPI!</strong> This sample extension will just
+display an alert with message <em>&quot;Mccoy 0.1!&quot;</em><br /></p>
+
+<br />
+
+
+<h3>Create a new version of your extension</h3>
+
+
+<p><strong>Alter the sample extension alert message with something new</strong></p>
+
+<pre>
+workdir $ vi chrome/content/firefoxOverlay.xul
+</pre>
+
+
+<p><strong>Update the version number with 0.2</strong></p>
+
+<pre>
+workdir $ vi install.rdf
+</pre>
+
+
+<p><strong>Build the new xpi</strong></p>
+
+<pre>
+workdir $ zip -r ../xpis/mccoy-test-0.2.xpi .
+</pre>
+
+
+<p><strong>Update the update xml file</strong></p>
+
+<pre>
+workdir $ cd ..
+mccoy-test $ vi update.xml
+### change version with 0.2
+### change updatelink with mccoy-test-0.2.xpi
+### change updatehash with result of <em>sha1sum xpis/mccoy-test-0.2.xpi</em>
+</pre>
+
+
+<p><strong>Sign the update file with mccoy</strong></p>
+
+<pre>
+mccoy-test $ ../mccoy/mccoy -signRDF update.xml -key myextensionkey
+Sign &lt; update.xml &gt; with key &lt; myextensionkey &gt;
+Sign addon : urn:mozilla:extension:mccoy-test@techno-barje.fr
+File signed!
+</pre>
+
+
+<p>This will set the <em>signature</em> attribute with computed with your private
+key.<br /></p>
+
+<br />
+
+
+<p><strong>&#187;&#187; You can now force the update in your firefox, relaunch it and
+voil&#224;!<br /></p>
+
+<br /></strong>
+
+
+<h3><strong>Some tips for debugging</strong></h3>
+
+
+<p>Enable this two about:config entries in order to get some message in JS console
+about update process :<br /></p>
+
+<pre>
+extensions.logging.enabled = true
+javascript.options.showInConsole = true
+</pre>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/10/02/Mozilla-Mccoy-tool-from-the-command-line/">Mozilla Mccoy Tool From the Command Line</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-02T21:18:09+02:00" pubdate  data-updated="true" >Oct 2<span>nd</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>We have seen in the <a href="/post/2009/09/30/Headless-xulrunner" hreflang="en">previous post</a> how to build an headless xulrunner application.<br />
+My first use case was enabling the Mozilla <a href="https://developer.mozilla.org/en/McCoy" hreflang="en">Mccoy</a> application to
+launch from command line. That allows me to build a bash script which create
+nightly builds of a firefox extension automatically updated by Firefox every
+day!.<br /></p>
+
+<br />
+
+
+<p>Here is the resulting Mccoy version :</p>
+
+<ul>
+<li><strong>Linux i686 patched build of Mccoy:</strong> <a href="/public/mccoy.tar.gz">mccoy-0.5-command-line.tar.gz</a></li>
+<li><strong>Patch based on 0.5 official release:</strong> <a href="/public/mccoy-0.5-command-line.patch">mccoy-0.5-command-line.patch</a></li>
+</ul>
+
+
+<br />
+
+
+<p><strong>Now, a summary of each command line arguments :</strong></p>
+
+<pre>
+# Create a new named public/private key
+$ ./mccoy -createKey mykey
+Creating key with name : mykey
+Public key : MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDbV+ZGXs658dOm/+4YtT+VzT5JWzMFYiQ8155fnMkOJCina2yDEBq8Lvi5qF5SyoMDkqaYeO51LR+B4p1g7oWmBW9HbOz3eA9lD/AHUR1SHiJAX7RQq8v9sPSkYta+LyVrCMFgpTmhOWPUXOnwalmL7syGkXyjxHqHCYz+s3d22QIDAQAB
+The key has been successfully created!
+
+# List all keys in the current mccoy profile
+# /!\ Don't forget to save your profile!
+$ ./mccoy -listKeys
+Registered keys :
+ - mykey
+
+# Inject the public key in your extension's install.rdf
+$ ./mccoy -installRDF myextension_workdir/install.rdf -key myextensionkey
+Public key inserted!
+
+# Update the signature of the update xml file
+$ ./mccoy -signRDF update.xml -key mykey
+Sign &lt; update.xml &gt; with key &lt; mykey &gt;
+Sign addon : urn:mozilla:extension:mccoy@techno-barje.fr
+File signed!
+
+# Check if the update xml file is correctly signed
+$ ./mccoy -verifyRDF update.xml -key myextensionkey
+Check rdf : update.xml with key myextensionkey
+Valid signature!
+
+</pre>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/09/30/Headless-xulrunner/">Headless Xulrunner</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-09-30T18:27:13+02:00" pubdate  data-updated="true" >Sep 30<span>th</span>, 2009</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Here is a summary on how to run a xulrunner application on an headless
+computer, or more commonly just launch xulrunner in a command line with no
+windows.<br /></p>
+
+<br />
+
+
+<p>By default, xulrunner try to open a XUL window defined in the
+&quot;&quot;toolkit.defaultChromeURI&quot;&quot; preference, so you have to set this one to an
+empty value.<br /></p>
+
+<br />
+
+
+<p>Then you need to have a running X server, even if it never open any window &#8230;
+one simple and lightweight solution is running Xvfb. But any other X server
+will do the work!<br /></p>
+
+<br />
+
+
+<p>Finally, I suggest you to take the <a hreflang="en" href="http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.0.14/runtimes/">
+1.9.0.14 xulrunner release</a> which has less painfull dependencies like
+libalsa (due to ogg support) and libdbus-glib.<br /></p>
+
+<br />
+
+
+<p>This will avoid this kind of errors :<br /></p>
+
+<blockquote>
+<p>./xulrunner-bin: error while loading shared libraries: libasound.so.2:
+cannot open shared object file: No such file or directory<br />
+./xulrunner-bin: error while loading shared libraries: libdbus-glib-1.so.2:
+cannot open shared object file: No such file or directory</p>
+</blockquote>
+
+
+<p>How to write such a tutorial without a complete working out of the box hello
+world ?<br />
+Here is a sample command line application with linux xulrunner binaries :
+<a href="/public/headless-runner.tar.gz">headless-runner.tar.gz</a><br /></p>
+
+<pre>
+$ tar zxvf headless-runner.tar.gz
+$ cd headless-runner
+$ Xvfb :2
+$ export DISPLAY=:2
+$ ./headless -ls -filesize application.ini
+LS :
+ - application.ini
+ - a.out
+ - tests
+ - components
+ - defaults
+ - updates
+ - extensions
+ - xulrunner-1.9.2a2pre.en-US.linux-x86_64.tar.bz2
+ - xulrunner
+ - headless
+
+$ ./headless -filesize application.ini
+File size of : application.ini
+  243
+</pre>
+
+
+<p>The main code is in the file components/nsCommandLineHandler.js</p>
+
+<pre>
+CommandLineHandler.prototype.handle = function(aCmdLine){
+  
+  var toggle = aCmdLine.handleFlag(&quot;ls&quot;, false);
+  if (toggle) {
+    dump(&quot;LS : 
+&quot;);
+    var list = aCmdLine.workingDirectory.directoryEntries;
+    while(list.hasMoreElements()) {
+      var file = list.getNext().QueryInterface(Components.interfaces.nsIFile);
+      dump(&quot; - &quot;+file.leafName+&quot;
+&quot;);
+    }
+    dump(&quot;
+&quot;);
+  }
+
+  var filesize = aCmdLine.handleFlagWithParam(&quot;filesize&quot;, false);
+  if (filesize) {
+    dump(&quot;File size of : &quot;+filesize+&quot;
+&quot;);
+    var file = aCmdLine.resolveFile(filesize);
+    if (!file)
+      return dump(&quot;Unable to find this file
+&quot;);
+    dump(&quot;  &quot;+file.fileSize+&quot;
+&quot;);
+  }
+}
+</pre>
+
+
+<p>For more information, check the <a hreflang="en" href="http://mxr.mozilla.org/mozilla-central/source/toolkit/components/commandlines/public/nsICommandLine.idl">
+nsICommandLine</a> interface of the aCmdLine object.<br /></p>
+
+<br />
+
+
+<p>Last but not least, why do I try to use Xulrunner in command line whereas
+<a href="https://developer.mozilla.org/en/xpcshell">xpcshell</a> and &quot;<a href="https://developer.mozilla.org/En/SpiderMonkey/Introduction_to_the_JavaScript_shell">js</a>&quot;
+commands exists?!</p>
+
+<ul>
+<li><strong>First:</strong> Some tools like <a href="https://developer.mozilla.org/en/McCoy">Mccoy</a> are bundled as xulrunner
+application. And you may launch these tools on headless servers in order to
+build, for example, continuous integration tools!</li>
+<li><strong>Second:</strong> JS shell allow you tu use only pure Javascript;
+Xpcshell expose all XPCOM but some part of Mozilla environnement are disabled!
+I was unabled to create a &lt;canvas&gt; element in xpcshell. There is no way
+to create a XUL/HTML document/element with XPCOM and hiddenWindow is disabled
+&#8230; So the only solution to build a tool which takes website screenshots with
+&lt;canvas&gt; was using xulrunner!</li>
+</ul>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/12/11/XUL-Profiler/">XUL Profiler</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-12-11T19:51:59+01:00" pubdate  data-updated="true" >Dec 11<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/public/addon_thumb.png" alt="addon_thumb.png" style="margin: 0 0 1em 1em; float: right;" title="addon_thumb.png, dec 2008" /> XUL
+Profiler&#160;? Qu&#8217;est-ce donc&#160;? Et bien c&#8217;est l&#8217;extension Firefox que
+j&#8217;ai pu d&#233;velopper chez <a href="http://www.yoono.com">Yoono</a>. Elle a pour
+but de donner des pistes aux d&#233;veloppeurs XUL (mais aussi aux d&#233;veloppeurs Web)
+pour optimiser les performances de leurs applications.</p>
+
+
+<p>Pour l&#8217;instant, cette extension permet de r&#233;colter deux
+informations&#160;:</p>
+
+
+<ul>
+<li>un callgraph Javascript&#160;: Chaque appel de fonction est consign&#233; dans
+un arbre et class&#233; par son temps d&#8217;ex&#233;cution. On peut ainsi rapidement rep&#233;rer
+les fonctions qui ralentissent le navigateur.</li>
+<li>une vid&#233;o des rafraichissements de Firefox&#160;: Toutes les op&#233;rations de
+mise &#224; jour graphique de firefox sont enregistr&#233;es dans une vid&#233;o qui nous
+permet d&#8217;apprendre &#224; optimiser notre Javascript ainsi que les CSS afin de
+soulager Firefox dans son travail de layout.</li>
+</ul>
+
+
+<p>L&#8217;extension est disponible sur <a href="https://addons.mozilla.org/fr/firefox/addon/9954">Mozilla addons</a></p>
+
+
+<p>Voici quelques r&#233;sultats sur des exemples simples.</p>
+
+
+<h2>Callgraph Javascript</h2>
+
+
+<p>(<a href="/public/test-xulprofiler-callgraph.html">Fichier html de
+test</a>)</p>
+
+
+<pre>
+function fun_root() {
+  fun_A();
+  fun_B();
+  fun_C();
+}
+function fun_A() {
+  dump(&quot;fun A&quot;);
+}
+function fun_B() {
+  dump(&quot;fun B&quot;);
+  var s=&quot;&quot;;
+  fun_D();
+  for(var i=0; i&lt;1000; i++) {
+    s+=&quot;CPU INTENSIVE FUNCTION&quot;;
+    fun_D();
+  }
+  fun_D();
+}
+function fun_C() {
+  dump(&quot;fun C&quot;);
+}
+function fun_D() {
+  dump(&quot;fun D&quot;);
+}
+</pre>
+
+
+<p><img src="/public/test-xulprofiler-callgraph.png" alt="test-xulprofiler-callgraph.png" style="margin: 0 auto; display: block;" title="test-xulprofiler-callgraph.png, dec 2008" /></p>
+
+
+<p>On voit ici la hi&#233;rarchie des appels entre les fonction gr&#226;ce &#224; la
+pr&#233;sentation sous forme d&#8217;arbre, et l&#8217;on peut conclure que la majorit&#233; du temps
+de calcul de ce script est effectu&#233; dans la fonction &quot;fun_B&quot;.</p>
+
+
+<h2>Paint events</h2>
+
+
+<p>(<a href="/public/test-xulprofiler-paint.html">Fichier html de test</a>)</p>
+
+
+<pre>
+function delayEachInserts() {
+  for(var i=0;i&lt;20;i++) {
+    window.setTimeout(insertItem,100*i,i);
+  }
+}
+function insertItem(i) {
+  var container=document.getElementById(&quot;container&quot;);
+  var item=document.createElement(&quot;div&quot;);
+  item.setAttribute(&quot;class&quot;,&quot;item&quot;);
+  item.textContent=&quot;Item &quot;+i;
+  container.appendChild(item);
+}
+window.addEventListener(&quot;load&quot;,delayEachInserts,false);
+</pre>
+
+
+<p>&#160; <strong>=&gt;</strong> <a style="font-weight: bold;" href="/public/test-xulprofiler-paint-result.html">R&#233;sutat</a></p>
+
+
+<p>Cet exemple montre que lorsqu&#8217;on ajoute un &#233;lement DOM, Firefox est oblig&#233;
+de rafraichir son conteneur &#224; chaque ajout.</p>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/11/09/Ocaml-native-code-debugging/">Ocaml Native Code Debugging</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-11-09T22:43:08+01:00" pubdate  data-updated="true" >Nov 9<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="/public/./.t-caml-valid-callgraph_s.jpg" alt="t-caml-valid-callgraph.png" style="float:right; margin: 0 0 1em 1em;" title="t-caml-valid-callgraph.png, juin 2008" /> Maintenant que le bug <a href="http://caml.inria.fr/mantis/bug_view_page.php?bug_id=4642" hreflang="en">Improve gnu ELF</a> est corrig&#233;, kcachegrind nous g&#233;n&#232;re de beaux
+callgraphs.</p>
+
+
+<p>Ce patch consistait &#224; ajouter des instructions .size (dans l&#8217;assembleur ELF)
+pour que valgrind interpr&#232;te tous les symboles (camT_entry, camlT_foo,
+camlT_bar, &#8230;) et puisse ainsi afficher leurs noms au lieu d&#8217;un nombre
+hexad&#233;cimal!</p>
+
+
+<h2>Les standards ELF pour le debug</h2>
+
+
+<p>Maintenant, nous souhaiterions que ces outils puissent savoir de mani&#232;re
+standard dans quels fichiers et &#224; quelles lignes sont d&#233;clar&#233;s les fonctions.
+(Le nom du fichier est bien pr&#233;sent dans les symboles, mais cela ne permet pas
+d&#8217;exploiter le plein potentiel de ces outils)</p>
+
+
+<p>Voyons un peu comment se d&#233;brouille GCC&#160;:</p>
+
+
+<pre>
+  int bar(int a) {
+        return 1+a;
+  }
+  
+  int foo(int a) {
+        return 2+bar(a);
+  }
+  
+  int main() {
+        foo(3);
+  }
+</pre>
+
+
+<pre>
+  $ gcc -O0 -g -S t.c
+</pre>
+
+
+<pre>
+  .globl bar
+        .type   bar, @function
+  bar:
+  .LFB2:
+        .file 1 &quot;t.c&quot;
+        .loc 1 1 0
+        pushq   %rbp
+  .LCFI0:
+        movq    %rsp, %rbp
+  .LCFI1:
+        movl    %edi, -4(%rbp)
+        .loc 1 2 0
+        movl    -4(%rbp), %eax
+        incl    %eax
+        .loc 1 3 0
+        leave
+        ret
+  .LFE2:
+        .size   bar, .-bar
+  .globl foo
+        .type   foo, @function
+</pre>
+
+
+<p>Les instructions cl&#233;s sont .file et .loc&#160;:</p>
+
+
+<ul>
+<li>.file d&#233;clare un chemin vers un fichier et l&#8217;associe &#224; un
+identifiant<br /></li>
+</ul>
+
+
+<p>-&gt; .file $identifiant$ &quot;$chemin_du_fichier&quot;</p>
+
+
+<ul>
+<li>.loc associe un fichier, un num&#233;ro de ligne et de colonne aux instructions
+la succ&#233;dant<br /></li>
+</ul>
+
+
+<p>-&gt; .loc $identifiant_de_fichier$ $ligne$ $colonne$</p>
+
+
+<h2>Solution propos&#233;e</h2>
+
+
+<p>Le module du compilateur qui g&#233;n&#232;re les instructions est&#160;: <a href="http://camlcvs.inria.fr/cgi-bin/cvsweb/ocaml/asmcomp/i386/emit.mlp?rev=1.41.2.2;only_with_tag=release311" hreflang="en">asmcomp/i386/emit.mlp</a><br />
+Et plus particuli&#232;rement la fonction <em>fundecl</em>&#160;:</p>
+
+
+<pre>
+  let fundecl fundecl =
+    function_name := fundecl.fun_name;
+    fastcode_flag := fundecl.fun_fast;
+    (* ... *)
+    `   .globl  {emit_symbol fundecl.fun_name}
+`;
+    `{emit_symbol fundecl.fun_name}:
+`;
+    if !Clflags.gprofile then emit_profile();
+    let n = frame_size() - 4 in
+    if n &gt; 0 then
+      ` subl    ${emit_int n}, %esp
+`;
+    `{emit_label !tailrec_entry_point}:
+`;
+    emit_all true fundecl.fun_body;
+    List.iter emit_call_gc !call_gc_sites;
+    emit_call_bound_errors ();
+    List.iter emit_float_constant !float_constants;
+    match Config.system with
+      &quot;linux_elf&quot; | &quot;bsd_elf&quot; | &quot;gnu&quot; -&gt;
+        `       .type   {emit_symbol fundecl.fun_name},@function
+`;
+        `       .size   {emit_symbol fundecl.fun_name},.-{emit_symbol fundecl.fun_name}
+`
+    | _ -&gt; ()
+</pre>
+
+
+<p>Hors nous n&#8217;avons &#224; disposition que la variable fundecl&#160;:</p>
+
+
+<pre>
+  type fundecl = 
+  { fun_name: string;
+    fun_body: instruction;
+    fun_fast: bool } 
+  type instruction =
+  { mutable desc: instruction_desc;
+    mutable next: instruction;
+    arg: Reg.t array;
+    res: Reg.t array;
+    dbg: Debuginfo.t;
+    live: Reg.Set.t }
+</pre>
+
+
+<p>Il y a bien un attribut dbg sur les instructions mais il est rarement
+renseign&#233;. (une compilation avec l&#8217;option -dlinear permet de le voir)</p>
+
+
+<p>J&#8217;ai d&#233;cid&#233; d&#8217;ajouter un attribut <em>fun_dbg&#160;: Debuginfo.t</em> sur
+<em>fundecl</em> et de le remplir dans toutes les phases de compilation. Il
+serait peut &#234;tre plus judicieux de travailler sur l&#8217;attribut <em>dbg</em> des
+instructions&#160;? (car cela permettrait par la suite d&#8217;indiquer les lignes de
+chaque instruction &#224; valgrind, mais aussi gdb!) Ce patch n&#8217;est pas optimis&#233; car
+il r&#233;p&#232;te l&#8217;instruction .file pour chaque .loc, donc &#224; chaque ent&#234;te de
+fonction, nous avons un .file et un .loc.</p>
+
+
+<p>-&gt; <a href="/public/patch-file-and-loc-v1-cvs-2008-11-11.patch">Patch sur
+la branche release311</a><br />
+<br /></p>
+
+
+<p>Voyons maintenant ce qu&#8217;apporte ce patch.</p>
+
+
+<h2>R&#233;sultats avec gdb</h2>
+
+
+<pre>
+  $ ocamlopt -g -inline 0 t.ml
+  $ gdb a.out
+  (gdb) break t.ml:6
+  Breakpoint 1 at 0x8049940: file t.ml, line 6.
+  (gdb) run
+  Starting program: /home/alex/callgraph/a.out 
+  
+  Breakpoint 1, camlT__foo_60 () at t.ml:6
+  6       let foo i  =
+  Current language:  auto; currently asm
+
+  (gdb) backtrace
+  #0  camlT__foo_60 () at t.ml:7
+  #1  0x0804c570 in camlT__entry () at t.ml:12
+  #2  0x0806e4b7 in caml_start_program ()
+  
+  (gdb) step 1
+  camlT__bar_58 () at t.ml:2
+  2       let bar i =
+  
+  (gdb) list
+  1
+  2       let bar i =
+  3               1+i
+  4       ;;
+  5
+  6       let foo i  =
+  7               2+(bar i )
+  8       ;;
+  9
+  10      let () =
+</pre>
+
+
+<h2>R&#233;sultats avec gprof</h2>
+
+
+<pre>
+  $ ocamlopt -g -p -inline 0 t.ml
+  $ ./a.out
+  $ gprof -A
+  *** File /home/alex/callgraph/t.ml:
+                  
+           1 -&gt; let bar i =
+                        Thread.delay 3.0;
+                        1+i
+                ;;
+                
+           1 -&gt; let foo i  =
+                        2+(bar i )
+                ;;
+                
+                let () =
+           1 -&gt;         let closure() = 3 in
+                        print_int ( foo (closure()) )
+                ;;
+                
+  Top 10 Lines:
+
+     Line      Count
+        2          1
+        7          1
+       12          1
+
+  Execution Summary:
+
+        3   Executable lines in this file
+        3   Lines executed
+   100.00   Percent of the file executed
+
+        3   Total number of line executions
+     1.00   Average executions per line
+</pre>
+
+
+<h2>R&#233;sultats avec valgrind/kcachegrind</h2>
+
+
+<pre>
+  $ ocamlopt -g -inline 0 t.ml
+  $ valgrind --tool=callgrind ./a.out
+  $ callgrind_annotate callgrind.out.2152 t.ml
+  --------------------------------------------------------------------------------
+  -- User-annotated source: t.ml
+  --------------------------------------------------------------------------------
+  .  
+  8  let bar i =
+  77,715  =&gt; thread.ml:camlThread__delay_75 (1x)
+  .      Thread.delay 3.0;
+  .      1+i
+  .  ;;
+  .  
+  3  let foo i  = 
+  77,723  =&gt; t.ml:camlT__bar_58 (1x)
+  .      2+(bar i )
+  .  ;;
+  .  
+  .  let () =
+  13          let closure() = 3 in
+  1,692  =&gt; pervasives.ml:camlPervasives__output_string_215 (1x)
+  2,312  =&gt; pervasives.ml:camlPervasives__string_of_int_154 (1x)
+  77,726  =&gt; t.ml:camlT__foo_60 (1x)
+  .      print_int ( foo (closure()) )
+  .  ;;
+  .  
+  $ kcachegrind callgrind.out.2152
+</pre>
+
+
+<p><img src="/public/./.kcachegrind-file-and-line_m.jpg" alt="kcachegrind-file-and-line.png" style="display:block; margin:0 auto;" title="kcachegrind-file-and-line.png, nov 2008" /></p>
+
+
+<p><br />
+<br /></p>
+
+
+<h2>Et apr&#232;s&#160;?</h2>
+
+
+<p>On peut esp&#233;rer encore un tas d&#8217;am&#233;liorations, comme&#160;:</p>
+
+
+<ul>
+<li>des breakpoints sur n&#8217;importe quelle ligne de caml &#8230;</li>
+<li>un pluging gdb pour pouvoir lire des valeurs pendant un break!</li>
+</ul>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/11/07/Functional-Programming-and-Finance/">Functional Programming and Finance</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-11-07T19:07:53+01:00" pubdate  data-updated="true" >Nov 7<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Qui l&#8217;eut cru&#160;? Le petit Eddy, vous savez celui au fond de la classe
+qui adore les proba et supporte tout juste les d&#233;lires de geek; et bien il est
+tomb&#233; lui aussi dans la spirale des langages modernes!</p>
+
+
+<p>Il vient m&#234;me de lancer tout seul un blog sur la promotion du F# dans la
+finance :<br />
+<a href="http://it-quant.blogspot.com/" hreflang="en">IT quant</a><br />
+Et oui, ils sont encore dans les solutions propri&#233;taires en C &#8230; ++ !!!<br />
+Enfin, je le promets, je n&#8217;y suis pour pas grand chose pour son int&#233;r&#234;t au
+F#<br /></p>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/06/20/ocaml-callgraph/">Ocaml Callgraph</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-06-20T18:11:47+02:00" pubdate  data-updated="true" >Jun 20<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://kcachegrind.sourceforge.net/" hreflang="en">KCacheGrind</a>&#160;: un outil simple mais diablement efficace pour
+analyser les callgraph de programmes en C (ou python, php, perl, &#8230;) afin de
+faire du d&#233;bogage ou encore de l&#8217;analyse de performance.</p>
+
+
+<h3>Situation actuelle avec un programme caml simple</h3>
+
+
+<p><strong>Exemple utilis&#233; :</strong></p>
+
+
+<pre>
+let bar i =
+        1+i
+;;
+
+let foo i  =
+        2+(bar i )
+;;
+
+let () = 
+        print_int ( foo 3 )
+;;
+</pre>
+
+
+<ul>
+<li>D&#8217;abord nous compilons en d&#233;sactivant les optimisations qui pourraient
+&#233;liminer ces fonctions triviales</li>
+</ul>
+
+
+<pre>
+$ ocamlopt -inline 0 -o foo t.ml
+</pre>
+
+
+<ul>
+<li>Puis nous ex&#233;cutons ce test via <a href="http://valgrind.org/" hreflang="en">valgrind</a> qui g&#233;n&#232;re un fichier au format &quot;callgrind&quot;, contenant
+l&#8217;ordre d&#8217;appel des fonctions ainsi que les estimations du temps pass&#233; dans
+chacune d&#8217;entre elles&#160;:</li>
+</ul>
+
+
+<pre>
+$ valgrind --tool=callgrind ./foo
+</pre>
+
+
+<ul>
+<li>Enfin, on regarde le r&#233;sultat sous kcachegrind</li>
+</ul>
+
+
+<pre>
+$ kcachegrind callgrind.out.10624
+</pre>
+
+
+<p><img src="/public/t-caml-without-patch-callgr.png" alt="t-caml-without-patch-callgr.png" style="display:block; margin:0 auto;" /></p>
+
+
+<p>Mais voil&#224;, l&#8217;assembleur g&#233;n&#233;r&#233; par le compilateur caml ne contient pas
+toutes les instructions utilis&#233;es par valgrind lors de l&#8217;analyse du programme.
+Ainsi, aucun label de fonction n&#8217;apparait et nous n&#8217;avons le droit qu&#8217;&#224; des
+adresses m&#233;moire en hexad&#233;cimal :(</p>
+
+
+<p><strong>/!\ Probl&#232;me corrig&#233; pour la version 3.11&#160;: <a href="http://caml.inria.fr/mantis/bug_view_page.php?bug_id=4642" hreflang="en">d&#233;tails</a></strong></p>
+
+
+<h3>Exemple du fonctionnement normal en C</h3>
+
+
+<p>Voyons comment valgrind fonctionne avec du C&#160;:</p>
+
+
+<pre>
+int bar(int a) {
+        return 1+a;
+}
+
+int foo(int a) {
+        return 2+bar(a);
+}
+
+int main() {
+        foo(3);
+}
+</pre>
+
+
+<pre>
+$ gcc -O0 -o foo t.c
+$ valgrind --tool=callgrind ./foo
+$ kcachegrind callgrind.out.10719
+</pre>
+
+
+<p><img src="/public/t-c-callgraph.png" alt="t-c-callgraph.png" style="display:block; margin:0 auto;" /></p>
+
+
+<p>Cette fois-ci, nous obtenons un graphe correct avec le nom des fonctions;
+Regardons maintenant l&#8217;assembleur g&#233;n&#233;r&#233; par gcc</p>
+
+
+<pre>
+ $gcc -O0 -S t.c
+</pre>
+
+
+<p><strong>Assembleur de GCC :</strong></p>
+
+
+<pre>
+        .file   &quot;t.c&quot;
+        .text
+.globl bar
+        .type   bar, @function
+bar:
+        pushl   %ebp
+        movl    %esp, %ebp
+        movl    8(%ebp), %eax
+        incl    %eax
+        popl    %ebp
+        ret
+        .size   bar, .-bar
+.globl foo
+        .type   foo, @function
+foo:
+        pushl   %ebp
+        movl    %esp, %ebp
+        subl    $4, %esp
+        movl    8(%ebp), %eax
+        movl    %eax, (%esp)
+        call    bar
+        addl    $2, %eax
+        leave
+        ret
+        .size   foo, .-foo
+</pre>
+
+
+<p>Comparons maintenant celui-ci &#224; l&#8217;assembleur g&#233;n&#233;r&#233; par le compilateur
+ocaml&#160;: <strong>Assembleur OCaml</strong></p>
+
+
+<pre>
+        .text
+        .align  16
+     .globl     camlT__bar_58
+        .type   camlT__bar_58,@function
+camlT__bar_58:
+.L100:
+        addl    $2, %eax
+        ret
+        .text
+        .align  16
+     .globl     camlT__foo_60
+        .type   camlT__foo_60,@function
+camlT__foo_60:
+.L101:
+        call    camlT__bar_58
+.L102:
+        addl    $4, %eax
+        ret
+</pre>
+
+
+<p>Dans les deux cas, nous retrouvons bien nos deux fonctions foo et bar avec
+les instructions&#160;: .globl, .type mais il manque .size &#224; la fin des
+fonctions caml! Ceci est la source du probl&#232;me pour valgrind, car apr&#232;s analyse
+de son code source, il ignore les fonctions de taille nulle &#8230;</p>
+
+
+<h3>Solution</h3>
+
+
+<p>Il suffit d&#8217;appliquer ce minuscule patch sur le compilateur ocaml pour
+g&#233;n&#233;rer des ex&#233;cutables ELF valides aux yeux de valgrind&#160;: <a href="/public/patch-alter_elf_for_valgrind-cvs-080620.patch">patch-alter_elf_for_valgrind-cvs-080620</a><br />
+
+(Patch r&#233;alis&#233; sur la version CVS, qui correspond &#224; la futur version 3.11)</p>
+
+
+<p>Nous obtenons alors le callgraph suivant sur le premier exemple&#160;:
+<img src="/public/t-caml-valid-callgraph.png" alt="t-caml-valid-callgraph.png" style="display:block; margin:0 auto;" /></p>
+
+
+<h3>Exemple sur un vrai projet utilisant ocamlnet&#160;:</h3>
+
+
+<p><a href="/public/callgraph-with-patch2.png"><img src="/public/./.callgraph-with-patch2_m.jpg" alt="callgraph-with-patch2.png" style="display:block; margin:0 auto;" /></a></p>
+
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/03/04/OCaml-embarque-et-flash/">OCaml, Embarqu&#233; Et Flash</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-03-04T23:38:52+01:00" pubdate  data-updated="true" >Mar 4<span>th</span>, 2008</time></p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Qu&#8217;on le veuille ou non, OCaml est utilisable dans l&#8217;embarqu&#233;!</p>
+
+
+<h2>Chumby</h2>
+
+
+<p>Cette sorte de nabaztag en forme de radio reveil propose de d&#233;velopper des
+interfaces/widgets en flash, &#224; l&#8217;aide du compilateur ActionScript de Motion
+twin&#160;: <a href="http://www.mtasc.org/" hreflang="en">MTASC</a><br />
+Donc l&#8217;&#233;quipe a int&#233;gr&#233; dans son sdk le compilateur MTASC et &#8230; le compilateur
+OCaml puisqu&#8217;il est lui m&#234;me &#233;crit en caml!<br />
+<a href="http://www.chumby.com/" hreflang="fr">Chumby</a><br />
+<a href="http://forum.chumby.com/viewtopic.php?pid=9801#9801" hreflang="fr">Annonce sur le forum chumby</a></p>
+
+
+<h2>Ming</h2>
+
+
+<p>Tant que nous parlons de flash, il faut noter l&#8217;existence d&#8217;un binding pour
+la librairie ming pour g&#233;n&#233;rer des animations flash :<br />
+<a href="http://www.linux-nantes.org/~fmonnier/OCaml/ming/" hreflang="en">Binding ming</a><br />
+<a href="http://www.linux-nantes.org/~fmonnier/OCaml/ming/set_line.ml.php" hreflang="en">Exemple d&#8217;animation</a></p>
+
+
+<h2>IPhone</h2>
+
+
+<p>L&#8217;interpr&#233;teur caml est aussi cross compilable pour l&#8217;iphone.<br />
+<a href="http://web.yl.is.s.u-tokyo.ac.jp/~tosh/ocaml-on-iphone/" hreflang="en">Patch et guide tutorial de compilation</a></p>
+
+</div>
+  
+  
+
+
+  </article>
+
+<nav role="pagination">
+  <div>
+    
+      <a class="prev" href="/page/4/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/page/2/">Newer &rarr;</a>
+    
+  </div>
+</nav>
+
+</div>
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>

@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>dynamique vs statique - Techno Barje</title>
+  <meta name="author" content="Alexandre Poirot">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <link rel="canonical" href="http://techno-barje.fr/2008/02/21/dynamique-vs-statique/">
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Techno Barje" type="application/atom+xml"/>
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body  >
+  <header><hgroup>
+  <h1><a href="/">Techno Barje</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role=navigation><ul role=subscription data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:techno-barje.fr" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://anacomda.hd.free.fr/resume/">About me/Resume</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">Dynamique vs Statique</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-02-21T15:24:52+01:00" pubdate  data-updated="true" >Feb 21<span>st</span>, 2008</time></p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Les langages dynamiques comme Python, PHP, Ruby ou encore Javascript ont le
+vent en poupe, car ils apportent un net gain en <em>productivit&#233;
+<del>&#233;ph&#233;m&#232;re</del> instantan&#233;e</em>.<br />
+Lorsque l&#8217;on d&#233;veloppe dans ces langages, on boucle sur des cycles&#160;:
+<strong>coder puis regarder</strong>&#160;:</p>
+
+
+<ul>
+<li>on modifie le code source du programme, et,</li>
+<li>on va directement voir le r&#233;sultat en ex&#233;cutant l&#8217;application &#8230;</li>
+</ul>
+
+
+<p>Dans le cas des langages &#224; typage statique, nous sommes oblig&#233;s de rajouter
+une &#233;tape interm&#233;diaire&#160;: <strong>coder, compiler et &#233;ventuellement
+regarder</strong>&#160;:</p>
+
+
+<ul>
+<li>on commence toujours pas modifier notre code source, puis,</li>
+<li>nous sommes oblig&#233;s de cliquer sur un bouton ou de lancer un make pour la
+compilation, et enfin,</li>
+<li>suivant le r&#233;sultat de la compilation, soit on se lance dans un nouveau
+cycle en cas d&#8217;erreur, ou alors, on ex&#233;cute l&#8217;application pour valider des
+besoins fonctionnels ou visuels.<br /></li>
+</ul>
+
+
+<p>Donc oui, un programme d&#233;velopp&#233; &#224; l&#8217;aide d&#8217;un langage statique prendra plus
+de temps car l&#8217;&#233;tape de compilation nous oblige &#224; supprimer toute erreur de
+typage, de syntaxe et souvent bon nombre d&#8217;erreurs d&#8217;inattention. De plus cette
+&#233;tape de compilation ne supprime pas l&#8217;&#233;tape &quot;lancer le programme&quot;, que nous
+devons toujours effectuer afin de valider les specs fonctionnelles ou
+graphiques.<br /></p>
+
+
+<p>Mais ce temps pass&#233; &#224; faire valider notre code par le compilateur n&#8217;est pas
+sans b&#233;n&#233;fices, puisque notre programme sera plus fiable et n&#8217;&#233;mettra aucune
+erreur purement informatique&#160;: typage, syntaxe, &#8230;<br />
+Ainsi, <strong>les erreurs sont pr&#233;sent&#233;es au d&#233;veloppeur et en aucun cas &#224;
+l&#8217;utilisateur</strong> qui ne devrait en aucun cas avoir &#224; g&#233;rer, ni
+comprendre, ni m&#234;me voir une telle erreur! <sup>[<a href="#pnote-212155-1" id="rev-pnote-212155-1" name="rev-pnote-212155-1">1</a>]</sup></p>
+
+
+<h3>Tests unitaires</h3>
+
+
+<p>Oui mais certains diront&#160;: on peut d&#233;velopper en mode <em><a href="http://fr.wikipedia.org/wiki/Extreme_programming" hreflang="fr">Extreme
+programming</a></em> ou encore <em>Programmation agile</em> en agr&#233;mentant une
+base de tests unitaires tout au long du d&#233;veloppement. Cela se tient si l&#8217;on
+fait des tests unitaires doubl&#233;s de <a href="http://fr.wikipedia.org/wiki/Couverture_de_code" hreflang="fr">couverture de
+code</a> maintenue &#224; 100% afin de s&#8217;assurer d&#8217;ex&#233;cuter l&#8217;int&#233;gralit&#233; du code
+source par les tests et ainsi &#233;viter l&#8217;affichage de moultes erreurs aux yeux
+&#233;bahis de nos utilisateurs.<br />
+Mais cela engendre un volume de travail suppl&#233;mentaire loin d&#8217;&#234;tre n&#233;gligeable!
+On peut m&#234;me se demander si les tests ne font pas que reproduire l&#8217;action d&#8217;un
+compilateur analysant notre programme ?<br />
+Pour rester objectif, je dirais que de tels tests vont plus loin et permettent
+par exemple de valider des specs fonctionelles et nous obtenons au final un
+logiciel modulaire, <ins>sp&#233;cifi&#233;</ins> et solide.<sup>[<a href="#pnote-212155-2" id="rev-pnote-212155-2" name="rev-pnote-212155-2">2</a>]</sup>&#8217;<br />
+Mais je reste perplexe quand au temps de d&#233;veloppement n&#233;cessaire si l&#8217;on
+compare &#224; n&#8217;importe quel langage statique agr&#233;ment&#233; de quelques tests
+unitaires/fonctionnels (naturellement plus succincts).<br />
+D&#8217;autre part, il ne faut pas oublier que la <a href="http://fr.wikipedia.org/wiki/Loi_de_Pareto" hreflang="fr">r&#232;gle des 80/20</a>
+s&#8217;applique &#224; tout, y compris &#224; l&#8217;informatique et &#224; notre sujet de
+discussion&#160;: on peut souvent r&#233;aliser une application fonctionnelle &#224; 80%
+avec 20% du temps n&#233;cessaire pour faire l&#8217;application finale&#160;: fiable et
+maintenable par d&#8217;autres d&#233;veloppeurs.</p>
+
+
+<h3>Refactoring et &#233;volution <sup>[<a href="#pnote-212155-3" id="rev-pnote-212155-3" name="rev-pnote-212155-3">3</a>]</sup></h3>
+
+
+<p>Enfin, je tiens &#224; mettre en avant un probl&#232;me s&#233;rieux lorsque l&#8217;on doit
+faire &#233;voluer une application &#233;crite &#224; l&#8217;aide d&#8217;un langage dynamique. En effet,
+dans ce cas de figure, nous devons &#224; coup s&#251;r modifier des structures de
+donn&#233;es&#160;: faire &#233;voluer un attribut entier vers un objet plus complexe, ou
+encore modifier le nom d&#8217;une fonction ou ses param&#232;tres, ou pire encore&#160;:
+changer le type de sortie d&#8217;une fonction! Et &#224; moins d&#8217;utiliser des outils
+avanc&#233;s comme IntelliJ ou Eclipse, <strong>les &#233;tapes de refactoring(r&#233;&#233;criture
+de code) seront laborieuses, incompl&#232;tes et vont d&#233;cupler le nombre d&#8217;erreur
+signal&#233;es &#224; l&#8217;ex&#233;cution</strong> &#8230;<br />
+Enfin, il faut rester conscient que ces outils ne pourront jamais rejoindre le
+niveau de v&#233;rification effectu&#233; par le compilateur d&#8217;un langage typ&#233;
+statiquement, et ce, &#224; cause de la nature dynamique du langage.</p>
+
+
+<div class="footnotes">
+<h4>Notes</h4>
+<p>[<a href="#rev-pnote-212155-1" id="pnote-212155-1" name="pnote-212155-1">1</a>] <a href="http://pinderkent.blogsavy.com/archives/157" hreflang="en">Billet sur les erreurs &#224; l&#8217;ex&#233;cution</a></p>
+<p>[<a href="#rev-pnote-212155-2" id="pnote-212155-2" name="pnote-212155-2">2</a>] les tests unitaires sont une bonne chose et je
+reviendrais la dessus</p>
+<p>[<a href="#rev-pnote-212155-3" id="pnote-212155-3" name="pnote-212155-3">3</a>] <a href="http://blogs.tedneward.com/2008/01/24/Can+Dynamic+Languages+Scale.aspx" hreflang="en">Billet sur l&#8217;&#233;volutivit&#233; du dynamique</a></p>
+</div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Alexandre Poirot</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-02-21T15:24:52+01:00" pubdate  data-updated="true" >Feb 21<span>st</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/ocaml/'>ocaml</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://techno-barje.fr/2008/02/21/dynamique-vs-statique/" data-via="technobarje" data-counturl="http://techno-barje.fr/2008/02/21/dynamique-vs-statique/" >Tweet</a>
+  
+  
+</div>
+
+    
+  </footer>
+</article>
+
+</div>
+
+<aside role=sidebar>
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2011/03/31/Jetpack-runner/">Jetpack runner</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/01/08/Arretetoi.la-geolocalisation-horodate/">Arretetoi.la - la g&#233;olocalisation horodat&#233;!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part2-cool-function-to-power-up-route%2C-directions/">Google maps hacks part2 - cool function to power up route, directions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/11/04/Google-maps-hacks-part1-auto-suggest-location-in/">Google maps hacks part1 - auto-suggest location in &lt;input></a>
+      </li>
+    
+      <li class="post">
+        <a href="/2010/10/06/UIWebView-secrets-part3-How-to-properly-call-ObjectiveC-from-Javascript/">UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ochameau">@ochameau</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ochameau',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("technobarje", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <p>Follow <a href="http://twitter.com/technobarje">@technobarje</a></p>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer><p>
+  Copyright &copy; 2011 - Alexandre Poirot -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4814612-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+</body>
+</html>
