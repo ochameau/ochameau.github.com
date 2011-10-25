@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Ocaml native code debugging"
-date: 2009-11-02 22:47:49
+date: 2009-11-02
 comments: true
 categories: [ocaml]
 ---

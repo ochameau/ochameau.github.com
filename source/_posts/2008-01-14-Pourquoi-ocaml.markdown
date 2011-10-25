@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Mais pourquoi ocaml ?"
-date: 2008-01-14 21:24:50
+date: 2008-01-14
 comments: true
 categories: [ocaml]
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "OCaml \"existe\"."
-date: 2007-12-26 18:01:31
+date: 2007-12-26
 comments: true
 categories: [ocaml]
 ---

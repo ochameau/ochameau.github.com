@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Yoono Desktop Portable"
-date: 2009-10-31 00:11:14
+date: 2009-11-06
 comments: true
 categories: [mozilla]
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "How to setup a mozilla extension update server"
-date: 2009-10-02 19:19:13
+date: 2009-10-08
 comments: true
 categories: [mozilla]
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Freemonkeys"
-date: 2010-02-11 22:32:44
+date: 2010-02-12
 comments: true
 categories: [mozilla]
 ---

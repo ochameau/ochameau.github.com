@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "XUL Profiler"
-date: 2008-12-11 18:51:59
+date: 2008-12-11
 comments: true
 categories: [mozilla]
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Un noyau en OCaml"
-date: 2008-02-26 17:04:35
+date: 2008-02-26
 comments: true
 categories: [ocaml]
 ---

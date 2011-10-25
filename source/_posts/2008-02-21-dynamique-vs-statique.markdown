@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "dynamique vs statique"
-date: 2008-02-21 14:24:52
+date: 2008-02-21
 comments: true
 categories: [ocaml]
 ---

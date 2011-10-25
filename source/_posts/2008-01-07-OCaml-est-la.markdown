@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "OCaml est l&#224;"
-date: 2008-01-07 21:16:26
+date: 2008-01-07
 comments: true
 categories: [ocaml]
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "jsctypes + win32api + jetpack = jetintray"
-date: 2010-08-26 23:04:20
+date: 2010-08-27
 comments: true
 categories: [mozilla]
 ---

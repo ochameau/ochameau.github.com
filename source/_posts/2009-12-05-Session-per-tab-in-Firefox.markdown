@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Session per tab in Firefox"
-date: 2009-12-05 19:10:32
+date: 2009-12-05
 comments: true
 categories: [mozilla]
 ---

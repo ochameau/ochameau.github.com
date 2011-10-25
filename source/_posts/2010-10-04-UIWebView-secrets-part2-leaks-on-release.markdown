@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "UIWebView secrets - part2 - leaks on release"
-date: 2010-10-04 16:08:40
+date: 2010-10-04
 comments: true
 categories: [iphone-sdk]
 ---

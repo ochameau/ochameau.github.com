@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "CSS animation+CSS transform+SVG powered by Firefox = Kaleidoscope"
-date: 2010-09-20 22:10:26
+date: 2010-09-27
 comments: true
 categories: [mozilla]
 ---

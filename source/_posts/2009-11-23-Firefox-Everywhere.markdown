@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Firefox Everywhere"
-date: 2009-11-22 22:37:47
+date: 2009-11-23
 comments: true
 categories: [mozilla]
 ---

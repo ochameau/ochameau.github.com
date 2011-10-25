@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "La 3D et le fonctionnel"
-date: 2008-01-29 22:43:53
+date: 2008-01-29
 comments: true
 categories: [ocaml]
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "UIWebView secrets - part1 - memory leaks on xmlhttprequest"
-date: 2010-10-04 13:58:33
+date: 2010-10-04
 comments: true
 categories: [iphone-sdk]
 ---

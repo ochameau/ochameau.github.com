@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Le fonctionnel arrive"
-date: 2008-01-07 22:01:30
+date: 2008-01-07
 comments: true
 categories: [ocaml]
 ---

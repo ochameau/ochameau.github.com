@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Jetpack runner"
-date: 2011-03-31 01:58:47
+date: 2011-03-31
 comments: true
 categories: [mozilla]
 ---

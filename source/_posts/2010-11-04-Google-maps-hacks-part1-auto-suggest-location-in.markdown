@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Google maps hacks part1 - auto-suggest location in &lt;input>"
-date: 2010-11-04 15:21:46
+date: 2010-11-04
 comments: true
 categories: [web-apis]
 ---

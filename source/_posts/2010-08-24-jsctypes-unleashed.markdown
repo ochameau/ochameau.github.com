@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "jsctypes unleashed"
-date: 2010-08-24 15:53:21
+date: 2010-08-24
 comments: true
 categories: [mozilla]
 ---

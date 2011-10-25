@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "UIWebView secrets - part3 - How to properly call ObjectiveC from Javascript"
-date: 2010-10-06 17:02:38
+date: 2010-10-06
 comments: true
 categories: [iphone-sdk]
 ---

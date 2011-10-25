@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Functional Programming and Finance"
-date: 2008-11-07 18:07:53
+date: 2008-11-07
 comments: true
 categories: []
 ---

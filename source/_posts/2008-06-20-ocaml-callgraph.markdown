@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "ocaml callgraph"
-date: 2008-06-20 16:11:47
+date: 2008-06-20
 comments: true
 categories: [ocaml]
 ---

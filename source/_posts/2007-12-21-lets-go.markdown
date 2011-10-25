@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "let's go"
-date: 2007-12-21 17:06:48
+date: 2007-12-21
 comments: true
 categories: []
 ---

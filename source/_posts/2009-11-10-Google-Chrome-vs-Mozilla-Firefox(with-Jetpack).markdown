@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Hackability test : Google Chrome vs Mozilla Firefox (with Jetpack)"
-date: 2009-11-10 11:25:10
+date: 2009-11-10
 comments: true
 categories: [mozilla]
 ---

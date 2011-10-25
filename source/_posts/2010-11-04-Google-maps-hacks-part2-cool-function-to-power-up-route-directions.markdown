@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Google maps hacks part2 - cool function to power up route, directions"
-date: 2010-11-04 17:18:03
+date: 2010-11-04
 comments: true
 categories: [web-apis]
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Headless xulrunner"
-date: 2009-09-30 16:27:13
+date: 2009-09-30
 comments: true
 categories: [mozilla]
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Catch all requests to a specific mime type/file extension in Firefox"
-date: 2009-10-30 22:55:33
+date: 2009-11-02
 comments: true
 categories: [mozilla]
 ---

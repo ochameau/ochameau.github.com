@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "OCaml, embarqu&#233; et flash"
-date: 2008-03-04 22:38:52
+date: 2008-03-04
 comments: true
 categories: [ocaml]
 ---

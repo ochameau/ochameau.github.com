@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Mozilla Mccoy tool from the command line"
-date: 2009-10-02 19:18:09
+date: 2009-10-05
 comments: true
 categories: [mozilla]
 ---

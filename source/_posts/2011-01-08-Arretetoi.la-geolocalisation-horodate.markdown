@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Arretetoi.la - la g&#233;olocalisation horodat&#233;!"
-date: 2011-01-08 22:25:18
+date: 2011-01-08
 comments: true
 categories: [web-apis]
 ---

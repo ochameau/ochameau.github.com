@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Mozilla memory profiling"
-date: 2009-11-14 22:05:23
+date: 2009-11-16
 comments: true
 categories: [mozilla]
 ---
