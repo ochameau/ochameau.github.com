@@ -1,0 +1,72 @@
+---
+layout: post
+title: "JS Ctypes"
+date: 2009-10-11 20:55:46
+comments: true
+categories: [mozilla]
+---
+<blockquote>Bug 518721 - Implement jsctypes with raw JSAPI<br />
+Status: SOLVED FIXED!!!<br /></blockquote>
+<p>That's an awesome news for mozilla's developpers!<br />
+<a href="https://wiki.mozilla.org/JSctypes">JS Ctypes</a> aims to provide the
+same library than <a href="http://docs.python.org/library/ctypes.html">Python
+Ctypes</a> :</p>
+<p>You can load any dynamic library (dll, so, dylib) and call
+<b>C</b>-functions directly from your Javascript. In the current implementation
+only simple types are supported : numbers, string, boolean. For now, we can't
+play with pointers, nor structures, but these features are <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=513788">planned</a>.</p>
+<br />
+<h3>simpler code -&gt; less work -&gt; simpler review</h3>
+<p>This new feature is going to greatly ease platform specific developpement
+like windows management, system calls, ... For example we're able to call
+Windows API directly from Javascript, without having to create, compile and
+maintain any C++ XPCOM!<br />
+One side effect is that it will ease code review for
+https://addons.mozilla.org/ too! Instead of shipping an obscure dynamic library
+with our extension, we may build only a JS-Ctypes wrapper and call directly OS
+libraries or call a common library that can be validated by reviewers with some
+MD5 checks.</p>
+<br />
+<h2>simpler code -&gt; less knownledge -&gt; better learning curve</h2>
+<p>This is going to simplify the use of native code too! You can now build
+native code without having to learn any mozilla &quot;things&quot; (XPCOM, specific build
+layout/system, ...) You will just have to expose your library with a C api and
+write a simple JS-CTypes wrapper.</p>
+<br />
+<h2>Hello World!</h2>
+<ul>
+<li>First retrieve <a href="http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-mozilla-1.9.2/">Firefox
+3.6b1pre nightly</a> or <a href="http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-trunk/">Firefox
+3.7a1pre nightly</a></li>
+<li>On windows, copy and paste this code in your JS console.<br />
+This will display an OS native dialog.<br />
+<i>(Change the dll path if your main windows directory is not on
+C:\WINDOWS!)</i>
+<pre>
+/* Load JS Ctypes Javascript module */
+Components.utils.import(&quot;resource://gre/modules/ctypes.jsm&quot;);
+var Types = ctypes.types;
+
+/* Load windows api dll */
+var lib = ctypes.open(&quot;C:\\WINDOWS\\system32\\user32.dll&quot;);
+
+/* Declare the signature of the function we are going to call */
+var msgBox = lib.declare(&quot;MessageBoxW&quot;,
+                         ctypes.stdcall_abi,
+                         ctypes.int32_t,
+                         ctypes.int32_t,
+                         ctypes.ustring,
+                         ctypes.ustring,
+                         ctypes.int32_t);
+var MB_OK = 3;
+
+/* Do it! */
+var ret = msgBox(0, &quot;Hello world&quot;, &quot;title&quot;, MB_OK);
+
+/* Display the returned value */
+alert(&quot;MessageBox result : &quot;+ret);
+
+lib.close();
+</pre></li>
+</ul>
+<br />

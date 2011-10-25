@@ -1,0 +1,20 @@
+---
+layout: post
+title: "let's go"
+date: 2007-12-21 17:06:48
+comments: true
+categories: []
+---
+<p>Bon aller, je me lance!<br />
+Rien de bien original en cette fin d'ann&#233;e 2007 &#224; lancer un blog, n&#233;anmoins,
+j'esp&#232;re l'agr&#233;menter r&#233;guli&#232;rement de contenu passionn&#233; afin de promouvoir ma
+vision tr&#232;s personnelle de l'informatique.</p>
+<p>Ainsi, je vous invite vivement &#224; passer dans le coin si vous &#234;tes int&#233;ress&#233;s
+soit par les technologies employ&#233;es par <strong><a href="/tag/Mozilla">Mozilla</a></strong>&#160;: xul, html, xbl, rdf, xpcom, svg, &#8230;,
+ou si, &#224; l'oppos&#233; de l'univers du d&#233;veloppement logiciel, vous voyez dans le
+langage <strong><a href="/tag/OCaml">OCaml</a></strong> de grands espoirs.</p>
+<p>En effet, je vous montrerais par le biais de projets personnels ou
+professionnels le potentiel, la viabilit&#233;, les d&#233;fauts et les qualit&#233;s de ces
+technologies.</p>
+<p>PS&#160;: le th&#232;me n'est pas super, mais un tout beau arrive, merci
+Takyon!</p>
