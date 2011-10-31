@@ -75,7 +75,7 @@ delicious_user:
 delicious_count: 3
 
 # Disqus Comments
-disqus_short_name:
+disqus_short_name: technobarje
 
 # Google Analytics
 google_analytics_tracking_id: UA-4814612-1
