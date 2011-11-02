@@ -93,6 +93,7 @@ cm.Item({
 ```
 
 Now, they have two choices:
+
  * use a string written in their prefered language, like here. 
 So that they don't have to create a locale file.
  * use an ID. Instead of _("My Menu Item"), we will use: _("contextMenuLabel").
