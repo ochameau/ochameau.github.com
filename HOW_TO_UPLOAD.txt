@@ -1,0 +1,9 @@
+### new blog post
+cd ~/ochameau-*/source/_posts/
+
+### upload
+cd ~/ochameau-truc
+jekyll
+cd public/
+lftp -e "mirror -R -n -x .git" sftp://107836@sftp.dc0.gpaas.net/vhosts/test.techno-barje.fr/htdocs/
+
