@@ -15,7 +15,7 @@ Let's start by looking at a concrete example, then I'll justify our different ch
 
 ``` javascript French locale file
 {
-  "Hello %s": "Bonjour %s"
+  "Hello %s": "Bonjour %s",
   "hello_user": "Bonjour %s"
 }
 ```
@@ -77,6 +77,7 @@ const _ = require("l10n").get;
 ```
 
 There is already multiple choices that has been made here:
+
  - `_` is not a _magic global_. We need to explicitely require it. 
 This choice will simplify compatibility with other CommonJS environnements, like NodeJS.
  - The name of the module itself is `l10n` instead of `localization` in order to ease the use of it.
@@ -96,11 +97,11 @@ Now, they have two choices:
 
  * use a string written in their prefered language, like here. 
 So that they don't have to create a locale file.
- * use an ID. Instead of _("My Menu Item"), we will use: _("contextMenuLabel").
+ * use an ID. Instead of `_("My Menu Item")`, we will use: `_("contextMenuLabel")`.
 But it forces to create a localization file in order to map `contextMenuLabel` to `My Menu Item`.
 
 Then, either a developer or a localizer can generate or modify locales files.
-Each jetpack package can have its own `locales` folder. 
+Each jetpack package can have its own `locale` folder. 
 This folder contains one JSON file per supported language.
 Here is how looks like a jetpack addon:
 
@@ -114,7 +115,7 @@ Here is how looks like a jetpack addon:
         * main.js      # main module to execute on startup
         * my-module.js # custom module that may use localization module
         * ...
-      * locales/       # our main interest!
+      * locale/       # our main interest!
         * en-US.json
         * fr-FR.json
         * en-GB.json
@@ -122,13 +123,13 @@ Here is how looks like a jetpack addon:
 
 The next iteration will add a new feature to our command line tool,
 that is going to generate or update a locale file for a given language by fetching localization strings from source code.
-For example, the following command will generate `my-addon/locales/fr-FR.json` file:
+For example, the following command will generate `my-addon/locale/fr-FR.json` file:
 
 ``` sh
 $ cfx fetch-locales fr-FR
 ```
 
-``` javascript my-addon/locales/fr-FR.json
+``` javascript my-addon/locale/fr-FR.json
 {
   "My Menu Item": "My Menu Item"
 }

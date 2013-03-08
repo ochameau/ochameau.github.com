@@ -1,6 +1,5 @@
 ---
 layout: post
-title: "Firefox OS Bootstrap: How to Build It on a VM"
 title: "How to write a new WebAPI in Firefox Desktop, mobile, OS - part 1 ?"
 date: 2013-02-14
 comments: true
