@@ -8,5 +8,5 @@ ssh vps141915.ovh.net
 cd ~/ochameau-truc
 jekyll
 cd public/
-lftp -e "mirror -R -n -x .git --ignore-time" sftp://root@vps141915.ovh.net/var/www/
+lftp -e "mirror -R -n -x .git --ignore-time; quit" sftp://root@vps141915.ovh.net/var/www/
 
