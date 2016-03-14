@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Session store as a Web Extension"
+title: "Session restore as a Web Extension"
 date: 2016-03-14
 comments: true
 categories: [mozilla, pm, web-extensions]
