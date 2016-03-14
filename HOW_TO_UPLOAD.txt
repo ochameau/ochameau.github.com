@@ -1,9 +1,12 @@
 ### new blog post
 cd ~/ochameau-*/source/_posts/
 
+## first connect to sftp, do ssh to host
+ssh vps141915.ovh.net
+
 ### upload
 cd ~/ochameau-truc
 jekyll
 cd public/
-lftp -e "mirror -R -n -x .git" sftp://107836@sftp.dc0.gpaas.net/vhosts/test.techno-barje.fr/htdocs/
+lftp -e "mirror -R -n -x .git --ignore-time" sftp://root@vps141915.ovh.net/var/www/
 
