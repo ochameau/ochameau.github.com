@@ -4,9 +4,14 @@ cd ~/ochameau-*/source/_posts/
 ## first connect to sftp, do ssh to host
 ssh vps141915.ovh.net
 
+## Fetch all content
+mkdir t
+rsync -az root@vps141915.ovh.net:/var/www/ t/
+
 ### upload
 cd ~/ochameau-truc
 jekyll
-cd public/
-lftp -e "mirror -R -n -x .git --ignore-time; quit" sftp://root@vps141915.ovh.net/var/www/
-
+# just print
+rsync -aznv public/ root@vps141915.ovh.net:/var/www/
+# do it
+rsync -azv public/ root@vps141915.ovh.net:/var/www/
