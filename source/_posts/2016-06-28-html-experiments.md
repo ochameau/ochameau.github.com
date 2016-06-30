@@ -11,10 +11,9 @@ Written with regular web technologies, served from http, refreshable via a key s
 
 ## How so?
 
-Follow these 4 steps:
+Follow these 3 steps:
 
 - Ensure running [Firefox Nightly][4],
-- Go to about:config and set "xpinstall.signatures.required" to false,
 - Install [this addon][3],
 - Visit this link: [browserui://rawgit.com/ochameau/planula-browser-advanced/addon-demo/][5].
 
@@ -113,7 +112,7 @@ Actually, we already have various patches to do that and would like to upstream 
 
 [1]: https://public.etherpad-mozilla.org/p/kill-xul-planning
 [2]: https://mail.mozilla.org/pipermail/firefox-dev/2015-July/003063.html
-[3]: http://techno-barje.fr/public/browserui-addon-0.1.xpi
+[3]: http://techno-barje.fr/public/browser_ui-0.1.2-fx.xpi
 [4]: https://nightly.mozilla.org/
 [5]: browserui://rawgit.com/ochameau/planula-browser-advanced/addon-demo/
 [6]: https://github.com/browserhtml/browserhtml/
