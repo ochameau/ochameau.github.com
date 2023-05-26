@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>TITLE - Techno Barje</title>
+
+  <script src="/loader.js"></script>
+  <link rel="component" href="/blog-article.wc">
+
+  <link href="/document.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<blog-article>
+    
+  <div class="entry-title">
+    <h1><a href="URL">TITLE</a></h1>
+  
+    <time datetime="DATE" pubdate>DATE_STRING</time>
+  </div>
+
+  <article>
+    ARTICLE
+  </article>
+
+  <section class="comments" data-host="MASTODON_HOST" data-id="TOOT_ID"MASTODON_HIDDEN>
+    <h1>Comments</h1>
+    <p>
+      You can use your Fediverse (i.e. Mastodon, among many others) account to reply to this <a href="MASTODON_LINK">post</a>
+    </p>
+    <noscript>
+      Please enable JavaScript to view the comments powered by the Fediverse.
+    </noscript>
+  </section>
+</blog-article>
+</body>
+</html>

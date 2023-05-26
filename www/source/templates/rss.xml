@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title>Techno Barje</title>
+  <link href="RSS_URL" rel="self"/>
+  <link href="HOME_URL"/>
+  <updated>UPDATED</updated>
+  <id>http://techno-barje.fr/</id>
+  <author>
+    <name>Alexandre Poirot</name>
+  </author>
+
+  ENTRIES
+</feed>

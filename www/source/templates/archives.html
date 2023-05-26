@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Techno Barje</title>
+
+  <script src="/loader.js"></script>
+  <link rel="component" href="/blog-article.wc">
+
+  <link href="/document.css" rel="stylesheet" type="text/css">
+
+  <style>
+    #blog-archives {
+      color: #aaa;
+    }
+    #blog-archives h1 {
+      margin: 0.3em 0;
+    }
+    #blog-archives h1 a {
+      text-decoration: none;
+      font-weight: normal;
+    }
+
+    #blog-archives h2 {
+      display: none;
+      font-weight: normal;
+    }
+
+    #blog-archives article {
+      padding: 1em 0 1em;
+      position: relative;
+      padding-bottom: .7em;
+    }
+
+    @media only screen and (min-width: 550px) {
+      #blog-archives {
+        padding-left: 55px;
+        padding-right: 55px;
+      }
+      #blog-archives article {
+        padding-left: 6.5em;
+        margin-left: 5em;
+      }
+      #blog-archives time {
+        position: absolute;
+        left: 0em;
+        top: 1.6em;
+      }
+      #blog-archives .year {
+          display: none;
+      }
+      #blog-archives h2 {
+        float: left;
+        display: inline-block;
+      }
+    }
+
+    #blog-archives time {
+      font-size: .9em;
+      line-height: 1.2em;
+    }
+    #blog-archives a.category, #blog-archives time {
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+  <blog-article>
+    <div id="blog-archives">
+      ARCHIVES
+    </div>
+
+  </blog-article>
+</body>
+</html>

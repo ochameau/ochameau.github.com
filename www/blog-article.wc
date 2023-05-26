@@ -1,0 +1,178 @@
+<template>
+  <header>
+    <hgroup>
+      <h1><a href="/">Techno Barje</a></h1>
+    </hgroup>
+  </header>
+
+  <nav role=navigation>
+    <ul>
+      <li><a href="/">Index</a></li>
+      <li><a href="/archives/">Archives</a></li>
+      <li><a href="/resume/">About me/Resume</a></li>
+    </ul>
+
+    <form action="http://google.com/search" method="get">
+      <fieldset role="search">
+        <input type="hidden" name="sitesearch" value="techno-barje.fr" />
+        <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+      </fieldset>
+    </form>
+
+    <ul role=subscription data-subscription="rss">
+      <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li> 
+    </ul>
+  </nav>
+
+  <div id="content">
+    <slot>ARTICLE</slot>
+  </div>
+
+  <footer>
+    <p>
+      Copyright &copy; 2023 - Alexandre Poirot
+    </p>
+  </footer>
+</template>
+
+<style>
+  header {
+    background-image: url('/images/techno-barje.jpg');
+    background-position: center top;
+    background-repeat: no-repeat;
+    height: 222px;
+    border-bottom: 7px solid red;
+    background-color: #050a1d;
+  }
+  header a {
+    color: transparent !important;
+  }
+  header h1 {
+    position: absolute;
+  }
+
+  nav {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: .9em;
+    background: linear-gradient(#e0e0e0,#cccccc,#b0b0b0);
+    border-top: 1px solid #f2f2f2;
+    border-bottom: 1px solid #8c8c8c;
+    padding-top: .35em;
+    padding-bottom: .35em;
+    padding-left: 55px;
+    padding-right: 55px;
+    display: flex;
+    line-height: 2em;
+  }
+  nav::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  nav a {
+    color: #6b6b6b;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    text-shadow: #ebebeb 0 1px;
+    text-decoration: none;
+    font-size: 1.1em;
+  }
+  nav a:hover {
+    color: black;
+  }
+  nav ul:first-child {
+    flex: 1;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  nav ul[role="subscription"] {
+    margin-left: .8em;
+  }
+  nav ul li {
+    float: left;
+  }
+  nav li + li {
+    border-left: 1px solid #b0b0b0;
+    margin-left: .8em;
+  }
+  nav li + li a {
+    padding-left: .8em;
+    border-left: 1px solid #dedede;
+  }
+
+  nav form {
+    width: 215px;
+    text-align: left;
+    padding-left: .8em;
+  }
+  nav form .search {
+    width: 93%;
+    font-size: .95em;
+    padding-left: .6em;
+    height: 1.6em;
+    border-radius: .5em;
+    background-clip: padding-box;
+    box-shadow: #d1d1d1 0 1px;
+    background-color: #f2f2f2;
+    border: 1px solid #b3b3b3;
+    color: #888;
+  }
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  @media only screen and (max-width: 700px) {
+    ul[role="subscription"] {
+      display: none;
+    }
+  }
+  @media only screen and (max-width: 680px) {
+    nav form {
+      display: none;
+    }
+  }
+  @media only screen and (max-width: 550px) {
+    nav  {
+      padding-left: 18px;
+      font-size: 0.9em;
+    }
+  }
+
+  #content {
+    border-bottom: 1px solid #bfbfbf;
+    padding-top: 1em;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  @media only screen and (min-width: 550px) {
+    #content {
+      padding-left: 55px;
+      padding-right: 55px;
+    }
+  }
+
+  footer {
+    border-bottom: 7px solid red;
+    font-size: .8em;
+    color: #888;
+    text-shadow: #d9d9d9 0 1px;
+    background: linear-gradient(#e0e0e0,#cccccc,#b0b0b0);
+    border-top: 1px solid #f2f2f2;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin-bottom: 3em;
+    padding-left: 55px;
+    padding-right: 55px;
+  }
+</style>
+
+<script>
+	export default {
+		name: 'blog-article',
+	};
+</script>
