@@ -178,6 +178,9 @@ async function buildBlogPost({ username, password, template, sourceBaseUrl, mark
     // Allow to get links to headers
     headerIds: true,
   });
+  if (yml.hidden) {
+    return null;
+  }
 
   // Use this complex snippet instead of toLocaleDateString (or other Date methods)
   // in order to avoid having the week day in the string...
@@ -265,11 +268,12 @@ async function main() {
   const username = "alex";
   const password = "alex";
 
-  const files = await listFiles({
+  let files = await listFiles({
     url: sourcesUrl,
     username,
     password,
   });
+  files = files.filter(name => name.endsWith(".md") || name.endsWith(".markdown"));
   if (files.length == 0) {
     throw new Error(`There is no files in ${sourcesUrl}`);
   }
@@ -282,7 +286,9 @@ async function main() {
   for(const markdownFile of files) {
     const blogPost = await buildBlogPost({ username, password, template: blogPostTemplate, sourceBaseUrl, markdownFile  });
     //console.log("blogPost", blogPost);
-    blogPosts.push(blogPost);
+    if (blogPost) {
+      blogPosts.push(blogPost);
+    }
   }
 
   // Sort from more recent to oldest as that's the order for RSS and archives

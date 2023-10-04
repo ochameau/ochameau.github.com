@@ -3,7 +3,7 @@ layout: post
 title: "Minimal blog post setup - Simpler Faster Stronger"
 date: 2023-10-03 10:00
 categories: [html]
-#mastodon-comments: https://piaille.fr/@technobarje/111161673300060672
+mastodon-comments: https://piaille.fr/@technobarje/111170218587454945
 ---
 
 I could no longer build my blog...
