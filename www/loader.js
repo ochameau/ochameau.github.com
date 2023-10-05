@@ -103,109 +103,196 @@
 (function () {
   function escapeHtml(unsafe) {
     return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
   }
 
-  var commentsLoaded = false;
+  function emojify(input, emojis) {
+      let output = input;
 
-  function toot_active(toot, what) {
-    var count = toot[what+'_count'];
-    return count > 0 ? 'active' : '';
-  }
+      emojis.forEach(emoji => {
+        let picture = document.createElement("picture");
 
-  function toot_count(toot, what) {
-    var count = toot[what+'_count'];
-    return count > 0 ? count : '';
-  }
+        let source = document.createElement("source");
+        source.setAttribute("srcset", escapeHtml(emoji.url));
+        source.setAttribute("media", "(prefers-reduced-motion: no-preference)");
 
-  function user_account(account) {
-    var result =`@${account.acct}`;
-    if (account.acct.indexOf('@') === -1) {
-      var domain = new URL(account.url)
-      result += `@${domain.hostname}`
-    }
-    return result;
-  }
+        let img = document.createElement("img");
+        img.className = "emoji";
+        img.setAttribute("src", escapeHtml(emoji.static_url));
+        img.setAttribute("alt", `:${ emoji.shortcode }:`);
+        img.setAttribute("title", `:${ emoji.shortcode }:`);
+        img.setAttribute("width", "20");
+        img.setAttribute("height", "20");
 
-  function render_toots(toots, in_reply_to, depth) {
-    var tootsToRender = toots.filter(toot => toot.in_reply_to_id === in_reply_to);
-    tootsToRender.forEach(toot => render_toot(toots, toot, depth));
-  }
+        picture.appendChild(source);
+        picture.appendChild(img);
 
-  function render_toot(toots, toot, depth) {
-    toot.account.display_name = escapeHtml(toot.account.display_name);
-    toot.account.emojis.forEach(emoji => {
-      toot.account.display_name = toot.account.display_name.replace(`:${emoji.shortcode}:`, `<img src="${escapeHtml(emoji.static_url)}" alt="Emoji ${emoji.shortcode}" height="20" width="20" />`);
-    });
-    mastodonComment =
-      `<div class="mastodon-comment" style="margin-left: calc(var(--mastodon-comment-indent) * ${depth})">
-        <div class="author">
-          <div class="avatar">
-            <img src="${escapeHtml(toot.account.avatar_static)}" height=60 width=60 alt="">
-          </div>
-          <div class="details">
-            <a class="name" href="${toot.account.url}" rel="nofollow">${toot.account.display_name}</a>
-            <a class="user" href="${toot.account.url}" rel="nofollow">${user_account(toot.account)}</a>
-          </div>
-          <a class="date" href="${toot.url}" rel="nofollow">${toot.created_at.substr(0, 10)} ${toot.created_at.substr(11, 8)}</a>
-        </div>
-        <div class="content">${toot.content}</div>
-        <div class="status">
-          <div class="replies ${toot_active(toot, 'replies')}">
-            <a href="${toot.url}" rel="nofollow"><i class="fa fa-reply fa-fw"></i>${toot_count(toot, 'replies')}</a>
-          </div>
-          <div class="reblogs ${toot_active(toot, 'reblogs')}">
-            <a href="${toot.url}" rel="nofollow"><i class="fa fa-retweet fa-fw"></i>${toot_count(toot, 'reblogs')}</a>
-          </div>
-          <div class="favourites ${toot_active(toot, 'favourites')}">
-            <a href="${toot.url}" rel="nofollow"><i class="fa fa-star fa-fw"></i>${toot_count(toot, 'favourites')}</a>
-          </div>
-        </div>
-      </div>`;
-      
-    const js = document.createElement("script");
-    js.setAttribute("integrity", "sha512-uHOKtSfJWScGmyyFr2O2+efpDx2nhwHU2v7MVeptzZoiC7bdF6Ny/CmZhN2AwIK1oCFiVQQ5DA/L9FSzyPNu6Q==");
-    js.setAttribute("crossorigin", "anonymous")
-    js.setAttribute("referrerpolicy", "no-referrer");
-    js.type = "text/javascript";
-    js.src = "https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.1/purify.min.js"
-    document.body.appendChild(js);
-
-    js.onload = () => {
-      document.querySelector('section.comments').appendChild(DOMPurify.sanitize(mastodonComment, {'RETURN_DOM_FRAGMENT': true}));
-      render_toots(toots, toot.id, depth + 1)
-    } 
-  }
-
-  function loadComments() {
-    if (commentsLoaded) return;
-
-    const domElement = document.querySelector("section.comments");
-    const loadingElement = document.createElement("span");
-    loadingElement.textContent = "Loading comments from the Fediverse...";
-    domElement.appendChild(loadingElement);
-    
-    const { host, id } = domElement.dataset;
-
-    fetch('https://' + host + '/api/v1/statuses/' + id + '/context')
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(data) {
-        loadingElement.remove();
-        if(data['descendants'] && Array.isArray(data['descendants']) && data['descendants'].length > 0) {
-          render_toots(data['descendants'], id, 0)
-        } else {
-          domElement.innerHTML += "<p>No comments found</p>";
-        }
-
-        commentsLoaded = true;
+        output = output.replace(`:${ emoji.shortcode }:`, picture.outerHTML);
       });
-  }
+
+      return output;
+    }
+
+    function loadComments() {
+      let commentsWrapper = document.querySelector("section.comments");
+      const loadingElement = document.createElement("span");
+      loadingElement.textContent = "Loading comments from the Fediverse...";
+      commentsWrapper.appendChild(loadingElement);
+
+      const { host, id } = commentsWrapper.dataset;
+
+      fetch('https://' + host + '/api/v1/statuses/' + id + '/context')
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(data) {
+          loadingElement.remove();
+          let descendants = data['descendants'];
+          if(
+            descendants &&
+            Array.isArray(descendants) &&
+            descendants.length > 0
+          ) {
+            commentsWrapper.innerHTML = "";
+
+            descendants.forEach(function(status) {
+                console.log(descendants)
+              if( status.account.display_name.length > 0 ) {
+                status.account.display_name = escapeHtml(status.account.display_name);
+                status.account.display_name = emojify(status.account.display_name, status.account.emojis);
+              } else {
+                status.account.display_name = status.account.username;
+              };
+
+              let instance = "";
+              if( status.account.acct.includes("@") ) {
+                instance = status.account.acct.split("@")[1];
+              } else {
+                instance = "{{ .host }}";
+              }
+
+              const isReply = status.in_reply_to_id !== "{{ .id }}";
+
+              let op = false;
+              if( status.account.acct == "{{ .username }}" ) {
+                op = true;
+              }
+
+              status.content = emojify(status.content, status.emojis);
+
+              let avatarSource = document.createElement("source");
+              avatarSource.setAttribute("srcset", escapeHtml(status.account.avatar));
+              avatarSource.setAttribute("media", "(prefers-reduced-motion: no-preference)");
+
+              let avatarImg = document.createElement("img");
+              avatarImg.className = "avatar";
+              avatarImg.setAttribute("src", escapeHtml(status.account.avatar_static));
+              avatarImg.setAttribute("alt", `@${ status.account.username }@${ instance } avatar`);
+
+              let avatarPicture = document.createElement("picture");
+              avatarPicture.appendChild(avatarSource);
+              avatarPicture.appendChild(avatarImg);
+
+              let avatar = document.createElement("a");
+              avatar.className = "avatar-link";
+              avatar.setAttribute("href", status.account.url);
+              avatar.setAttribute("rel", "external nofollow");
+              avatar.setAttribute("title", `View profile at @${ status.account.username }@${ instance }`);
+              avatar.appendChild(avatarPicture);
+
+              let instanceBadge = document.createElement("a");
+              instanceBadge.className = "instance";
+              instanceBadge.setAttribute("href", status.account.url);
+              instanceBadge.setAttribute("title", `@${ status.account.username }@${ instance }`);
+              instanceBadge.setAttribute("rel", "external nofollow");
+              instanceBadge.textContent = instance;
+
+              let display = document.createElement("span");
+              display.className = "display";
+              display.setAttribute("itemprop", "author");
+              display.setAttribute("itemtype", "http://schema.org/Person");
+              display.innerHTML = status.account.display_name;
+
+              let header = document.createElement("header");
+              header.className = "author";
+              header.appendChild(display);
+              header.appendChild(instanceBadge);
+
+              let permalink = document.createElement("a");
+              permalink.setAttribute("href", status.url);
+              permalink.setAttribute("itemprop", "url");
+              permalink.setAttribute("title", `View comment at ${ instance }`);
+              permalink.setAttribute("rel", "external nofollow");
+              permalink.textContent = new Date( status.created_at ).toLocaleString('en-US', {
+                dateStyle: "long",
+                timeStyle: "short",
+              });
+
+              let timestamp = document.createElement("time");
+              timestamp.setAttribute("datetime", status.created_at);
+              timestamp.appendChild(permalink);
+
+              let main = document.createElement("main");
+              main.setAttribute("itemprop", "text");
+              main.innerHTML = status.content;
+
+              let interactions = document.createElement("footer");
+              if(status.favourites_count > 0) {
+                let faves = document.createElement("a");
+                faves.className = "faves";
+                faves.setAttribute("href", `${ status.url }/favourites`);
+                faves.setAttribute("title", `Favorites from ${ instance }`);
+                faves.textContent = status.favourites_count;
+
+                interactions.appendChild(faves);
+              }
+
+              let comment = document.createElement("article");
+              comment.id = `comment-${ status.id }`;
+              comment.className = isReply ? "comment comment-reply" : "comment";
+              comment.setAttribute("itemprop", "comment");
+              comment.setAttribute("itemtype", "http://schema.org/Comment");
+              comment.appendChild(avatar);
+              comment.appendChild(header);
+              comment.appendChild(timestamp);
+              comment.appendChild(main);
+              comment.appendChild(interactions);
+
+              if(op === true) {
+                comment.classList.add("op");
+
+                avatar.classList.add("op");
+                avatar.setAttribute(
+                  "title",
+                  "Blog post author; " + avatar.getAttribute("title")
+                );
+
+                instanceBadge.classList.add("op");
+                instanceBadge.setAttribute(
+                  "title",
+                  "Blog post author: " + instanceBadge.getAttribute("title")
+                );
+              }
+
+              const js = document.createElement("script");
+              js.setAttribute("integrity", "sha512-uHOKtSfJWScGmyyFr2O2+efpDx2nhwHU2v7MVeptzZoiC7bdF6Ny/CmZhN2AwIK1oCFiVQQ5DA/L9FSzyPNu6Q==");
+              js.setAttribute("crossorigin", "anonymous")
+              js.setAttribute("referrerpolicy", "no-referrer");
+              js.type = "text/javascript";
+              js.src = "https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.1/purify.min.js"
+              document.body.appendChild(js);
+              js.onload = () => {
+                commentsWrapper.innerHTML += DOMPurify.sanitize(comment.outerHTML);
+              }
+            });
+          }
+        });
+      }
+
 
   function respondToVisibility(element, callback) {
     var options = {
